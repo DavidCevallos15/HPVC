@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "noticias" ALTER COLUMN "titulo" DROP NOT NULL,
+ALTER COLUMN "extracto" DROP NOT NULL,
+ALTER COLUMN "contenido" DROP NOT NULL;

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary:        #003A70;
+    --color-primary-light:  #005BAC;
+    --color-primary-pale:   #D6E6F5;
+    --color-primary-dark:   #080B5E;
+    --color-secondary:      #007A4D;
+    --color-secondary-light:#00A86B;
+    --color-secondary-pale: #D4F0E3;
+    --color-accent:         #F5C400;
+    --color-dark:           #1A1A2E;
+    --color-gray:           #64748B;
+    --color-gray-light:     #F1F5F9;
+    --color-white:          #FFFFFF;
+    --color-error:          #E30613;
+    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  html { font-family: var(--font-body); }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .btn-primario {
+    @apply bg-primary hover:bg-primary-light text-white font-medium py-2 px-4 rounded-lg transition-all shadow-sm active:scale-95 flex items-center gap-2;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border;
+  }
+  .badge-disponible {
+    background-color: #D4F0E3;
+    color: #007A4D;
+    border-color: #007A4D;
+  }
+  .badge-vacaciones {
+    background-color: #FEF9C3;
+    color: #A16207;
+    border-color: #F5C400;
+  }
+  .badge-sin-atencion {
+    background-color: #FEF2F2;
+    color: #E30613;
+    border-color: #E30613;
+  }
+  .font-heading { font-family: var(--font-heading); }
+}

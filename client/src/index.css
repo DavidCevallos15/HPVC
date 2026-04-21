@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Azul institucional Ecuador — autoridad y confianza */
+    --color-primary:        #003A70;
+    --color-primary-light:  #005BAC;
+    --color-primary-pale:   #D6E6F5;
+    --color-primary-dark:   #080B5E;
+
+    /* Verde salud — vida, bienestar */
+    --color-secondary:      #007A4D;
+    --color-secondary-light:#00A86B;
+    --color-secondary-pale: #D4F0E3;
+
+    /* Amarillo Ecuador — referencia bandera nacional, usado con mesura */
+    --color-accent:         #F5C400;
+
+    /* Neutros */
+    --color-dark:           #1A1A2E;
+    --color-gray:           #64748B;
+    --color-gray-light:     #F1F5F9;
+    --color-white:          #FFFFFF;
+
+    /* Semáforo de estado */
+    --color-success:        #00A86B;
+    --color-warning:        #F5C400;
+    --color-error:          #E30613;
+
+    /* Tipografía */
+    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Sombras */
+    --shadow-card: 0 4px 24px rgba(0, 58, 112, 0.10);
+    --shadow-hero: 0 8px 40px rgba(0, 58, 112, 0.18);
+    --shadow-floating: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --shadow-dropdown: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+    /* Bordes */
+    --radius-card: 16px;
+    --radius-btn:  8px;
+    --radius-fab:  50%;
+    --radius-chip: 16px;
+
+    /* Z-index hierarchy */
+    --z-dropdown: 1000;
+    --z-modal: 9999;
+    --z-chatbot: 9998;
+    --z-speed-dial: 9997;
+    --z-navbar: 100;
+
+    /* Transiciones */
+    --transition-base: all 0.3s ease;
+    --transition-fast: all 0.2s ease;
+    --transition-slow: all 0.5s ease;
+  }
+
+  html { 
+    font-family: var(--font-body); 
+    scroll-behavior: smooth;
+  }
+  body {
+    overflow-y: scroll;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  /* Botones Base */
+  .btn-primario {
+    @apply bg-primary hover:bg-primary-light text-white font-medium py-2 px-4 rounded-[var(--radius-btn)] transition-all shadow-md active:scale-95 flex justify-center items-center gap-2;
+  }
+  .btn-secundario {
+    @apply bg-secondary hover:bg-secondary-light text-white font-medium py-2 px-4 rounded-[var(--radius-btn)] transition-all shadow-md active:scale-95 flex justify-center items-center gap-2;
+  }
+  .btn-outline {
+    @apply bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium py-2 px-4 rounded-[var(--radius-btn)] transition-all active:scale-95 flex justify-center items-center gap-2;
+  }
+  
+  /* Badges - Semáforo */
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border;
+  }
+  .badge-disponible {
+    background-color: var(--color-secondary-pale);
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+  }
+  .badge-sin-atencion {
+    background-color: #FEF2F2;
+    color: var(--color-error);
+    border-color: var(--color-error);
+  }
+  .badge-vacaciones {
+    background-color: #FEF9C3; /* Amarillo tenue Tailwind */
+    color: #A16207; /* Amarillo oscuro */
+    border-color: var(--color-warning);
+  }
+}
