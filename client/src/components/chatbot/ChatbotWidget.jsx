@@ -257,9 +257,9 @@ export default function ChatbotWidget() {
       <button
         onClick={() => setOpen(!open)}
         aria-label="Abrir asistente virtual"
-        className="fixed bottom-5 right-5 z-[9999] w-14 h-14 bg-primary hover:bg-primary-light text-white rounded-full shadow-floating flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
+        className="fixed bottom-5 right-5 z-[9999] w-16 h-16 bg-primary hover:bg-primary-light text-white rounded-full shadow-floating flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
       >
-        {open ? <X size={22} /> : <MessageCircle size={22} />}
+        {open ? <X size={30} /> : <MessageCircle size={30} />}
         {!open && (
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full text-[9px] font-bold text-primary-dark flex items-center justify-center animate-pulse">
             ?

@@ -2,7 +2,9 @@ import React from 'react';
 import { 
   FileText, BookOpen, Users, IdCard, List, Pill, 
   Monitor, Archive, Mail, Cloud, HardDrive, Folder, 
-  Globe, MessageCircle, Landmark, ExternalLink, Calendar 
+  Globe, MessageCircle, Landmark, ExternalLink, Calendar, 
+  Form,
+  User
 } from 'lucide-react';
 
 const categorias = [
@@ -14,6 +16,8 @@ const categorias = [
       { nombre: "Drive Zonal", url: "https://nube.mspz4.gob.ec/login", Icono: HardDrive },
       { nombre: "Drive 13d01 MSP", url: "https://app.13d01.mspz4.gob.ec/", Icono: Folder },
       { nombre: "Consulta de Citas Verdi", url: "http://186.47.77.45:8082/consulta_cita/", Icono: Calendar },
+      { nombre: "Consulta de Recetas Médicas", url: "http://186.47.77.45:8082/consulta_cita/", Icono: Form },
+      { nombre: "Sistema de Información Hospitalaria", url: "http://186.47.77.45:8082/syshpvc/", Icono: Monitor },
     ]
   },
   {
@@ -22,7 +26,7 @@ const categorias = [
     enlaces: [
       { nombre: "Quipux", url: "https://mail.hpvc.gob.ec/", Icono: FileText },
       { nombre: "PahoFlu", url: "https://sive.msp.gob.ec/Account/Login?ReturnUrl=%2F", Icono: BookOpen },
-      { nombre: "Phuyu Salud", url: "https://msp.citas.med.ec/WfrmLogueo", Icono: Users },
+      { nombre: "Agendamiento MSP", url: "https://agendamiento.msp.gob.ec/login", Icono: Users },
       { nombre: "PRAS", url: "https://sgrdacaa.msp.gob.ec/", Icono: IdCard },
       { nombre: "Apps MSP", url: "https://app.13d01.mspz4.gob.ec/", Icono: List },
     ]

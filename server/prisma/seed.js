@@ -8,12 +8,14 @@ async function main() {
   console.log('🌱 Iniciando seed de la base de datos HPVC...');
 
   // ── 1. SUPERADMIN ────────────────────────────────────────────────
-  const passwordHash = await bcrypt.hash('HpvcAdmin2026!', 12);
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hpvc.gob.ec';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'HpvcAdmin2026!';
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12);
   const admin = await prisma.usuario.upsert({
-    where: { email: 'admin@hpvc.gob.ec' },
+    where: { email: ADMIN_EMAIL },
     update: {},
     create: {
-      email: 'admin@hpvc.gob.ec',
+      email: ADMIN_EMAIL,
       password: passwordHash,
       nombre: 'Administrador HPVC',
       rol: 'SUPERADMIN',
@@ -126,7 +128,7 @@ async function main() {
   console.log(`✅ ${noticias.length} noticias de muestra creadas.`);
 
   console.log('\n🎉 Seed completado exitosamente.');
-  console.log('   👤 SUPERADMIN: admin@hpvc.gob.ec | HpvcAdmin2026!');
+  console.log(`   👤 SUPERADMIN: ${ADMIN_EMAIL} | ${ADMIN_PASSWORD}`);
 }
 
 main()

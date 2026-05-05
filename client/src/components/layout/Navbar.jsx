@@ -27,11 +27,10 @@ const navLinks = [
   { 
     label: 'Accesos Directos', 
     children: [
-      { label: 'Ver todos los Accesos', to: '/accesos' },
-      { label: 'Sistemas Nacionales (MSP)', to: '/accesos' },
       { label: 'Quipux', to: 'https://www.gestiondocumental.gob.ec/' },
       { label: 'Plataformas Web Z4', to: '/sis_adm/index.php' },
       { label: 'Correo Zimbra', to: 'https://mail.mspz4.gob.ec' },
+      { label: 'Ver todos los Accesos', to: '/accesos' },
     ]
   },
   { label: 'Contáctenos', to: '/contacto' },

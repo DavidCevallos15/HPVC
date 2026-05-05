@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Recetas | HPVCB</title>
+    <link rel="icon" href="icono.png" type="image/png">
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Generación PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <header class="header-institucion">
+        <img src="logo.png" alt="Logo Institución" class="logo" id="logo-institucion">
+        <div class="titulos">
+            <h2 id="nombre-modulo">Sistema de Salud Pública</h2>
+            <h1 id="nombre-institucion">Hospital Provincial "Dr. Verdi Cevallos Balda"</h1>
+        </div>
+    </header>
+
+    <main class="contenedor-principal">
+        <!-- SECCIÓN BÚSQUEDA -->
+        <section class="tarjeta-busqueda" id="seccion-busqueda">
+            <div class="instrucciones">
+                <h3>Consulta de Recetas Electrónicas</h3>
+                <p>Ingrese sus datos para visualizar y descargar sus recetas médicas vigentes.</p>
+            </div>
+
+            <form id="form-consulta" novalidate>
+                <div class="grupo-input">
+                    <label for="documento">
+                        <i data-lucide="credit-card" size="18"></i>
+                        Número de Cédula
+                    </label>
+                    <input type="text" id="documento" required placeholder="Ej. 1312345678"
+                    minlength="10" 
+                    maxlength="10" 
+                    pattern="\d{10}" 
+                    title="Numero de Documento Invalido">
+                </div>
+
+                <div class="grupo-input">
+                    <label for="fecha_nac">
+                        <i data-lucide="calendar" size="18"></i>
+                        Fecha de Nacimiento
+                    </label>
+                    <input type="date" id="fecha_nac" required>
+                </div>
+
+                <button type="submit" id="btn-consultar">
+                    <span id="btn-texto">Consultar Recetas</span>
+                    <span id="btn-loader" class="loader oculto"></span>
+                </button>
+            </form>
+
+            <div id="mensaje-error" class="oculto error-texto">
+                <i data-lucide="alert-circle" size="20"></i>
+                <span id="error-contenido"></span>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DETALLE RECETA -->
+        <section id="seccion-receta" class="oculto">
+            <div class="acciones-receta">
+                <button id="btn-volver" class="btn-volver">
+                    <i data-lucide="arrow-left" size="18"></i>
+                    Volver a buscar
+                </button>
+                <button id="btn-descargar-pdf" style="width: auto; background-color: var(--secondary);">
+                    <i data-lucide="download" size="18"></i>
+                    Descargar en PDF
+                </button>
+            </div>
+            
+            <div id="documento-pdf" class="plantilla-receta">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE SELECCIÓN -->
+    <dialog id="modal-recetas" class="modal">
+        <div class="modal-header">
+            <h3><i data-lucide="clipboard-list" style="vertical-align: middle; margin-right: 8px;"></i>Recetas Disponibles</h3>
+        </div>
+        <div class="modal-body">
+            <div id="paciente-info-modal" class="paciente-info-badge">
+                <!-- Info del paciente -->
+            </div>
+            <div id="lista-recetas" class="lista-grid">
+                <!-- Lista de recetas -->
+            </div>
+            <button id="btn-cerrar-modal" class="btn-secundario">
+                Cerrar
+            </button>
+        </div>
+    </dialog>
+
+    <script src="app.js"></script>
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+    </script>
+</body>
+</html>
