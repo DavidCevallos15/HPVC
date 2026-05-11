@@ -4,8 +4,9 @@ const { getPublicas, getBySlug }      = require('../controllers/noticias.control
 const { getDisponibles }               = require('../controllers/especialidades.controller');
 const { getDirectorio }                = require('../controllers/medicos.controller');
 const { getByMes }                     = require('../controllers/horarios.controller');
-const { enviar, contactoLimiter }      = require('../controllers/contacto.controller');
-const { getPublicos }                  = require('../controllers/documentos.controller');
+const { getGuardiasByMes, getMesesDisponibles } = require('../controllers/guardias.controller');
+const { enviar }      = require('../controllers/contacto.controller');
+const { getPublicos, preguntar } = require('../controllers/documentos.controller');
 const { getAll: getConfiguracion }     = require('../controllers/configuracion.controller');
 
 // Noticias públicas
@@ -17,11 +18,16 @@ router.get('/especialidades',   getDisponibles);
 router.get('/medicos',          getDirectorio);
 router.get('/horarios/:mes',    getByMes);
 
-// Documentos académicos
-router.get('/documentos',       getPublicos);
+// Guardias Matriz institucional
+router.get('/guardias/:mes',       getGuardiasByMes);
+router.get('/guardias-meses',      getMesesDisponibles);
 
-// Contacto (con rate limit)
-router.post('/contacto', contactoLimiter, enviar);
+// Documentos académicos + Asistente IA
+router.get('/documentos',          getPublicos);
+router.post('/documentos/preguntar', preguntar);
+
+// Contacto (con rate limit y validación)
+router.post('/contacto', enviar);
 
 // Configuración pública (teléfono, dirección, horario, etc.)
 router.get('/configuracion',    getConfiguracion);

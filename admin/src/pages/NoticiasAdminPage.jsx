@@ -8,6 +8,8 @@ export default function NoticiasAdminPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const fetchNoticias = () => {
     setLoading(true);
@@ -25,6 +27,13 @@ export default function NoticiasAdminPage() {
   };
 
   const filtered = noticias.filter(n => (n.titulo || '').toLowerCase().includes(search.toLowerCase()));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div>
@@ -61,7 +70,7 @@ export default function NoticiasAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map((n) => (
+              {paginated.map((n) => (
                 <tr key={n.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
                     <span className="font-medium text-gray-900 line-clamp-1">{n.titulo || 'Sin título'}</span>
@@ -97,6 +106,31 @@ export default function NoticiasAdminPage() {
               )}
             </tbody>
           </table>
+        )}
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <span className="text-sm text-gray-500">
+              Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filtered.length)} de {filtered.length}
+            </span>
+            <div className="flex gap-1">
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-white disabled:opacity-50"
+              >
+                Anterior
+              </button>
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-white disabled:opacity-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

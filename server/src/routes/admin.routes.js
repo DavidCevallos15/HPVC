@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { verifyToken, requireRole } = require('../middlewares/auth');
-const { uploadImage, uploadPDF, uploadMedico, uploadExcel } = require('../middlewares/upload');
+const { uploadImage, uploadDocumento, uploadMedico, uploadExcel } = require('../middlewares/upload');
 
 const noticiaCtrl      = require('../controllers/noticias.controller');
 const especialidadCtrl = require('../controllers/especialidades.controller');
@@ -9,6 +9,7 @@ const horarioCtrl      = require('../controllers/horarios.controller');
 const contactoCtrl     = require('../controllers/contacto.controller');
 const documentoCtrl    = require('../controllers/documentos.controller');
 const configCtrl       = require('../controllers/configuracion.controller');
+const guardiasCtrl     = require('../controllers/guardias.controller');
 
 // Todas las rutas requieren autenticación
 router.use(verifyToken);
@@ -39,6 +40,11 @@ router.put('/medicos/:medicoId/horario', requireRole('SUPERADMIN', 'EDITOR_HORAR
 router.get('/horarios',               requireRole('SUPERADMIN','EDITOR_HORARIOS'), horarioCtrl.getAll);
 router.post('/horarios/upload',       requireRole('SUPERADMIN','EDITOR_HORARIOS'), uploadExcel.single('archivo'), horarioCtrl.uploadExcel);
 
+// ── Guardias Matriz (Excel institucional real) ────────────────────────
+router.get('/guardias',               requireRole('SUPERADMIN','EDITOR_HORARIOS'), guardiasCtrl.getAll);
+router.post('/guardias/upload',       requireRole('SUPERADMIN','EDITOR_HORARIOS'), uploadExcel.single('archivo'), guardiasCtrl.uploadGuardias);
+router.delete('/guardias/:mes',       requireRole('SUPERADMIN'), guardiasCtrl.deleteByMes);
+
 // ── Mensajes de Contacto ─────────────────────────────────────────────
 router.get('/contacto',           requireRole('SUPERADMIN'), contactoCtrl.getAll);
 router.put('/contacto/:id/leer',  requireRole('SUPERADMIN'), contactoCtrl.marcarLeido);
@@ -47,11 +53,14 @@ router.delete('/contacto/:id',    requireRole('SUPERADMIN'), contactoCtrl.elimin
 // ── Configuración del Sistema ────────────────────────────────────────
 router.get('/configuracion',      requireRole('SUPERADMIN'), configCtrl.getAll);
 router.put('/configuracion',      requireRole('SUPERADMIN'), configCtrl.update);
+router.post('/configuracion/imagen', requireRole('SUPERADMIN'), uploadImage.single('imagen'), configCtrl.updateImage);
+router.delete('/configuracion/:clave', requireRole('SUPERADMIN'), configCtrl.deleteConfig);
 
-// ── Documentos Académicos CRUD ───────────────────────────────────────
-router.get('/documentos',         requireRole('SUPERADMIN'), documentoCtrl.getAll);
-router.post('/documentos',        requireRole('SUPERADMIN'), uploadPDF.single('archivo'), documentoCtrl.create); // Asumiendo que usa PDF
-router.put('/documentos/:id',     requireRole('SUPERADMIN'), uploadPDF.single('archivo'), documentoCtrl.update);
-router.delete('/documentos/:id',  requireRole('SUPERADMIN'), documentoCtrl.remove);
+// ── Documentos Académicos CRUD + IA ─────────────────────────────────
+router.get('/documentos',                 requireRole('SUPERADMIN'), documentoCtrl.getAll);
+router.post('/documentos',                requireRole('SUPERADMIN'), uploadDocumento.single('archivo'), documentoCtrl.create);
+router.put('/documentos/:id',             requireRole('SUPERADMIN'), uploadDocumento.single('archivo'), documentoCtrl.update);
+router.delete('/documentos/:id',          requireRole('SUPERADMIN'), documentoCtrl.remove);
+router.post('/documentos/:id/re-indexar', requireRole('SUPERADMIN'), documentoCtrl.reIndexar);
 
 module.exports = router;

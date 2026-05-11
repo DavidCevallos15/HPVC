@@ -11,7 +11,7 @@ const navLinks = [
     children: [
       { label: 'Especialidades Médicas', to: '/especialidades' },
       { label: 'Directorio de Médicos', to: '/directorio' },
-      { label: 'Horarios de Atención', to: '/directorio#horarios' },
+      { label: 'Horarios de Atención', to: '/horarios' },
       { label: 'Recorrido Virtual', to: '/recorrido-virtual' },
     ],
   },
@@ -21,7 +21,7 @@ const navLinks = [
       { label: 'Acerca de Nosotros', to: '/acerca' },
       { label: 'Noticias y Actualidad', to: '/noticias' },
       { label: 'Documentos y Transparencia', to: '/documentos' },
-      { label: 'Subcentros de Salud', to: '/subcentros' },
+      { label: 'GeoSalud MSP', to: '/subcentros' },
     ],
   },
   { 
@@ -71,9 +71,6 @@ export default function Navbar() {
         <div className="container mx-auto px-6 flex justify-between items-center">
           <span className="font-medium opacity-90">{}</span>
           <div className="flex items-center gap-5">
-            <a href={`tel:${config.hospital_telefono?.replace(/\D/g, '') || '052590140'}`} className="flex items-center gap-1.5 hover:text-accent transition-colors font-medium">
-              <Phone size={12} /> {config.hospital_telefono || '(05) 259-0140'}
-            </a>
             <a href={`mailto:${config.hospital_email || 'hospital.portoviejo@mspz4.gob.ec'}`} className="flex items-center gap-1.5 hover:text-accent transition-colors font-medium">
               <Mail size={12} /> {config.hospital_email || 'hospital.portoviejo@mspz4.gob.ec'}
             </a>
@@ -147,7 +144,7 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Link to="/directorio"
+            <Link to="/horarios"
               className="ml-2 btn-primario text-sm py-2 px-4 inline-flex items-center gap-2">
               <Clock size={16} /> Horarios
             </Link>
@@ -192,7 +189,7 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Link to="/directorio" className="btn-primario w-full mt-4 text-sm justify-center inline-flex items-center gap-2">
+            <Link to="/horarios" className="btn-primario w-full mt-4 text-sm justify-center inline-flex items-center gap-2">
               <Clock size={16} /> Ver Horarios
             </Link>
           </div>

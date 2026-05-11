@@ -1,5 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const rateLimit = require('express-rate-limit');
+const { contactoSchemas } = require('../validators/schemas');
+const { validate } = require('../middlewares/validate');
 const prisma = new PrismaClient();
 
 // Rate limit específico para formulario de contacto
@@ -10,18 +12,20 @@ const contactoLimiter = rateLimit({
 });
 
 // ── PUBLIC: Enviar mensaje ──────────────────────────────────────────
-const enviar = async (req, res, next) => {
-  try {
-    const { nombre, email, telefono, asunto, mensaje } = req.body;
-    if (!nombre || !email || !asunto || !mensaje)
-      return res.status(400).json({ success: false, message: 'Nombre, email, asunto y mensaje son requeridos.' });
+const enviar = [
+  contactoLimiter,
+  validate(contactoSchemas.enviar),
+  async (req, res, next) => {
+    try {
+      const { nombre, email, telefono, asunto, mensaje } = req.body;
 
     const msg = await prisma.mensajeContacto.create({
       data: { nombre, email, telefono: telefono || null, asunto, mensaje },
     });
     res.status(201).json({ success: true, message: 'Mensaje enviado correctamente. Nos comunicaremos pronto.', data: { id: msg.id } });
-  } catch (err) { next(err); }
-};
+    } catch (err) { next(err); }
+  }
+];
 
 // ── ADMIN ───────────────────────────────────────────────────────────
 const getAll = async (req, res, next) => {

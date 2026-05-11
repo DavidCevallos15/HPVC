@@ -13,6 +13,9 @@ import ContactoAdminPage from './pages/ContactoAdminPage';
 import ConfiguracionPage from './pages/ConfiguracionPage';
 import MedicosAdminPage  from './pages/MedicosAdminPage';
 import MedicoFormPage    from './pages/MedicoFormPage';
+import DocumentosAdminPage from './pages/DocumentosAdminPage';
+import ImagenMesAdminPage  from './pages/ImagenMesAdminPage';
+import HeroCarouselAdminPage from './pages/HeroCarouselAdminPage';
 
 function Loader() {
   return (
@@ -44,9 +47,12 @@ export default function App() {
               <Route path="horarios"             element={<HorariosPage />} />
               <Route path="contacto"             element={<ContactoAdminPage />} />
               <Route path="configuracion"        element={<ConfiguracionPage />} />
+              <Route path="configuracion/portada" element={<ImagenMesAdminPage />} />
+              <Route path="configuracion/carrusel" element={<HeroCarouselAdminPage />} />
               <Route path="medicos"              element={<MedicosAdminPage />} />
               <Route path="medicos/nuevo"        element={<MedicoFormPage />} />
               <Route path="medicos/editar/:id"   element={<MedicoFormPage />} />
+              <Route path="documentos"           element={<DocumentosAdminPage />} />
             </Route>
 
             {/* Fallback */}

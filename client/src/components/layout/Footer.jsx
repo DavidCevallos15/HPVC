@@ -108,16 +108,12 @@ export default function Footer() {
               to="/subcentros"
               className="inline-flex items-center justify-center text-sm font-medium mb-4 py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-light transition-colors text-white"
             >
-              Ver subcentros cercanos
+              Consultar GeoSalud MSP
             </Link>
             <ul className="space-y-2 mt-auto">
               <li className="flex items-start gap-2 text-sm text-primary-pale">
                 <MapPin size={14} className="mt-0.5 shrink-0 text-accent" />
                 <span>{config.hospital_direccion || 'Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105'}</span>
-              </li>
-              <li className="flex items-center gap-2 text-sm text-primary-pale">
-                <Phone size={14} className="shrink-0 text-accent" />
-                <a href={`tel:${config.hospital_telefono?.replace(/\D/g, '')}`} className="hover:text-white transition-colors">{config.hospital_telefono || '(05) 259-0140'}</a>
               </li>
               <li className="flex items-center gap-2 text-sm text-primary-pale">
                 <Mail size={14} className="shrink-0 text-accent" />

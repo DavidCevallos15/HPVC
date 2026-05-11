@@ -46,7 +46,6 @@ export default function ContactoPage() {
             <h2 className="text-xl font-bold font-heading text-dark mb-6">Información de Contacto</h2>
             {[
               { Icon: MapPin, label: 'Dirección', content: 'Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105' },
-              { Icon: Phone, label: 'Teléfono', content: '(05) 259-0140', href: 'tel:052590140' },
               { Icon: Mail, label: 'Correo Electrónico', content: 'hospital.portoviejo@mspz4.gob.ec', href: 'mailto:hospital.portoviejo@mspz4.gob.ec' },
               { Icon: Clock, label: 'Atención al Público', content: 'Lunes a Viernes de 08h00 a 17h00\nEmergencias: 24h / 7 días' },
             ].map(({ Icon, label, content, href }) => (

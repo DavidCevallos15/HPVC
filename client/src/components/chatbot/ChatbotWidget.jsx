@@ -20,10 +20,9 @@ const CHATBOT_TREE = {
   },
 
   citas: {
-    text: '📅 **Citas Médicas y Consulta Externa**\n\nPuede consultar su cita en el portal HPVC o llamar directamente.\n\n📞 **Cómo marcar la extensión:**\n1. Marque **(05) 259-0140**\n2. Espere a la operadora o contestadora\n3. Solicite el área de **Consulta Externa / Admisión**\n\nTambién puede acercarse presencialmente a ventanilla de admisión.',
+    text: '📅 **Citas Médicas y Consulta Externa**\n\nPuede consultar su cita en el portal HPVC de manera digital.\n\nTambién puede acercarse presencialmente a ventanilla de admisión para mayor información.',
     opciones: [
       { label: '🌐 Consultar mi cita en línea',    href: 'http://186.47.77.45:8082/consulta_cita/', extBlank: true },
-      { label: '📞 Llamar a Consulta Externa',        href: 'tel:052590140' },
       { label: '👨‍⚕️ Ver Directorio Médico',            link: '/directorio' },
       { label: '🏥 Ver Especialidades',                link: '/especialidades' },
       { label: '🔙 Volver al inicio',                  next: 'inicio' },
@@ -40,10 +39,10 @@ const CHATBOT_TREE = {
   },
 
   especialidades: {
-    text: '🏥 **Especialidades Médicas**\n\nContamos con un amplio equipo de profesionales en diversas especialidades: Medicina Interna, Cirugía, Pediatría, Ginecología, Traumatología, Cardiología, y más.\n\nConsulte nuestro directorio completo para ver disponibilidad de profesionales.',
+    text: '🏥 **Especialidades Médicas y Áreas**\n\nActualmente contamos con más de **50 especialidades médicas y áreas institucionales** (Pediatría, Cirugía, UCI, Ginecología, Farmacia, Admisiones, etc.) y un directorio con **más de 140 profesionales médicos y personal de salud** a su servicio.\n\nLe invitamos a consultar nuestro Directorio Médico digital para ver todo el listado oficial y buscar a su especialista.',
     opciones: [
-      { label: '🏥 Ver todas las especialidades', link: '/especialidades' },
-      { label: '👨‍⚕️ Ver Directorio Médico',       link: '/directorio' },
+      { label: '🏥 Ver todas las áreas',          link: '/especialidades' },
+      { label: '👨‍⚕️ Ver Directorio (140+ médicos)', link: '/directorio' },
       { label: '📅 Agendar una cita',             next: 'citas' },
       { label: '🔙 Volver al inicio',              next: 'inicio' },
     ],
@@ -59,9 +58,8 @@ const CHATBOT_TREE = {
   },
 
   emergencias: {
-    text: '🚨 **EMERGENCIAS — Atención 24/7**\n\nNuestro servicio de emergencias atiende de forma **ininterrumpida** todos los días del año.\n\n📞 **Línea principal:** (05) 259-0140\n📱 **ECU 911** para emergencias vitales\n\n🔎 **Cómo marcar la extensión:**\n1. Marque **(05) 259-0140**\n2. Espere a que la operadora le indique\n3. Solicite el área de **Emergencias**\n\n📍 Calle 12 de Marzo y Rocafuerte, Portoviejo.',
+    text: '🚨 **EMERGENCIAS — Atención 24/7**\n\nNuestro servicio de emergencias atiende de forma **ininterrumpida** todos los días del año.\n\n📱 **ECU 911** para emergencias vitales\n\n📍 Calle 12 de Marzo y Rocafuerte, Portoviejo.',
     opciones: [
-      { label: '📞 Llamar al (05) 259-0140',  href: 'tel:052590140' },
       { label: '📞 Llamar al ECU 911',          href: 'tel:911' },
       { label: '📍 Ver ubicación del hospital',  next: 'ubicacion' },
       { label: '🔙 Volver al inicio',            next: 'inicio' },
@@ -78,9 +76,8 @@ const CHATBOT_TREE = {
   },
 
   contacto: {
-    text: '📞 **Información de Contacto**\n\n• **Teléfono:** (05) 259-0140\n• **Correo:** hospital.portoviejo@mspz4.gob.ec\n• **Dirección:** Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105\n\nTambién puede enviarnos un mensaje a través del formulario de contacto de nuestro portal.',
+    text: '📞 **Información de Contacto**\n\n• **Correo:** hospital.portoviejo@mspz4.gob.ec\n• **Dirección:** Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105\n\nTambién puede enviarnos un mensaje a través del formulario de contacto de nuestro portal.',
     opciones: [
-      { label: '📞 Llamar al (05) 259-0140',           href: 'tel:052590140' },
       { label: '✉️ Enviar correo electrónico',          href: 'mailto:hospital.portoviejo@mspz4.gob.ec' },
       { label: '📝 Formulario de contacto',        link: '/contacto' },
       { label: '🔙 Volver al inicio',              next: 'inicio' },

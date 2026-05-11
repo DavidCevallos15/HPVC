@@ -11,6 +11,8 @@ const app = express();
 
 // ── Seguridad ────────────────────────────────────────────────────────
 app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  xFrameOptions: false, // Permitimos iframes (controlado por CSP)
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -19,6 +21,7 @@ app.use(helmet({
       imgSrc:     ["'self'", "data:", "https:"],
       scriptSrc:  ["'self'"],
       connectSrc: ["'self'", "http://localhost:3001", "https://api.hpvc.gob.ec"],
+      frameAncestors: ["'self'", "http://localhost:5173", "http://localhost:5174"],
     },
   },
 }));
@@ -46,6 +49,12 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ── Archivos estáticos ───────────────────────────────────────────────
+// PDFs de documentos clínicos: servidos inline para el visor integrado
+app.use('/uploads/documentos', (req, res, next) => {
+  res.setHeader('Content-Disposition', 'inline');
+  next();
+}, express.static(path.join(__dirname, '../public/uploads/documentos')));
+
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/assets',  express.static(path.join(__dirname, '../public/assets')));
 

@@ -62,6 +62,30 @@ const uploadPDF = multer({
   fileFilter: pdfFilter,
 });
 
+// ── Upload PDFs para documentos clínicos (directorio propio) ──────────────
+const documentoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = './public/uploads/documentos';
+    ensureDir(dir);
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    // Preservar nombre original sanitizado para facilitar identificación
+    const base = file.originalname
+      .replace(/[^a-zA-Z0-9ÁáÉéÍíÓóÚúÑñ._\- ]/g, '')
+      .replace(/\s+/g, '_')
+      .slice(0, 120);
+    const unique = `${Date.now()}_${base}`;
+    cb(null, unique);
+  },
+});
+
+const uploadDocumento = multer({
+  storage: documentoStorage,
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB para GPCs grandes
+  fileFilter: pdfFilter,
+});
+
 // ── Upload múltiple para médicos (foto + cv) ────────────────────────
 const medicoStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -114,4 +138,4 @@ const uploadExcel = multer({
   },
 });
 
-module.exports = { uploadImage, uploadPDF, uploadMedico, uploadExcel };
+module.exports = { uploadImage, uploadPDF, uploadDocumento, uploadMedico, uploadExcel };

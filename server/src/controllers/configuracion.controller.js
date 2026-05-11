@@ -46,4 +46,34 @@ const getStats = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { getAll, update, getStats };
+const updateImage = async (req, res, next) => {
+  try {
+    const { clave } = req.body;
+    if (!clave) return res.status(400).json({ success: false, message: 'Clave requerida' });
+    if (!req.file) return res.status(400).json({ success: false, message: 'Imagen requerida' });
+    
+    const imageUrl = `/uploads/${req.file.filename}`;
+    await prisma.configuracion.upsert({
+      where: { clave },
+      update: { valor: imageUrl },
+      create: { clave, valor: imageUrl }
+    });
+    
+    res.json({ success: true, url: imageUrl });
+  } catch (err) { next(err); }
+};
+
+const deleteConfig = async (req, res, next) => {
+  try {
+    const { clave } = req.params;
+    if (!clave) return res.status(400).json({ success: false, message: 'Clave requerida' });
+    
+    await prisma.configuracion.delete({
+      where: { clave }
+    });
+    
+    res.json({ success: true, message: 'Configuración eliminada correctamente.' });
+  } catch (err) { next(err); }
+};
+
+module.exports = { getAll, update, getStats, updateImage, deleteConfig };

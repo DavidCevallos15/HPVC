@@ -98,15 +98,79 @@ enum EstadoHorario {
   SIN_ATENCION
 }
 
+// Tabla para la Matriz de Guardias real del hospital (formato Excel institucional)
+model GuardiaMatriz {
+  id              Int      @id @default(autoincrement())
+  mes             String   // formato: "2026-05"
+  tipoContrato    String?  // TC1, TC3, GUARDIA 1, etc.
+  nombreMedico    String
+  area            String?  // especialidad / área asignada
+  telefono        String?
+  // 31 columnas para cada día del mes (valor: "X", "VACACIONES", "G", "M", etc. o null)
+  d01 String? @db.VarChar(100)
+  d02 String? @db.VarChar(100)
+  d03 String? @db.VarChar(100)
+  d04 String? @db.VarChar(100)
+  d05 String? @db.VarChar(100)
+  d06 String? @db.VarChar(100)
+  d07 String? @db.VarChar(100)
+  d08 String? @db.VarChar(100)
+  d09 String? @db.VarChar(100)
+  d10 String? @db.VarChar(100)
+  d11 String? @db.VarChar(100)
+  d12 String? @db.VarChar(100)
+  d13 String? @db.VarChar(100)
+  d14 String? @db.VarChar(100)
+  d15 String? @db.VarChar(100)
+  d16 String? @db.VarChar(100)
+  d17 String? @db.VarChar(100)
+  d18 String? @db.VarChar(100)
+  d19 String? @db.VarChar(100)
+  d20 String? @db.VarChar(100)
+  d21 String? @db.VarChar(100)
+  d22 String? @db.VarChar(100)
+  d23 String? @db.VarChar(100)
+  d24 String? @db.VarChar(100)
+  d25 String? @db.VarChar(100)
+  d26 String? @db.VarChar(100)
+  d27 String? @db.VarChar(100)
+  d28 String? @db.VarChar(100)
+  d29 String? @db.VarChar(100)
+  d30 String? @db.VarChar(100)
+  d31 String? @db.VarChar(100)
+  creadoEn        DateTime @default(now())
+  actualizadoEn   DateTime @updatedAt
+
+  @@index([mes])
+  @@index([nombreMedico])
+  @@map("guardias_matriz")
+}
+
 model DocumentoAcademico {
   id          Int      @id @default(autoincrement())
   titulo      String
   tipo        String   // paper, guia, protocolo, manual, estudio
-  driveUrl    String
+  driveUrl    String?  // Opcional, link original
+  archivoUrl  String?  // Ruta local en server/public/uploads
   publicadoEn DateTime @default(now())
+  chunks      DocumentoChunk[]
   
   @@index([tipo])
   @@map("documentos_academicos")
+}
+
+model DocumentoChunk {
+  id            Int                @id @default(autoincrement())
+  documentoId   Int
+  documento     DocumentoAcademico @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  contenido     String             @db.Text
+  pagina        Int?
+  // Nota: Para pgvector usaremos una migración SQL manual ya que Prisma no soporta el tipo vector nativamente aún
+  // Pero definiremos un campo para identificar el chunk
+  orden         Int
+  
+  @@index([documentoId])
+  @@map("documentos_chunks")
 }
 
 model Configuracion {

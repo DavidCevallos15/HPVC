@@ -1,4 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
+const { noticiasSchemas } = require('../validators/schemas');
+const { validate } = require('../middlewares/validate');
 const prisma = new PrismaClient();
 
 const slugify = (text) =>
@@ -89,9 +91,11 @@ const getAll = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-const create = async (req, res, next) => {
-  try {
-    const { titulo, extracto, contenido, categoria, embedUrl } = req.body;
+const create = [
+  validate(noticiasSchemas.create),
+  async (req, res, next) => {
+    try {
+      const { titulo, extracto, contenido, categoria, embedUrl } = req.body;
     const publicado = req.body.publicado === 'true' || req.body.publicado === true;
     const imagenUrl = req.file ? `/uploads/${req.file.filename}` : null;
     const slug = titulo ? `${slugify(titulo)}-${Date.now()}` : `noticia-${Date.now()}`;
@@ -110,13 +114,16 @@ const create = async (req, res, next) => {
       },
     });
     res.status(201).json({ success: true, data: noticia });
-  } catch (err) { next(err); }
-};
+    } catch (err) { next(err); }
+  }
+];
 
-const update = async (req, res, next) => {
-  try {
-    const id = parseInt(req.params.id);
-    const { titulo, extracto, contenido, categoria, embedUrl } = req.body;
+const update = [
+  validate(noticiasSchemas.update),
+  async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { titulo, extracto, contenido, categoria, embedUrl } = req.body;
     const publicado = req.body.publicado === 'true' || req.body.publicado === true;
 
     const data = { 
@@ -134,8 +141,9 @@ const update = async (req, res, next) => {
 
     const noticia = await prisma.noticia.update({ where: { id }, data });
     res.json({ success: true, data: noticia });
-  } catch (err) { next(err); }
-};
+    } catch (err) { next(err); }
+  }
+];
 
 const remove = async (req, res, next) => {
   try {

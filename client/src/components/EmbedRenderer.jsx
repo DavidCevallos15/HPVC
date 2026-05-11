@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ExternalLink, MessageCircle } from 'lucide-react';
 
-export default function EmbedRenderer({ html, className }) {
+export default function EmbedRenderer({ html, className, showDirectAccess = true }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -32,11 +33,68 @@ export default function EmbedRenderer({ html, className }) {
     return () => clearTimeout(timeoutId);
   }, [html]);
 
+  // Detectar tipo de red social para mostrar botón de acceso directo
+  const getSocialInfo = () => {
+    if (!html) return null;
+    
+    if (html.includes('instagram.com') || html.includes('instgrm')) {
+      return {
+        type: 'instagram',
+        url: 'https://www.instagram.com/hospitalverdi/',
+        icon: ExternalLink,
+        label: 'Ver en Instagram',
+        color: 'bg-gradient-to-r from-purple-500 to-pink-500'
+      };
+    }
+    
+    if (html.includes('facebook.com') || html.includes('fb-post')) {
+      return {
+        type: 'facebook',
+        url: 'https://www.facebook.com/HospitalVerdiCevallosBalda',
+        icon: ExternalLink,
+        label: 'Ver en Facebook',
+        color: 'bg-blue-600'
+      };
+    }
+    
+    if (html.includes('twitter.com') || html.includes('x.com')) {
+      return {
+        type: 'twitter',
+        url: 'https://twitter.com/HospitalVerdi',
+        icon: MessageCircle,
+        label: 'Ver en X',
+        color: 'bg-black'
+      };
+    }
+    
+    return null;
+  };
+
+  const socialInfo = getSocialInfo();
+
   return (
-    <div 
-      ref={containerRef}
-      className={className} 
-      dangerouslySetInnerHTML={{ __html: html }} 
-    />
+    <div className="relative">
+      <div 
+        ref={containerRef}
+        className={className} 
+        dangerouslySetInnerHTML={{ __html: html }} 
+      />
+      
+      {/* Botón de acceso directo a red social */}
+      {showDirectAccess && socialInfo && (
+        <div className="absolute bottom-4 right-4 z-10">
+          <a
+            href={socialInfo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center gap-2 px-4 py-2 ${socialInfo.color} text-white rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 text-sm font-medium`}
+          >
+            <socialInfo.icon size={16} />
+            {socialInfo.label}
+            <ExternalLink size={14} />
+          </a>
+        </div>
+      )}
+    </div>
   );
 }

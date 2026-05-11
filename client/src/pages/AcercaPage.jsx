@@ -135,9 +135,6 @@ export default function AcercaPage() {
             <Link to="/contacto" className="bg-white text-primary font-semibold px-6 py-2.5 rounded-btn hover:bg-gray-50 transition-colors">
               Formulario de Contacto
             </Link>
-            <a href="tel:052590140" className="border border-white/50 text-white font-semibold px-6 py-2.5 rounded-btn hover:bg-white/10 transition-colors">
-              📞 (05) 259-0140
-            </a>
           </div>
         </div>
       </section>

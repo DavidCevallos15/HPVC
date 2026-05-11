@@ -17,6 +17,7 @@ const RecorridoVirtualPage = lazy(() => import('./pages/RecorridoVirtualPage'));
 const AccesosPage         = lazy(() => import('./pages/AccesosPage'));
 const SubcentrosPage      = lazy(() => import('./pages/SubcentrosPage'));
 const AcercaPage          = lazy(() => import('./pages/AcercaPage'));
+const HorariosPage        = lazy(() => import('./pages/HorariosPage'));
 
 function PageLoader() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                 <Route path="/accesos"           element={<AccesosPage />} />
                 <Route path="/subcentros"        element={<SubcentrosPage />} />
                 <Route path="/acerca"            element={<AcercaPage />} />
+                <Route path="/horarios"          element={<HorariosPage />} />
                 <Route path="*" element={
                   <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
                     <Building2 size={64} className="text-gray-300" />

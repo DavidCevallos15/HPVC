@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom';
 import {
   Stethoscope, Baby, Scissors, Heart, Bone, Activity,
   Layers, Brain, Eye, Smile, FlaskConical, FlaskRound, ArrowRight,
-  Clock, Newspaper, ExternalLink, ChevronRight, PlayCircle, Phone, ShieldCheck
+  Clock, Newspaper, ExternalLink, ChevronRight, ChevronLeft, PlayCircle, Phone, ShieldCheck,
+  User, Building, Briefcase, Package, Archive, Wrench, Users, TestTube, Cross, X
 } from 'lucide-react';
 import api from '../api/axios';
 import EmbedRenderer from '../components/EmbedRenderer';
-import bgHero from '../assets/background-hero-section.jpeg';
+import HeroCarousel from '../components/HeroCarousel';
 import footerImg from '../assets/Footer-escudo.png';
 import bgFooter from '../assets/background-footer.jpg';
-import imgOp from '../assets/hero-section-propuesta-operacion.jpg';
-import imgMed from '../assets/propuesta4.jpg';
-import imgAmb from '../assets/propuesta2.jpg';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
 
@@ -22,122 +20,32 @@ const toAbsoluteMediaUrl = (url) => {
   return `${API_ORIGIN}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
-const ICON_MAP = {
-  Stethoscope, Baby, Scissors, Heart, Bone, Activity,
-  Layers, Brain, Eye, Smile, FlaskConical, FlaskRound,
+const getIconForSpecialty = (nombre, dbIcon) => {
+   const n = nombre?.toLowerCase() || '';
+   if (n.includes('pediatr') || n.includes('neonat')) return Baby;
+   if (n.includes('cirug') || n.includes('quir') || n.includes('parto')) return Scissors;
+   if (n.includes('cardio') || n.includes('vascular')) return Heart;
+   if (n.includes('trauma') || n.includes('ortop')) return Bone;
+   if (n.includes('neuro') || n.includes('psiquia') || n.includes('psicol')) return Brain;
+   if (n.includes('oftal') || n.includes('optom')) return Eye;
+   if (n.includes('odont') || n.includes('maxilo')) return Smile;
+   if (n.includes('laboratorio') || n.includes('patolog') || n.includes('sangre')) return FlaskConical;
+   if (n.includes('emergencia') || n.includes('uci') || n.includes('triage') || n.includes('intensiv')) return Activity;
+   if (n.includes('gastro') || n.includes('nutri') || n.includes('endocrin')) return TestTube;
+   if (n.includes('gineco') || n.includes('obste')) return Users;
+   
+   if (n.includes('admin') || n.includes('gerencia') || n.includes('direcci') || n.includes('financiero') || n.includes('juridica')) return Briefcase;
+   if (n.includes('farmacia') || n.includes('bodega') || n.includes('compras')) return Package;
+   if (n.includes('archivo') || n.includes('estadist') || n.includes('informacion')) return Archive;
+   if (n.includes('mantenimiento') || n.includes('tics')) return Wrench;
+   if (n.includes('enfermeria') || n.includes('epidemiologia')) return Cross;
+   
+   if (dbIcon === 'building') return Building;
+   if (dbIcon === 'user') return User;
+   return Stethoscope;
 };
 
-// ── Hero section ────────────────────────────────────────────────────
-function Hero() {
-  return (
-    <section
-      className="relative min-h-[calc(100svh-4rem)] md:min-h-[calc(100svh-6rem)] flex items-center overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgHero})` }}
-    >
-      {/* Decorative circles */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-white/5 -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-secondary/20 translate-y-1/2 -translate-x-1/3" />
-      <div className="absolute top-1/2 right-1/4 w-40 h-40 rounded-full bg-accent/10" />
 
-      {/* Overlay oscuro para legibilidad general */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative z-10 animate-fade-in h-full flex items-center py-0">
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
-
-          {/* Text Content */}
-          <div className="w-full lg:w-1/2 max-w-2xl lg:max-w-none text-center lg:text-left flex flex-col items-center lg:items-start">
-            {/* Badge Logo - SIN MARCOS */}
-            <div className="mb-3 sm:mb-5">
-              <img src={footerImg} alt="Gobierno del Nuevo Ecuador" className="h-9 sm:h-11 md:h-14 object-contain drop-shadow-lg" />
-            </div>
-
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.35rem] font-bold text-white font-heading leading-tight mb-4 sm:mb-5">
-              Hospital Provincial<br />
-              <span className="text-accent">Dr. Verdi Cevallos Balda</span>
-            </h1>
-
-            <p className="text-primary-pale text-base sm:text-lg md:text-xl leading-relaxed mb-5 sm:mb-6 max-w-xl">
-              Atención médica de calidad para toda la provincia de Manabí. Emergencias disponibles <strong className="text-white">24 horas al día, los 365 días del año.</strong>
-            </p>
-
-            <div className="flex flex-wrap justify-start lg:justify-start gap-3 sm:gap-4 mb-2 lg:mb-0">
-              <Link to="http://186.47.77.45:8082/consulta_cita/" className="btn-primario bg-accent text-primary-dark hover:bg-yellow-400 text-sm sm:text-base py-3 px-6 shadow-lg inline-flex items-center gap-2 transition-transform hover:-translate-y-1">
-                <Clock size={18} /> Consulta tu cita
-                <ChevronRight size={18} />
-              </Link>
-              <a href="http://186.47.77.45:8081/hpvc/" target="_blank" rel="noopener noreferrer"
-                className="btn-outline border-white text-white hover:bg-white hover:text-primary text-sm sm:text-base py-3 px-6 transition-transform hover:-translate-y-1 inline-flex items-center gap-2">
-                <FlaskConical size={18} /> Resultados de Lab
-                <ExternalLink size={16} />
-              </a>
-            </div>
-
-            {/* Stats row */}
-            {/* { <div className="flex flex-col gap-6 pt-8 border-t border-white/20">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                {[
-                  { label: 'Especialidades', value: '12+' },
-                  { label: 'Médicos activos', value: '80+' },
-                  { label: 'Pacientes al año', value: '50K+' },
-                  { label: 'Años de servicio', value: '60+' },
-                ].map(({ label, value }) => (
-                  <div key={label} className="group cursor-default">
-                    <div className="text-2xl md:text-3xl font-extrabold text-accent font-heading leading-tight transition-transform duration-300 group-hover:scale-105 origin-left">{value}</div>
-                    <div className="text-primary-pale text-xs tracking-wider uppercase mt-1">{label}</div>
-                  </div>
-                ))}
-              </div>
-            </div> } */}
-
-          </div>
-
-          {/* Tres imágenes inclinadas sin marco ni límite */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end overflow-hidden my-0">
-            <div className="w-full h-[300px] sm:h-[360px] md:h-[420px] lg:h-[500px] flex items-stretch gap-0 my-0">
-              <div
-                className="group relative flex-1 overflow-hidden"
-                style={{ clipPath: 'polygon(0 0, 88% 0, 100% 100%, 0 100%)' }}
-              >
-                <img
-                  src={imgOp}
-                  alt="Operación"
-                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/10 pointer-events-none transition-colors duration-300 group-hover:bg-black/0" />
-              </div>
-
-              <div
-                className="group relative flex-1 overflow-hidden"
-                style={{ clipPath: 'polygon(0 0, 88% 0, 100% 100%, 12% 100%)' }}
-              >
-                <img
-                  src={imgMed}
-                  alt="Médica"
-                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/10 pointer-events-none transition-colors duration-300 group-hover:bg-black/0" />
-              </div>
-
-              <div
-                className="group relative flex-1 overflow-hidden"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 12% 100%)' }}
-              >
-                <img
-                  src={imgAmb}
-                  alt="Ambulancia"
-                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/10 pointer-events-none transition-colors duration-300 group-hover:bg-black/0" />
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-  );
-}
 
 
 // ── Especialidades Preview ──────────────────────────────────────────
@@ -171,7 +79,7 @@ function EspecialidadesPreview() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {especialidades.map((esp) => {
-              const IconComp = ICON_MAP[esp.icono] || Stethoscope;
+              const IconComp = getIconForSpecialty(esp.nombre, esp.icono);
               return (
                 <Link key={esp.id} to={`/especialidades`}
                   className="group bg-white border border-gray-100 hover:border-primary hover:shadow-card rounded-card p-5 flex flex-col items-center text-center gap-3 transition-all duration-200 hover:-translate-y-1">
@@ -300,10 +208,13 @@ function EmergenciasBanner() {
             <h2 className="text-2xl md:text-3xl font-bold font-heading">Servicio disponible <span className="text-accent">24/7</span></h2>
             <p className="text-secondary-pale mt-1 text-sm">No esperes si es una urgencia. Nuestra sala de emergencias está siempre lista.</p>
           </div>
-          <a href="tel:(05) 259-0140"
-            className="bg-white text-secondary hover:bg-accent hover:text-primary-dark font-bold py-4 px-8 rounded-card text-xl transition-all shadow-floating whitespace-nowrap inline-flex items-center gap-2">
-            <Phone size={24} /> (05) 259-0140
-          </a>
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-white">
+            <div className="text-center">
+              <div className="text-accent font-bold text-sm uppercase tracking-widest mb-2">Ubicación</div>
+              <div className="text-lg font-semibold">Av. Urbina y Quito</div>
+              <div className="text-sm opacity-90">Portoviejo, Manabí, Ecuador</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -351,12 +262,152 @@ function RecorridoVirtualBanner() {
   );
 }
 
+// ── Imagen Mes Banner (Carrusel) ───────────────────────────────────
+function ImagenMesBanner() {
+  const [images,    setImages]    = useState([]);
+  const [intervalMs, setIntervalMs] = useState(5000);
+  const [current,   setCurrent]   = useState(0);
+  const [isPaused,  setIsPaused]  = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const intervalRef               = React.useRef(null);
+
+  useEffect(() => {
+    api.get('/public/configuracion').then((r) => {
+      const data = r.data.data || {};
+      const imgs = [];
+      for (let i = 1; i <= 8; i++) {
+        const url = data[`imagen_mes_${i}`];
+        if (url) imgs.push(toAbsoluteMediaUrl(url));
+      }
+      // fallback: clave antigua
+      if (imgs.length === 0 && data.imagen_mes_noticias) {
+        imgs.push(toAbsoluteMediaUrl(data.imagen_mes_noticias));
+      }
+      setImages(imgs);
+      const secs = parseInt(data.imagen_mes_intervalo || '5', 10);
+      setIntervalMs(Math.max(2, secs) * 1000);
+    }).catch(() => {});
+  }, []);
+
+  // Auto-play
+  useEffect(() => {
+    if (images.length > 1 && !isPaused) {
+      intervalRef.current = setInterval(() => setCurrent(p => (p + 1) % images.length), intervalMs);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [images.length, isPaused, intervalMs]);
+
+  if (images.length === 0) return null;
+
+  const prev = () => { clearInterval(intervalRef.current); setCurrent(p => (p - 1 + images.length) % images.length); };
+  const next = () => { clearInterval(intervalRef.current); setCurrent(p => (p + 1) % images.length); };
+
+  return (
+    <>
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col items-center">
+            <span className="text-secondary text-sm font-semibold uppercase tracking-widest mb-4">Noticias del Mes</span>
+
+            <div
+              className="relative rounded-2xl overflow-hidden shadow-xl w-full max-w-4xl bg-gray-50 border border-gray-100"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              {/* Slides */}
+              <div className="relative max-h-[600px] overflow-hidden cursor-pointer" onClick={() => setModalOpen(true)}>
+                {images.map((url, idx) => (
+                  <div
+                    key={idx}
+                    className={`transition-opacity duration-700 ${idx === current ? 'opacity-100 relative' : 'opacity-0 absolute inset-0'}`}
+                  >
+                    <img
+                      src={url}
+                      alt={`Noticia del Mes ${idx + 1}`}
+                      className="w-full h-auto object-contain max-h-[600px]"
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                    />
+                  </div>
+                ))}
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                  <div className="bg-white/90 text-primary-dark px-6 py-3 rounded-full font-bold shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex items-center gap-2">
+                    <Eye size={20} /> Ver en grande
+                  </div>
+                </div>
+              </div>
+
+              {/* Flechas */}
+              {images.length > 1 && (
+                <>
+                  <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm shadow-lg z-10" aria-label="Anterior">
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm shadow-lg z-10" aria-label="Siguiente">
+                    <ChevronRight size={20} />
+                  </button>
+                </>
+              )}
+
+              {/* Indicadores */}
+              {images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => { clearInterval(intervalRef.current); setCurrent(idx); }}
+                      className={`rounded-full transition-all duration-300 ${idx === current ? 'w-6 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-white/60 hover:bg-white'}`}
+                      aria-label={`Imagen ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Contador */}
+              {images.length > 1 && (
+                <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full z-10">
+                  {current + 1} / {images.length}
+                </div>
+              )}
+            </div>
+
+            {/* Click hint */}
+            <p className="text-xs text-gray mt-3 flex items-center gap-1">
+              <Eye size={12} /> Haz clic en la imagen para verla en grande
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Lightbox Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" onClick={() => setModalOpen(false)}>
+          <button
+            className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+            onClick={(e) => { e.stopPropagation(); setModalOpen(false); }}
+          >
+            <X size={32} />
+          </button>
+          <img
+            src={images[current]}
+            alt={`Noticia del Mes ${current + 1} (Grande)`}
+            className="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-sm"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
-      <Hero />
+      <HeroCarousel />
       <EspecialidadesPreview />
       <RecorridoVirtualBanner />
+      <ImagenMesBanner />
       <NoticiasRecientes />
       <EmergenciasBanner />
     </>

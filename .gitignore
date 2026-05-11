@@ -5,3 +5,9 @@ temp_tracer/
 .DS_Store
 dist/
 build/
+server/temp_docs.zip
+*.zip
+server/public/uploads/documentos/
+server/temp_docs.zip
+*.zip
+admin/GUIAS PRACTICAS CLINICAS/
