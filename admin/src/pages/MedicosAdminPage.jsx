@@ -50,8 +50,8 @@ export default function MedicosAdminPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold font-heading text-gray-900">Médicos</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Gestiona el directorio de profesionales de la salud.</p>
+          <h1 className="text-2xl font-semibold font-heading text-neutral-900">Médicos</h1>
+          <p className="text-neutral-500 text-sm mt-0.5">Gestiona el directorio de profesionales de la salud.</p>
         </div>
         <button 
           onClick={() => navigate('/medicos/nuevo')}
@@ -61,22 +61,22 @@ export default function MedicosAdminPage() {
         </button>
       </div>
 
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-neutral-100 flex gap-4">
          <div className="relative flex-1 max-w-md">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input 
               type="text" 
               placeholder="Buscar por nombre o especialidad..." 
               value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary transition" 
+              className="w-full pl-9 pr-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-primary transition" 
             />
          </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-gray-50 text-gray-600 font-medium">
+            <thead className="bg-neutral-50 text-neutral-600 font-medium">
               <tr>
                 <th className="px-6 py-4">Médico</th>
                 <th className="px-6 py-4">Especialidad</th>
@@ -84,33 +84,33 @@ export default function MedicosAdminPage() {
                 <th className="px-6 py-4 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-neutral-100">
               {loading ? (
                  <tr>
-                    <td colSpan="4" className="text-center py-8 text-gray-400">Cargando médicos...</td>
+                    <td colSpan="4" className="text-center py-8 text-neutral-400">Cargando médicos...</td>
                  </tr>
               ) : filtered.length === 0 ? (
                  <tr>
-                    <td colSpan="4" className="text-center py-8 text-gray-400">No se encontraron médicos.</td>
+                    <td colSpan="4" className="text-center py-8 text-neutral-400">No se encontraron médicos.</td>
                  </tr>
               ) : paginated.map(medico => (
-                <tr key={medico.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={medico.id} className="hover:bg-neutral-50/50 transition-colors">
                   <td className="px-6 py-4">
                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center overflow-hidden shrink-0">
                            {medico.foto ? (
                               <img src={`http://localhost:3001${medico.foto}`} alt={medico.nombre} className="w-full h-full object-cover" />
                            ) : (
-                              <User size={18} className="text-gray-400" />
+                              <User size={18} className="text-neutral-400" />
                            )}
                         </div>
                         <div>
-                           <div className="font-medium text-gray-900">{medico.nombre}</div>
-                           <div className="text-xs text-gray-500">{medico.email || 'Sin correo'}</div>
+                           <div className="font-medium text-neutral-900">{medico.nombre}</div>
+                           <div className="text-xs text-neutral-500">{medico.email || 'Sin correo'}</div>
                         </div>
                      </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{medico.especialidad?.nombre}</td>
+                  <td className="px-6 py-4 text-neutral-600">{medico.especialidad?.nombre}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${medico.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {medico.activo ? 'Activo' : 'Inactivo'}
@@ -134,22 +134,22 @@ export default function MedicosAdminPage() {
         
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
-            <span className="text-sm text-gray-500">
+          <div className="px-6 py-4 border-t border-neutral-100 flex items-center justify-between bg-neutral-50/50">
+            <span className="text-sm text-neutral-500">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filtered.length)} de {filtered.length}
             </span>
             <div className="flex gap-1">
               <button 
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-white disabled:opacity-50"
+                className="px-3 py-1 text-sm border border-neutral-200 rounded hover:bg-white disabled:opacity-50"
               >
                 Anterior
               </button>
               <button 
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 text-sm border border-gray-200 rounded hover:bg-white disabled:opacity-50"
+                className="px-3 py-1 text-sm border border-neutral-200 rounded hover:bg-white disabled:opacity-50"
               >
                 Siguiente
               </button>

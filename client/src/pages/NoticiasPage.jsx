@@ -10,7 +10,7 @@ const catColors = {
   'Tecnología':      'bg-purple-100 text-purple-700',
   'Educación':       'bg-orange-100 text-orange-700',
   'Institución':     'bg-primary-pale text-primary',
-  'default':         'bg-gray-100 text-gray',
+  'default':         'bg-neutral-100 text-gray',
 };
 
 export default function NoticiasPage() {
@@ -46,7 +46,7 @@ export default function NoticiasPage() {
             <span className="mx-2">/</span>
             <span>Noticias</span>
           </nav>
-          <h1 className="text-4xl font-bold font-heading">Noticias Institucionales</h1>
+          <h1 className="text-4xl font-semibold font-heading">Noticias Institucionales</h1>
           <p className="text-primary-pale mt-2">Mantente al día con las novedades del Hospital Verdi Cevallos.</p>
         </div>
       </div>
@@ -57,12 +57,12 @@ export default function NoticiasPage() {
           <div className="relative flex-1 max-w-xs">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray" />
             <input type="text" placeholder="Buscar noticia..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-btn text-sm focus:outline-none focus:border-primary" />
+              className="w-full pl-9 pr-4 py-2 border border-neutral-200 rounded-btn text-sm focus:outline-none focus:border-primary" />
           </div>
           <div className="flex flex-wrap gap-2">
             {CATEGORIAS.map(c => (
               <button key={c} onClick={() => handleCat(c)}
-                className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${categoria === c ? 'bg-primary text-white border-primary' : 'bg-white text-gray border-gray-200 hover:border-primary hover:text-primary'}`}>
+                className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${categoria === c ? 'bg-primary text-white border-primary' : 'bg-white text-gray border-neutral-200 hover:border-primary hover:text-primary'}`}>
                 {c}
               </button>
             ))}
@@ -72,7 +72,7 @@ export default function NoticiasPage() {
         {/* Grid */}
         {loading ? (
           <div className="grid md:grid-cols-3 gap-6">
-            {[...Array(9)].map((_, i) => <div key={i} className="h-64 bg-gray-200 rounded-card animate-pulse" />)}
+            {[...Array(9)].map((_, i) => <div key={i} className="h-64 bg-neutral-200 rounded-card animate-pulse" />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-gray">
@@ -109,8 +109,8 @@ export default function NoticiasPage() {
                       <div className="flex justify-between items-center mb-3">
                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full self-start ${catColors[n.categoria] || catColors.default}`}>{n.categoria}</span>
                       </div>
-                      <h2 className="font-bold font-heading text-dark text-sm leading-snug group-hover:text-primary transition-colors line-clamp-3 flex-1">{n.titulo || 'Sin Título'}</h2>
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                      <h2 className="font-semibold font-heading text-dark text-sm leading-snug group-hover:text-primary transition-colors line-clamp-3 flex-1">{n.titulo || 'Sin Título'}</h2>
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
                         <span className="text-xs text-gray">
                           {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
                         </span>
@@ -127,7 +127,7 @@ export default function NoticiasPage() {
               <div className="flex justify-center gap-2 mt-10">
                 {[...Array(totalPages)].map((_, i) => (
                   <button key={i} onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 rounded-btn text-sm font-medium transition-colors ${page === i + 1 ? 'bg-primary text-white' : 'bg-white text-gray hover:bg-primary-pale hover:text-primary border border-gray-200'}`}>
+                    className={`w-9 h-9 rounded-btn text-sm font-medium transition-colors ${page === i + 1 ? 'bg-primary text-white' : 'bg-white text-gray hover:bg-primary-pale hover:text-primary border border-neutral-200'}`}>
                     {i + 1}
                   </button>
                 ))}

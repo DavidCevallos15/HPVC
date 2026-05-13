@@ -33,7 +33,7 @@ export default function ContactoPage() {
             <span className="mx-2">/</span>
             <span>Contáctenos</span>
           </nav>
-          <h1 className="text-4xl font-bold font-heading">Contáctenos</h1>
+          <h1 className="text-4xl font-semibold font-heading">Contáctenos</h1>
           <p className="text-primary-pale mt-2">Estamos aquí para ayudarle. Envíennos su consulta.</p>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function ContactoPage() {
 
           {/* Info */}
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-bold font-heading text-dark mb-6">Información de Contacto</h2>
+            <h2 className="text-xl font-semibold font-heading text-dark mb-6">Información de Contacto</h2>
             {[
               { Icon: MapPin, label: 'Dirección', content: 'Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105' },
               { Icon: Mail, label: 'Correo Electrónico', content: 'hospital.portoviejo@mspz4.gob.ec', href: 'mailto:hospital.portoviejo@mspz4.gob.ec' },
@@ -68,12 +68,12 @@ export default function ContactoPage() {
           {/* Form */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-card shadow-card p-8">
-              <h2 className="text-xl font-bold font-heading text-dark mb-6">Enviar Mensaje</h2>
+              <h2 className="text-xl font-semibold font-heading text-dark mb-6">Enviar Mensaje</h2>
 
               {status === 'ok' ? (
                 <div className="text-center py-10">
                   <CheckCircle size={48} className="mx-auto text-secondary mb-4" />
-                  <h3 className="text-xl font-bold text-dark mb-2">¡Mensaje enviado!</h3>
+                  <h3 className="text-xl font-semibold text-dark mb-2">¡Mensaje enviado!</h3>
                   <p className="text-gray text-sm mb-6">Hemos recibido su consulta. Nos comunicaremos a la brevedad posible.</p>
                   <button onClick={() => setStatus(null)} className="btn-primario inline-flex">Enviar otro mensaje</button>
                 </div>
@@ -83,30 +83,30 @@ export default function ContactoPage() {
                     <div>
                       <label className="block text-xs font-medium text-dark mb-1">Nombre completo *</label>
                       <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Ej. Juan Pérez"
-                        className="w-full border border-gray-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
+                        className="w-full border border-neutral-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-dark mb-1">Correo electrónico *</label>
                       <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="correo@ejemplo.com"
-                        className="w-full border border-gray-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
+                        className="w-full border border-neutral-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-medium text-dark mb-1">Teléfono (opcional)</label>
                       <input name="telefono" value={form.telefono} onChange={handleChange} placeholder="0999 999 999"
-                        className="w-full border border-gray-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
+                        className="w-full border border-neutral-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-dark mb-1">Asunto *</label>
                       <input name="asunto" value={form.asunto} onChange={handleChange} required placeholder="Motivo de consulta"
-                        className="w-full border border-gray-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
+                        className="w-full border border-neutral-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-dark mb-1">Mensaje *</label>
                     <textarea name="mensaje" value={form.mensaje} onChange={handleChange} required rows={5} placeholder="Escriba su mensaje aquí..."
-                      className="w-full border border-gray-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors resize-none" />
+                      className="w-full border border-neutral-200 rounded-btn px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors resize-none" />
                   </div>
 
                   {status === 'error' && (

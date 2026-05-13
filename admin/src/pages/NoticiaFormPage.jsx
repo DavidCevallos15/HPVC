@@ -32,9 +32,9 @@ export default function NoticiaFormPage() {
     }
   }, [id]);
 
-  const handleChange = (e) => {
+  const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
@@ -60,80 +60,80 @@ export default function NoticiaFormPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/noticias')} className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
+        <button onClick={() => navigate('/noticias')} className="p-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500">
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold font-heading text-gray-900">{isEdit ? 'Editar noticia' : 'Nueva noticia'}</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{isEdit ? 'Modifica los campos y guarda.' : 'Completa el formulario para publicar.'}</p>
+          <h1 className="text-2xl font-semibold font-heading text-neutral-900">{isEdit ? 'Editar noticia' : 'Nueva noticia'}</h1>
+          <p className="text-neutral-500 text-sm mt-0.5">{isEdit ? 'Modifica los campos y guarda.' : 'Completa el formulario para publicar.'}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
-          <input name="titulo" value={form.titulo} onChange={handleChange} placeholder="Título de la noticia"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+          <label htmlFor="titulo" className="block text-sm font-medium text-neutral-700 mb-1">Título</label>
+          <input id="titulo" name="titulo" value={form.titulo} onChange={handleFormChange} placeholder="Título de la noticia"
+            className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-            <select name="categoria" value={form.categoria} onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition">
+            <label htmlFor="categoria" className="block text-sm font-medium text-neutral-700 mb-1">Categoría *</label>
+            <select id="categoria" name="categoria" value={form.categoria} onChange={handleFormChange}
+              className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition">
               {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-3 mt-6">
-            <input type="checkbox" id="publicado" name="publicado" checked={form.publicado} onChange={handleChange}
+            <input type="checkbox" id="publicado" name="publicado" checked={form.publicado} onChange={handleFormChange}
               className="w-4 h-4 accent-primary" />
-            <label htmlFor="publicado" className="text-sm font-medium text-gray-700">Publicar inmediatamente</label>
+            <label htmlFor="publicado" className="text-sm font-medium text-neutral-700">Publicar inmediatamente</label>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Extracto <span className="font-normal text-gray-400">(máx. 200 caracteres)</span></label>
-          <textarea name="extracto" value={form.extracto} onChange={handleChange} rows={2} maxLength={200}
+          <label htmlFor="extracto" className="block text-sm font-medium text-neutral-700 mb-1">Extracto <span className="font-normal text-neutral-400">(máx. 200 caracteres)</span></label>
+          <textarea id="extracto" name="extracto" value={form.extracto} onChange={handleFormChange} rows={2} maxLength={200}
             placeholder="Resumen breve de la noticia..."
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none" />
-          <div className="text-right text-xs text-gray-400">{(form.extracto || '').length}/200</div>
+            className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none" />
+          <div className="text-right text-xs text-neutral-400">{(form.extracto || '').length}/200</div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Contenido completo</label>
-          <textarea name="contenido" value={form.contenido} onChange={handleChange} rows={10}
+          <label htmlFor="contenido" className="block text-sm font-medium text-neutral-700 mb-1">Contenido completo</label>
+          <textarea id="contenido" name="contenido" value={form.contenido} onChange={handleFormChange} rows={10}
             placeholder="Escribe el contenido HTML completo de la noticia..."
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-y font-mono" />
-          <p className="text-xs text-gray-400 mt-1">Puedes usar HTML básico: &lt;p&gt;, &lt;strong&gt;, &lt;h2&gt;, &lt;ul&gt;, &lt;li&gt;</p>
+            className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-y font-mono" />
+          <p className="text-xs text-neutral-400 mt-1">Puedes usar HTML básico: &lt;p&gt;, &lt;strong&gt;, &lt;h2&gt;, &lt;ul&gt;, &lt;li&gt;</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Imagen de portada</label>
-          <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-primary transition-colors">
+          <span className="block text-sm font-medium text-neutral-700 mb-1">Imagen de portada</span>
+          <div className="border-2 border-dashed border-neutral-200 rounded-lg p-4 text-center hover:border-primary transition-colors">
             <input type="file" id="imagen" accept="image/*" onChange={e => setImagen(e.target.files[0])} className="hidden" />
-            <label htmlFor="imagen" className="cursor-pointer flex flex-col items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+            <label htmlFor="imagen" className="cursor-pointer flex flex-col items-center gap-2 text-neutral-400 hover:text-primary transition-colors">
               <Image size={24} />
               <span className="text-sm">{imagen ? imagen.name : 'Haz clic para seleccionar imagen (max 5MB)'}</span>
             </label>
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-5 mt-5">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="border-t border-neutral-100 pt-5 mt-5">
+          <label htmlFor="embedUrl" className="block text-sm font-medium text-neutral-700 mb-1">
             Embed de Redes Sociales (Opcional)
           </label>
-          <p className="text-xs text-gray-400 mb-2">
+          <p className="text-xs text-neutral-400 mb-2">
             Pega el código HTML de inserción (&lt;iframe&gt;) de Facebook, Instagram o X.
           </p>
-          <textarea name="embedUrl" value={form.embedUrl} onChange={handleChange} rows={3}
+          <textarea id="embedUrl" name="embedUrl" value={form.embedUrl} onChange={handleFormChange} rows={3}
             placeholder='<iframe src="..." ...></iframe>'
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition font-mono mb-4 text-gray-600" />
+            className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition font-mono mb-4 text-neutral-600" />
           
           {form.embedUrl && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Vista Previa del Embed</h4>
+            <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4">
+              <h4 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">Vista Previa del Embed</h4>
               <EmbedRenderer 
-                className="w-full flex justify-center bg-white border border-gray-100 rounded shadow-sm py-4 [&>iframe]:w-full [&>iframe]:max-w-[100%] overflow-hidden"
+                className="w-full flex justify-center bg-white border border-neutral-100 rounded shadow-sm py-4 [&>iframe]:w-full [&>iframe]:max-w-[100%] overflow-hidden"
                 html={form.embedUrl}
               />
             </div>
@@ -143,7 +143,7 @@ export default function NoticiaFormPage() {
         {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</div>}
 
         <div className="flex gap-3 justify-end pt-2">
-          <button type="button" onClick={() => navigate('/noticias')} className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          <button type="button" onClick={() => navigate('/noticias')} className="px-4 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition">
             Cancelar
           </button>
           <button type="submit" disabled={loading}

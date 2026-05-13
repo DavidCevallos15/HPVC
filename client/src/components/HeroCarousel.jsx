@@ -13,16 +13,19 @@ const toAbsoluteMediaUrl = (url) => {
 
 const DEFAULT_IMAGES = [
   { id: 'd1', url: new URL('../assets/hero-section-propuesta-operacion.jpg', import.meta.url).href, alt: 'Operación quirúrgica',  title: 'Excelencia quirúrgica',  description: 'Tecnología de punta para intervenciones seguras' },
-  { id: 'd2', url: new URL('../assets/propuesta4.jpg',                        import.meta.url).href, alt: 'Personal médico',        title: 'Personal calificado',    description: 'Más de 140 especialistas a tu servicio' },
+  { id: 'd2', url: new URL('../assets/propuestaimagenhero.jpg',                        import.meta.url).href, alt: 'Personal médico',        title: 'Personal calificado',    description: 'Más de 140 especialistas a tu servicio' },
   { id: 'd3', url: new URL('../assets/propuesta2.jpg',                        import.meta.url).href, alt: 'Instalaciones',          title: 'Modernas instalaciones', description: 'Ambientes renovados para tu bienestar' },
 ];
 
 export default function HeroCarousel() {
-  const [heroImages, setHeroImages] = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [current,    setCurrent]    = useState(0);
-  const [isPaused,   setIsPaused]   = useState(false);
-  const intervalRef                 = useRef(null);
+  const [state, setState]       = useState({ images: [], loading: true, nombre: '' });
+  const [current, setCurrent]   = useState(0);
+  const isPaused                = useRef(false);
+  const intervalRef             = useRef(null);
+
+  const heroImages = state.images;
+  const loading    = state.loading;
+  const hospitalNombre = state.nombre;
 
   /* ─── Fetch images ────────────────────────────────────── */
   useEffect(() => {
@@ -36,22 +39,48 @@ export default function HeroCarousel() {
             const url = data.data[`hero_carousel_${i}`];
             if (url) imgs.push({ id: `h${i}`, url: toAbsoluteMediaUrl(url), alt: `Imagen ${i}`, title: data.data[`hero_carousel_${i}_title`] || '', description: data.data[`hero_carousel_${i}_description`] || '' });
           }
-          setHeroImages(imgs.length > 0 ? imgs : DEFAULT_IMAGES);
-        } else { setHeroImages(DEFAULT_IMAGES); }
-      } catch { setHeroImages(DEFAULT_IMAGES); }
-      finally  { setLoading(false); }
+          setState({
+            images: imgs.length > 0 ? imgs : DEFAULT_IMAGES,
+            loading: false,
+            nombre: data.data.hospital_nombre || '',
+          });
+        } else {
+          setState({ images: DEFAULT_IMAGES, loading: false, nombre: '' });
+        }
+      } catch {
+        setState({ images: DEFAULT_IMAGES, loading: false });
+      }
     })();
   }, []);
 
   /* ─── Auto-play ───────────────────────────────────────── */
-  useEffect(() => {
-    if (!isPaused && heroImages.length > 1) {
+  const startInterval = () => {
+    clearInterval(intervalRef.current);
+    if (heroImages.length > 1 && !isPaused.current) {
       intervalRef.current = setInterval(() => setCurrent(p => (p + 1) % heroImages.length), 5500);
     }
-    return () => clearInterval(intervalRef.current);
-  }, [isPaused, heroImages.length]);
+  };
 
-  const go = (dir) => { clearInterval(intervalRef.current); setCurrent(p => (p + dir + heroImages.length) % heroImages.length); };
+  useEffect(() => {
+    startInterval();
+    return () => clearInterval(intervalRef.current);
+  }, [heroImages.length]);
+
+  const handleMouseEnter = () => {
+    isPaused.current = true;
+    clearInterval(intervalRef.current);
+  };
+
+  const handleMouseLeave = () => {
+    isPaused.current = false;
+    startInterval();
+  };
+
+  const go = (dir) => { 
+    clearInterval(intervalRef.current); 
+    setCurrent(p => (p + dir + heroImages.length) % heroImages.length); 
+    if (!isPaused.current) startInterval();
+  };
 
   /* ─────────────────────────────────────────────────────────
      ARQUITECTURA:
@@ -63,8 +92,8 @@ export default function HeroCarousel() {
   return (
     <section
       className="relative w-full min-h-[calc(100svh-4rem)] md:min-h-[calc(100svh-5.5rem)] overflow-hidden flex items-center"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
 
       {/* ─── Layer 0 · Fondo base desenfocado ──────────────────── */}
@@ -103,11 +132,22 @@ export default function HeroCarousel() {
               <img src={logoEscudo} alt="Escudo Ecuador" className="h-11 sm:h-13 md:h-14 object-contain drop-shadow-lg" />
             </div>
 
-            {/* Título institucional */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3rem] font-bold text-white font-heading leading-[1.1] mb-5 drop-shadow-lg">
-              Hospital Provincial<br />
-              <span className="text-accent">Verdi Cevallos Balda</span>
-            </h1>
+            {/* Título institucional — dinámico desde config */}
+            {(() => {
+              const nombre = hospitalNombre || 'Hospital Provincial de Portoviejo Dr. Verdi Cevallos Balda';
+              // Dividir en dos líneas: antes y después de "Dr." o "Verdi"
+              const splitPoint = nombre.search(/(\bDr\.\s|\bVerdi\b)/i);
+              const linea1 = splitPoint > 0 ? nombre.slice(0, splitPoint).trim() : nombre;
+              const linea2 = splitPoint > 0 ? nombre.slice(splitPoint).trim() : '';
+              return (
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3rem] font-semibold text-white font-heading leading-[1.1] mb-3 drop-shadow-lg">
+                  {linea1}{linea2 && <><br /><span className="text-accent">{linea2}</span></>}
+                </h1>
+              );
+            })()}
+            <span className="inline-flex items-center gap-1.5 mb-5 px-3 py-1 bg-accent/20 border border-accent/40 rounded-full text-accent text-xs font-bold tracking-widest uppercase backdrop-blur-sm">
+              ★ Hospital Público · TIPO C
+            </span>
 
             {/* Subtítulo */}
             <p className="text-white/85 text-base sm:text-lg leading-relaxed mb-8 max-w-md drop-shadow">
@@ -143,14 +183,14 @@ export default function HeroCarousel() {
           <>
             <button
               onClick={() => go(-1)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/65 border border-white/20 text-white backdrop-blur-sm shadow-lg transition-all hover:scale-110 active:scale-95 pointer-events-auto"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 size-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/65 border border-white/20 text-white backdrop-blur-sm shadow-lg transition-all hover:scale-110 active:scale-95 pointer-events-auto"
               aria-label="Imagen anterior"
             >
               <ChevronLeft size={20} />
             </button>
             <button
               onClick={() => go(1)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/65 border border-white/20 text-white backdrop-blur-sm shadow-lg transition-all hover:scale-110 active:scale-95 pointer-events-auto"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 size-10 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/65 border border-white/20 text-white backdrop-blur-sm shadow-lg transition-all hover:scale-110 active:scale-95 pointer-events-auto"
               aria-label="Imagen siguiente"
             >
               <ChevronRight size={20} />

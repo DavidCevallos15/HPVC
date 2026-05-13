@@ -61,7 +61,7 @@ export default function ImageCarousel({ images = [], autoplay = true, showIndica
 
   return (
     <div 
-      className="relative w-full overflow-hidden rounded-2xl shadow-2xl bg-gray-100"
+      className="relative w-full overflow-hidden rounded-2xl shadow-2xl bg-neutral-100"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -86,7 +86,7 @@ export default function ImageCarousel({ images = [], autoplay = true, showIndica
               {/* Overlay opcional para mejor legibilidad */}
               {index === currentIndex && image.title && (
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                  <h3 className="text-white text-lg md:text-xl font-bold">
+                  <h3 className="text-white text-lg md:text-xl font-semibold">
                     {image.title}
                   </h3>
                   {image.description && (
@@ -105,7 +105,7 @@ export default function ImageCarousel({ images = [], autoplay = true, showIndica
           <>
             <button
               onClick={goToPrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 backdrop-blur-sm"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-neutral-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 backdrop-blur-sm"
               aria-label="Imagen anterior"
             >
               <ChevronLeft size={20} />
@@ -113,7 +113,7 @@ export default function ImageCarousel({ images = [], autoplay = true, showIndica
             
             <button
               onClick={goToNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 backdrop-blur-sm"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-neutral-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 backdrop-blur-sm"
               aria-label="Siguiente imagen"
             >
               <ChevronRight size={20} />
@@ -130,7 +130,7 @@ export default function ImageCarousel({ images = [], autoplay = true, showIndica
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-300 ${
                   index === currentIndex 
-                    ? 'bg-white text-gray-800 scale-110' 
+                    ? 'bg-white text-neutral-800 scale-110' 
                     : 'bg-white/50 text-white hover:bg-white/70'
                 } p-1 rounded-full`}
                 aria-label={`Ir a imagen ${index + 1}`}

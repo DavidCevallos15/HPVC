@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Upload, FileSpreadsheet, CheckCircle, AlertCircle,
-  Info, Table, Calendar, Sparkles, Loader2, Eye, EyeOff
+  Info, Table, Calendar, Sparkles, Loader2, Eye, EyeOff,
+  Search, User, ChevronLeft, ChevronRight, Filter, X, CalendarDays
 } from 'lucide-react';
 import api from '../api/axios';
 import * as XLSX from 'xlsx';
@@ -158,8 +159,8 @@ function UploadGuardias() {
   return (
     <div className="max-w-3xl w-full">
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold font-heading text-gray-900">Matriz de Guardias Médicas</h1>
-        <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
+        <h1 className="text-xl sm:text-2xl font-semibold font-heading text-neutral-900">Matriz de Guardias Médicas</h1>
+        <p className="text-neutral-500 text-xs sm:text-sm mt-0.5">
           Importa la matriz de guardias mensual desde el Excel institucional. La IA analiza y normaliza los datos antes de guardarlos.
         </p>
       </div>
@@ -178,23 +179,23 @@ function UploadGuardias() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-4 sm:p-6 space-y-5">
 
         {/* Mes manual */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-neutral-700 mb-1">
             Mes de referencia{' '}
-            <span className="text-gray-400 font-normal">(se detecta del Excel, pero puedes sobreescribirlo)</span>
+            <span className="text-neutral-400 font-normal">(se detecta del Excel, pero puedes sobreescribirlo)</span>
           </label>
           <input type="month" value={mes} onChange={e => setMes(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+            className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
         </div>
 
         {/* Drop zone */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Archivo Excel *</label>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Archivo Excel *</label>
           <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-            archivo ? 'border-secondary bg-secondary-pale' : 'border-gray-200 hover:border-primary'
+            archivo ? 'border-secondary bg-secondary-pale' : 'border-neutral-200 hover:border-primary'
           }`}>
             <input type="file" id="excel-guardias" accept=".xlsx,.xls" onChange={handleFileChange} className="hidden" required />
             <label htmlFor="excel-guardias" className="cursor-pointer flex flex-col items-center gap-3">
@@ -208,11 +209,11 @@ function UploadGuardias() {
                 </>
               ) : (
                 <>
-                  <Upload size={36} className="text-gray-300" />
-                  <div className="text-sm text-gray-400">
+                  <Upload size={36} className="text-neutral-300" />
+                  <div className="text-sm text-neutral-400">
                     Arrastra el Excel o <span className="text-primary font-medium">haz clic aquí</span>
                   </div>
-                  <div className="text-xs text-gray-300">Acepta .xlsx y .xls (max 10MB)</div>
+                  <div className="text-xs text-neutral-300">Acepta .xlsx y .xls (max 10MB)</div>
                 </>
               )}
             </label>
@@ -224,11 +225,11 @@ function UploadGuardias() {
           <div className={`rounded-xl border p-4 ${
             aiLoading ? 'border-primary/30 bg-primary-pale/30' :
             aiPreview ? 'border-accent/40 bg-amber-50/50' :
-            'border-gray-200 bg-gray-50'
+            'border-neutral-200 bg-neutral-50'
           }`}>
             <div className="flex items-center justify-between mb-2">
               <span className="flex items-center gap-2 text-sm font-semibold text-dark">
-                <Sparkles size={15} className={aiPreview ? 'text-amber-500' : 'text-gray-400'} />
+                <Sparkles size={15} className={aiPreview ? 'text-amber-500' : 'text-neutral-400'} />
                 Análisis con IA (Groq)
               </span>
               {aiPreview && (
@@ -247,7 +248,7 @@ function UploadGuardias() {
             )}
 
             {!aiLoading && !GROQ_KEY && (
-              <p className="text-xs text-gray-400">Configura VITE_GROQ_API_KEY para activar el análisis IA.</p>
+              <p className="text-xs text-neutral-400">Configura VITE_GROQ_API_KEY para activar el análisis IA.</p>
             )}
 
             {!aiLoading && aiPreview && (
@@ -262,7 +263,7 @@ function UploadGuardias() {
             )}
 
             {!aiLoading && !aiPreview && GROQ_KEY && (
-              <p className="text-xs text-gray-400">Selecciona un archivo para activar el análisis.</p>
+              <p className="text-xs text-neutral-400">Selecciona un archivo para activar el análisis.</p>
             )}
 
             {/* Tabla de datos normalizados por IA */}
@@ -282,10 +283,10 @@ function UploadGuardias() {
                     <tbody className="divide-y divide-amber-100">
                       {aiPreview.map((r, i) => (
                         <tr key={i} className={r.observacion ? 'bg-amber-50' : 'bg-white'}>
-                          <td className="px-3 py-1.5 text-gray-400">{i + 1}</td>
+                          <td className="px-3 py-1.5 text-neutral-400">{i + 1}</td>
                           <td className="px-3 py-1.5 font-medium text-dark">{r.nombreMedico}</td>
                           <td className="px-3 py-1.5 text-secondary">{r.area}</td>
-                          <td className="px-3 py-1.5 text-gray-500">{r.tipoContrato}</td>
+                          <td className="px-3 py-1.5 text-neutral-500">{r.tipoContrato}</td>
                           <td className="px-3 py-1.5 text-amber-600 italic">{r.observacion || '—'}</td>
                         </tr>
                       ))}
@@ -300,18 +301,18 @@ function UploadGuardias() {
         {/* Vista previa cruda del Excel */}
         {previewRows && previewRows.length > 0 && (
           <details className="group">
-            <summary className="cursor-pointer text-sm font-medium text-gray-500 hover:text-dark flex items-center gap-2 select-none">
+            <summary className="cursor-pointer text-sm font-medium text-neutral-500 hover:text-dark flex items-center gap-2 select-none">
               <Table size={14} /> Vista previa del archivo Excel (primeras filas)
             </summary>
-            <div className="mt-2 overflow-hidden rounded-lg border border-gray-200">
+            <div className="mt-2 overflow-hidden rounded-lg border border-neutral-200">
               <div className="overflow-x-auto max-h-48">
                 <table className="w-full text-left text-xs whitespace-nowrap">
-                  <tbody className="divide-y divide-gray-100 text-gray-700">
+                  <tbody className="divide-y divide-neutral-100 text-neutral-700">
                     {previewRows.map((row, i) => (
-                      <tr key={i} className={i < 7 ? 'bg-blue-50/30' : 'hover:bg-gray-50'}>
-                        <td className="px-2 py-1 text-gray-300 font-mono">{i}</td>
+                      <tr key={i} className={i < 7 ? 'bg-blue-50/30' : 'hover:bg-neutral-50'}>
+                        <td className="px-2 py-1 text-neutral-300 font-mono">{i}</td>
                         {row.slice(0, 8).map((cell, j) => (
-                          <td key={j} className="px-3 py-1 border-l border-gray-100 max-w-[120px] truncate">
+                          <td key={j} className="px-3 py-1 border-l border-neutral-100 max-w-[120px] truncate">
                             {String(cell).substring(0, 25) || ''}
                           </td>
                         ))}
@@ -353,7 +354,7 @@ function UploadGuardias() {
           {archivo && (
             <button type="button"
               onClick={() => { setArchivo(null); setPreviewRows(null); setAiPreview(null); setResult(null); setMostrarAI(false); }}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              className="px-4 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition">
               Limpiar
             </button>
           )}
@@ -401,19 +402,19 @@ function UploadHorariosLegado() {
   return (
     <div className="max-w-2xl w-full">
       <div className="mb-6">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">Horarios por medicoId (Legado)</h2>
-        <p className="text-gray-400 text-[11px] sm:text-xs mt-1">Formato antiguo: columnas medicoId, lunes, martes, miercoles, jueves, viernes, estado</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-neutral-800">Horarios por medicoId (Legado)</h2>
+        <p className="text-neutral-400 text-[11px] sm:text-xs mt-1">Formato antiguo: columnas medicoId, lunes, martes, miercoles, jueves, viernes, estado</p>
       </div>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-4 sm:p-6 space-y-5">
         <input type="month" value={mes} onChange={e => setMes(e.target.value)} required
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary w-full sm:w-auto" />
-        <div className={`border-2 border-dashed rounded-xl p-6 sm:p-8 text-center ${archivo ? 'border-secondary bg-secondary-pale' : 'border-gray-200'}`}>
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary w-full sm:w-auto" />
+        <div className={`border-2 border-dashed rounded-xl p-6 sm:p-8 text-center ${archivo ? 'border-secondary bg-secondary-pale' : 'border-neutral-200'}`}>
           <input type="file" id="excel-legado" accept=".xlsx,.xls"
             onChange={e => { setArchivo(e.target.files[0]); setResult(null); }} className="hidden" required />
           <label htmlFor="excel-legado" className="cursor-pointer flex flex-col items-center gap-2">
             {archivo
               ? <><FileSpreadsheet size={32} className="text-secondary" /><span className="text-xs sm:text-sm text-secondary break-all">{archivo.name}</span></>
-              : <><Upload size={32} className="text-gray-300" /><span className="text-xs sm:text-sm text-gray-400">Seleccionar archivo</span></>
+              : <><Upload size={32} className="text-neutral-300" /><span className="text-xs sm:text-sm text-neutral-400">Seleccionar archivo</span></>
             }
           </label>
         </div>
@@ -433,32 +434,235 @@ function UploadHorariosLegado() {
   );
 }
 
+/* ── VISUALIZAR HORARIOS: Utilidades ─────────────────────────────── */
+const diasDelMes = (mes) => {
+  const [y, m] = mes.split('-').map(Number);
+  const total = new Date(y, m, 0).getDate();
+  return Array.from({ length: total }, (_, i) => String(i + 1).padStart(2, '0'));
+};
+const nombreDia = (mes, dStr) => {
+  const [y, m] = mes.split('-').map(Number);
+  return new Date(y, m - 1, parseInt(dStr, 10)).toLocaleDateString('es-EC', { weekday: 'short' }).replace('.', '');
+};
+const getMesActual = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`; };
+const getMesLabel = (m) => { const [y,mo] = m.split('-'); return new Date(y, parseInt(mo)-1).toLocaleDateString('es-EC', { month: 'long', year: 'numeric' }); };
+const navegarMes = (mes, delta) => { const [y,mo] = mes.split('-').map(Number); const d = new Date(y, mo-1+delta, 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+const POR_PAGINA = 12;
+
+/* ── Card de médico (vista admin completa) ───────────────────────── */
+function HorarioCardAdmin({ guardia, mes }) {
+  const dias = diasDelMes(mes);
+  const tieneAlgunDia = dias.some(d => guardia[`d${d}`]);
+  const algunVac = dias.some(d => guardia[`d${d}`] === 'VAC');
+  const todosVac = dias.every(d => { const v = guardia[`d${d}`]; return !v || v === 'VAC'; });
+  const estado = todosVac && algunVac ? 'VAC' : tieneAlgunDia ? 'OK' : 'NADA';
+  const estadoClase = { OK:'bg-secondary-pale text-secondary border-secondary/30', VAC:'bg-yellow-50 text-yellow-700 border-yellow-200', NADA:'bg-neutral-50 text-neutral-400 border-neutral-200' }[estado];
+  const estadoLabel = { OK:'Disponible', VAC:'Vacaciones', NADA:'Sin guardia' }[estado];
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-4 flex flex-col gap-3 hover:shadow-md transition-all duration-200">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-9 h-9 rounded-full bg-primary-pale border border-primary/10 flex items-center justify-center shrink-0">
+            <User size={16} className="text-primary" />
+          </div>
+          <div className="min-w-0">
+            <div className="font-bold text-dark text-sm leading-tight truncate">{guardia.nombreMedico}</div>
+            <div className="text-secondary text-xs font-medium mt-0.5 truncate">{guardia.area || '—'}</div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          {guardia.tipoContrato && <span className="text-[10px] bg-primary-pale text-primary font-bold px-2 py-0.5 rounded-full">{guardia.tipoContrato}</span>}
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${estadoClase}`}>{estadoLabel}</span>
+        </div>
+      </div>
+      <div className="overflow-x-auto -mx-1 pb-1">
+        <div className="flex gap-[3px] min-w-max px-1">
+          {dias.map(d => {
+            const valor = guardia[`d${d}`];
+            const esVac = valor === 'VAC';
+            const esPerm = valor === 'PERM';
+            const hayValor = !!valor;
+            return (
+              <div key={d} className="text-center" style={{ minWidth:'24px' }}>
+                <div className="text-[8px] text-neutral-400 font-bold leading-none mb-0.5">{nombreDia(mes,d)}</div>
+                <div className="text-[8px] text-neutral-300 leading-none mb-1">{parseInt(d)}</div>
+                <div title={valor||'Sin guardia'} className={`text-[9px] w-[24px] h-[24px] flex items-center justify-center rounded font-bold border ${
+                  esVac ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                  esPerm ? 'bg-orange-50 text-orange-600 border-orange-200' :
+                  hayValor ? 'bg-secondary-pale text-secondary border-secondary/20' :
+                  'bg-neutral-50 text-neutral-200 border-neutral-100'
+                }`}>{hayValor ? (esVac ? 'V' : esPerm ? 'P' : valor.charAt(0)) : '·'}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {guardia.telefono && <div className="text-xs text-neutral-400">📞 {guardia.telefono}</div>}
+    </div>
+  );
+}
+
+/* ── Tab: Visualizar Horarios (Privado Admin) ────────────────────── */
+function VisualizarHorarios() {
+  const [horarios, setHorarios] = useState([]);
+  const [areas,    setAreas]    = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
+  const [mes,      setMes]      = useState(getMesActual);
+  const [search,   setSearch]   = useState('');
+  const [filtroArea,     setFiltroArea]     = useState('');
+  const [filtroContrato, setFiltroContrato] = useState('');
+  const [pagina,   setPagina]   = useState(1);
+
+  useEffect(() => {
+    setLoading(true); setError(null); setPagina(1);
+    api.get(`/admin/guardias?mes=${mes}`)
+      .then(r => { setHorarios(r.data.data || []); setAreas([...new Set((r.data.data||[]).map(g=>g.area).filter(Boolean))].sort()); })
+      .catch(() => setError('Error al cargar los horarios.'))
+      .finally(() => setLoading(false));
+  }, [mes]);
+
+  useEffect(() => { setPagina(1); }, [search, filtroArea, filtroContrato]);
+
+  const q = search.toLowerCase().trim();
+  const filtered = horarios.filter(h => {
+    const matchSearch = !q || (h.nombreMedico||'').toLowerCase().includes(q) || (h.area||'').toLowerCase().includes(q);
+    const matchArea     = !filtroArea     || h.area === filtroArea;
+    const matchContrato = !filtroContrato || h.tipoContrato === filtroContrato;
+    return matchSearch && matchArea && matchContrato;
+  });
+
+  const totalPaginas = Math.ceil(filtered.length / POR_PAGINA);
+  const paginados    = filtered.slice((pagina-1)*POR_PAGINA, pagina*POR_PAGINA);
+  const hayFiltros   = search || filtroArea || filtroContrato;
+  const tiposContrato = [...new Set(horarios.map(h=>h.tipoContrato).filter(Boolean))].sort();
+  const limpiar = () => { setSearch(''); setFiltroArea(''); setFiltroContrato(''); };
+
+  const btnPage = 'w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-all border';
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold font-heading text-neutral-900 flex items-center gap-2">
+            <CalendarDays size={22} className="text-primary" /> Visualizar Horarios Médicos
+          </h2>
+          <p className="text-neutral-400 text-xs mt-0.5">Vista privada y completa — solo disponible para administradores.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-white border border-neutral-200 rounded-xl px-3 py-1.5">
+          <button onClick={() => setMes(m => navegarMes(m,-1))} className="p-1 hover:bg-neutral-100 rounded-lg transition"><ChevronLeft size={16}/></button>
+          <span className="font-semibold text-sm capitalize min-w-[130px] text-center text-dark">{getMesLabel(mes)}</span>
+          <button onClick={() => setMes(m => navegarMes(m,1))} className="p-1 hover:bg-neutral-100 rounded-lg transition"><ChevronRight size={16}/></button>
+        </div>
+      </div>
+
+      {/* Filtros */}
+      <div className="bg-white rounded-xl border border-neutral-100 shadow-sm p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"/>
+            <input type="text" placeholder="Buscar médico o área..." value={search} onChange={e=>setSearch(e.target.value)}
+              className="w-full pl-8 pr-3 py-2 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:border-primary transition"/>
+          </div>
+          <select value={filtroArea} onChange={e=>setFiltroArea(e.target.value)}
+            className="border border-neutral-200 rounded-lg px-3 py-2 text-sm text-dark focus:outline-none focus:border-primary">
+            <option value="">Todas las áreas</option>
+            {areas.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+          <select value={filtroContrato} onChange={e=>setFiltroContrato(e.target.value)}
+            className="border border-neutral-200 rounded-lg px-3 py-2 text-sm text-dark focus:outline-none focus:border-primary">
+            <option value="">Todos los tipos</option>
+            {tiposContrato.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          {hayFiltros && (
+            <button onClick={limpiar} className="flex items-center gap-1 px-3 py-2 border border-neutral-200 rounded-lg text-sm text-neutral-500 hover:bg-neutral-50 transition shrink-0">
+              <X size={14}/> Limpiar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Contenido */}
+      {loading ? (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          {[...Array(6)].map((_,i) => (
+            <div key={i} className="bg-white rounded-2xl border border-neutral-100 p-4 animate-pulse h-28"/>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center gap-3 py-16 text-center">
+          <AlertCircle size={36} className="text-red-400"/>
+          <p className="text-dark font-medium text-sm">{error}</p>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-neutral-500">
+            <span className="font-semibold text-dark">{filtered.length}</span> médico{filtered.length!==1?'s':''}
+            {totalPaginas>1 && <span className="ml-2 text-neutral-400">· Página {pagina} de {totalPaginas}</span>}
+          </p>
+          {paginados.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {paginados.map(h => <HorarioCardAdmin key={h.id} guardia={h} mes={mes}/>)}
+              </div>
+              {totalPaginas > 1 && (
+                <div className="flex items-center justify-center gap-1 mt-6">
+                  <button onClick={()=>setPagina(p=>Math.max(1,p-1))} disabled={pagina===1} className={`${btnPage} text-neutral-500 hover:bg-primary hover:text-white hover:border-primary disabled:opacity-30`}><ChevronLeft size={15}/></button>
+                  {Array.from({length:Math.min(5,totalPaginas)},(_,i)=>i+Math.max(1,pagina-2)).filter(p=>p<=totalPaginas).map(p=>(
+                    <button key={p} onClick={()=>setPagina(p)} className={`${btnPage} ${p===pagina?'bg-primary text-white border-primary':'border-neutral-200 text-neutral-600 hover:bg-primary-pale'}`}>{p}</button>
+                  ))}
+                  <button onClick={()=>setPagina(p=>Math.min(totalPaginas,p+1))} disabled={pagina===totalPaginas} className={`${btnPage} text-neutral-500 hover:bg-primary hover:text-white hover:border-primary disabled:opacity-30`}><ChevronRight size={15}/></button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <Filter size={36} className="text-neutral-300"/>
+              <p className="text-dark font-medium text-sm">No se encontraron resultados.</p>
+              {hayFiltros && <button onClick={limpiar} className="text-primary text-sm hover:underline">Limpiar filtros</button>}
+            </div>
+          )}
+          {horarios.length === 0 && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center text-sm text-blue-700">
+              No hay guardias importadas para {getMesLabel(mes)}. Usa la pestaña "Matriz de Guardias" para subir el Excel.
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ── Root con tabs ───────────────────────────────────────────────── */
 export default function HorariosPage() {
   const [tab, setTab] = useState('guardias');
 
   return (
     <div className="w-full">
-      <div className="flex gap-2 mb-6 border-b border-gray-200 overflow-x-auto whitespace-nowrap hide-scrollbar pb-px">
+      <div className="flex gap-2 mb-6 border-b border-neutral-200 overflow-x-auto whitespace-nowrap hide-scrollbar pb-px">
         <button onClick={() => setTab('guardias')}
           className={`px-4 py-2 text-sm font-medium rounded-t-lg transition shrink-0 ${
-            tab === 'guardias'
-              ? 'bg-white border border-b-white border-gray-200 text-secondary'
-              : 'text-gray-500 hover:text-dark'
+            tab === 'guardias' ? 'bg-white border border-b-white border-neutral-200 text-secondary' : 'text-neutral-500 hover:text-dark'
           }`}>
-          <span className="flex items-center gap-2"><Calendar size={15} /> Matriz de Guardias</span>
+          <span className="flex items-center gap-2"><Calendar size={15}/> Matriz de Guardias</span>
+        </button>
+        <button onClick={() => setTab('visualizar')}
+          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition shrink-0 ${
+            tab === 'visualizar' ? 'bg-white border border-b-white border-neutral-200 text-primary' : 'text-neutral-500 hover:text-dark'
+          }`}>
+          <span className="flex items-center gap-2"><Eye size={15}/> Visualizar Horarios</span>
         </button>
         <button onClick={() => setTab('legado')}
           className={`px-4 py-2 text-sm font-medium rounded-t-lg transition shrink-0 ${
-            tab === 'legado'
-              ? 'bg-white border border-b-white border-gray-200 text-primary'
-              : 'text-gray-500 hover:text-dark'
+            tab === 'legado' ? 'bg-white border border-b-white border-neutral-200 text-neutral-600' : 'text-neutral-500 hover:text-dark'
           }`}>
           Formato Legado
         </button>
       </div>
 
-      {tab === 'guardias' ? <UploadGuardias /> : <UploadHorariosLegado />}
+      {tab === 'guardias'   && <UploadGuardias />}
+      {tab === 'visualizar' && <VisualizarHorarios />}
+      {tab === 'legado'     && <UploadHorariosLegado />}
     </div>
   );
 }

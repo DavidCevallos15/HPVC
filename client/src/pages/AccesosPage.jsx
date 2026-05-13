@@ -45,12 +45,12 @@ const categorias = [
 
 export default function AccesosPage() {
   return (
-    <div className="bg-gray-50 min-h-screen py-10">
+    <div className="bg-neutral-50 min-h-screen py-10">
       <div className="container mx-auto px-6">
         
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-12 animate-fade-in">
-          <h1 className="text-4xl font-bold font-heading text-primary mb-4">
+          <h1 className="text-4xl font-semibold font-heading text-primary mb-4">
             Accesos Directos
           </h1>
           <p className="text-gray text-lg">
@@ -62,7 +62,7 @@ export default function AccesosPage() {
         <div className="space-y-12">
           {categorias.map((categoria, idx) => (
             <section key={idx} className="animate-slide-up" style={{ animationDelay: `${idx * 0.15}s` }}>
-              <h2 className="text-2xl font-bold font-heading text-dark mb-6 flex items-center gap-2 border-b border-gray-200 pb-3">
+              <h2 className="text-2xl font-semibold font-heading text-dark mb-6 flex items-center gap-2 border-b border-neutral-200 pb-3">
                 <span className={`block w-2 h-6 rounded-full bg-${categoria.color} mr-2`} />
                 {categoria.titulo}
               </h2>
@@ -76,7 +76,7 @@ export default function AccesosPage() {
                       href={enlace.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group bg-white rounded-xl p-5 shadow-sm hover:shadow-md border border-gray-100 hover:border-primary/20 transition-all duration-300 flex items-center justify-between pointer-events-auto hover:-translate-y-1"
+                      className="group bg-white rounded-xl p-5 shadow-sm hover:shadow-md border border-neutral-100 hover:border-primary/20 transition-all duration-300 flex items-center justify-between pointer-events-auto hover:-translate-y-1"
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-12 h-12 rounded-lg bg-${categoria.color}-pale text-${categoria.color} flex items-center justify-center transition-colors group-hover:bg-${categoria.color} group-hover:text-white`}>
@@ -88,7 +88,7 @@ export default function AccesosPage() {
                           </span>
                         </div>
                       </div>
-                      <ExternalLink size={16} className="text-gray-300 group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0" />
+                      <ExternalLink size={16} className="text-neutral-300 group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0" />
                     </a>
                   );
                 })}

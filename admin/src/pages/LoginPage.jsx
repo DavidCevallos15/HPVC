@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-neutral-50">
       {/* Panel Izquierdo */}
       <div
         className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 text-white relative overflow-hidden"
@@ -49,10 +49,9 @@ export default function LoginPage() {
           <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center mx-auto mb-6">
             <span className="text-3xl font-bold">H</span>
           </div>
-          <h1 className="text-3xl font-bold font-heading mb-2">HPVC Admin</h1>
+          <h1 className="text-3xl font-semibold font-heading mb-2">HPVC Admin</h1>
           <p className="text-primary-pale text-sm max-w-xs">
-            Panel de administración del Hospital Provincial Verdi Cevallos
-            Balda.
+            Panel de administración del Hospital Provincial de Portoviejo Dr. Verdi Cevallos Balda.
           </p>
           <div className="mt-8 text-xs text-primary-pale/70 space-y-1">
             <div>🔒 Acceso restringido a personal autorizado</div>
@@ -68,23 +67,23 @@ export default function LoginPage() {
             <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
               <Lock size={20} className="text-white" />
             </div>
-            <h2 className="text-2xl font-bold font-heading text-gray-900">
+            <h2 className="text-2xl font-semibold font-heading text-neutral-900">
               Iniciar sesión
             </h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-neutral-500 text-sm mt-1">
               Ingresa tus credenciales de administrador
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Correo electrónico
               </label>
               <div className="relative">
                 <Mail
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
                 />
                 <input
                   type="email"
@@ -92,19 +91,19 @@ export default function LoginPage() {
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   required
                   placeholder="admin@hpvc.gob.ec"
-                  className="w-full pl-9 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                  className="w-full pl-9 pr-4 py-3 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
                 Contraseña
               </label>
               <div className="relative">
                 <Lock
                   size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
                 />
                 <input
                   type={showPw ? "text" : "password"}
@@ -114,12 +113,12 @@ export default function LoginPage() {
                   }
                   required
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-10 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                  className="w-full pl-9 pr-10 py-3 border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -141,7 +140,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="text-center text-xs text-neutral-400 mt-6">
             © {new Date().getFullYear()} Hospital Provincial Verdi Cevallos
           </p>
         </div>

@@ -35,23 +35,23 @@ export default function ConfiguracionPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold font-heading text-gray-900">Configuración</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Parámetros institucionales que aparecen en el sitio web público.</p>
+        <h1 className="text-2xl font-semibold font-heading text-neutral-900">Configuración</h1>
+        <p className="text-neutral-500 text-sm mt-0.5">Parámetros institucionales que aparecen en el sitio web público.</p>
       </div>
 
       {loading ? (
-        <div className="space-y-4">{[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />)}</div>
+        <div className="space-y-4">{[...Array(5)].map((_, i) => <div key={i} className="h-14 bg-neutral-100 rounded-xl animate-pulse" />)}</div>
       ) : (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 space-y-5">
           {CAMPOS.map(({ clave, label, type }) => (
             <div key={clave}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">{label}</label>
               {type === 'textarea' ? (
                 <textarea value={config[clave] || ''} onChange={e => handleChange(clave, e.target.value)} rows={3}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none" />
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none" />
               ) : (
                 <input type={type} value={config[clave] || ''} onChange={e => handleChange(clave, e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
               )}
             </div>
           ))}

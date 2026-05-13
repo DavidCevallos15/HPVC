@@ -124,31 +124,31 @@ export default function MedicoFormPage() {
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate('/medicos')} className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
+        <button onClick={() => navigate('/medicos')} className="p-2 rounded-lg hover:bg-neutral-100 transition-colors text-neutral-500">
           <ArrowLeft size={18} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold font-heading text-gray-900">{isEdit ? 'Editar Médico' : 'Nuevo Médico'}</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{isEdit ? 'Modifica los datos del profesional.' : 'Ingresa la información para el directorio.'}</p>
+          <h1 className="text-2xl font-semibold font-heading text-neutral-900">{isEdit ? 'Editar Médico' : 'Nuevo Médico'}</h1>
+          <p className="text-neutral-500 text-sm mt-0.5">{isEdit ? 'Modifica los datos del profesional.' : 'Ingresa la información para el directorio.'}</p>
         </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
          <div className="md:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-5">
-              <h2 className="text-lg font-semibold border-b border-gray-100 pb-2 mb-4">Información Personal</h2>
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 space-y-5">
+              <h2 className="text-lg font-semibold border-b border-neutral-100 pb-2 mb-4">Información Personal</h2>
               
               <div className="grid sm:grid-cols-2 gap-4">
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo *</label>
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Nombre Completo *</label>
                    <input name="nombre" value={form.nombre} onChange={handleChange} required placeholder="Dr. Juan Pérez"
-                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
                  </div>
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Especialidad *</label>
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Especialidad *</label>
                    <div className="flex gap-2">
                      <select name="especialidadId" value={form.especialidadId} onChange={handleChange} required
-                       className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition">
+                       className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition">
                        <option value="">Seleccione especialidad</option>
                        {especialidades.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}
                      </select>
@@ -161,43 +161,43 @@ export default function MedicoFormPage() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Teléfono</label>
                    <input name="telefono" value={form.telefono} onChange={handleChange} placeholder="(05) 234-5678"
-                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
                  </div>
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Correo Institucional</label>
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Correo Institucional</label>
                    <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="medico@hpvc.gob.ec"
-                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
+                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition" />
                  </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Biografía / Perfil Profesional</label>
+                <label className="block text-sm font-medium text-neutral-700 mb-1">Biografía / Perfil Profesional</label>
                 <textarea name="bio" value={form.bio} onChange={handleChange} rows={4} placeholder="Breve descripción de su trayectoria..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none text-gray-600" />
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition resize-none text-neutral-600" />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4 border-t border-gray-100 pt-5 mt-5">
+              <div className="grid sm:grid-cols-2 gap-4 border-t border-neutral-100 pt-5 mt-5">
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Foto / Avatar (JPG, PNG)</label>
-                   <div className="border border-dashed border-gray-300 bg-gray-50 rounded-lg p-3 text-center flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden h-20">
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Foto / Avatar (JPG, PNG)</label>
+                   <div className="border border-dashed border-neutral-300 bg-neutral-50 rounded-lg p-3 text-center flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden h-20">
                      <input type="file" accept="image/*" onChange={e => setFoto(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer" />
                      {foto ? (
                         <span className="text-secondary text-xs truncate max-w-full font-medium">{foto.name}</span>
                      ) : (
-                        <><User size={20} className="text-gray-400" /><span className="text-xs text-gray-500">Subir foto (.jpg, .png)</span></>
+                        <><User size={20} className="text-neutral-400" /><span className="text-xs text-neutral-500">Subir foto (.jpg, .png)</span></>
                      )}
                    </div>
                  </div>
                  <div>
-                   <label className="block text-sm font-medium text-gray-700 mb-1">Hoja de Vida (PDF)</label>
-                   <div className="border border-dashed border-gray-300 bg-gray-50 rounded-lg p-3 text-center flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden h-20">
+                   <label className="block text-sm font-medium text-neutral-700 mb-1">Hoja de Vida (PDF)</label>
+                   <div className="border border-dashed border-neutral-300 bg-neutral-50 rounded-lg p-3 text-center flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden h-20">
                      <input type="file" accept="application/pdf" onChange={e => setCv(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer" />
                      {cv ? (
                         <span className="text-secondary text-xs truncate max-w-full font-medium">{cv.name}</span>
                      ) : (
-                        <><FileText size={20} className="text-gray-400" /><span className="text-xs text-gray-500">Subir CV (.pdf)</span></>
+                        <><FileText size={20} className="text-neutral-400" /><span className="text-xs text-neutral-500">Subir CV (.pdf)</span></>
                      )}
                    </div>
                  </div>
@@ -206,12 +206,12 @@ export default function MedicoFormPage() {
               <div className="flex items-center gap-3 pt-2">
                 <input type="checkbox" id="activo" name="activo" checked={form.activo} onChange={handleChange}
                   className="w-4 h-4 accent-primary" />
-                <label htmlFor="activo" className="text-sm font-medium text-gray-700">Médico activo en el directorio</label>
+                <label htmlFor="activo" className="text-sm font-medium text-neutral-700">Médico activo en el directorio</label>
               </div>
 
               {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">{error}</div>}
 
-              <div className="flex justify-end pt-4 border-t border-gray-100">
+              <div className="flex justify-end pt-4 border-t border-neutral-100">
                 <button type="submit" disabled={loading}
                   className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition disabled:opacity-60">
                   <Save size={16} /> {loading ? 'Guardando...' : 'Guardar Médico'}
@@ -222,35 +222,35 @@ export default function MedicoFormPage() {
 
          {/* Panel lateral: Horarios Manuales */}
          <div className="md:col-span-1">
-            <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-6 ${!isEdit ? 'opacity-50 pointer-events-none' : ''}`}>
-               <div className="flex items-center gap-2 mb-4 text-primary font-semibold border-b border-gray-100 pb-3">
+            <div className={`bg-white rounded-xl shadow-sm border border-neutral-100 p-5 sticky top-6 ${!isEdit ? 'opacity-50 pointer-events-none' : ''}`}>
+               <div className="flex items-center gap-2 mb-4 text-primary font-semibold border-b border-neutral-100 pb-3">
                   <CalendarIcon size={18} />
                   <h3>Asignación de Horario</h3>
                </div>
                
-               {!isEdit && <p className="text-xs text-gray-400 mb-4 bg-gray-50 p-2 rounded border border-gray-100">Guarda el médico primero para asignarle horarios manuales.</p>}
+               {!isEdit && <p className="text-xs text-neutral-400 mb-4 bg-neutral-50 p-2 rounded border border-neutral-100">Guarda el médico primero para asignarle horarios manuales.</p>}
 
                <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">Mes de configuración</label>
+                    <label className="block text-xs font-medium text-neutral-500 mb-1">Mes de configuración</label>
                     <input type="month" value={mesActual} onChange={e => setMesActual(e.target.value)}
-                      className="w-full border border-gray-200 rounded text-sm px-2 py-1.5 focus:border-primary" />
+                      className="w-full border border-neutral-200 rounded text-sm px-2 py-1.5 focus:border-primary" />
                   </div>
 
                   <div className="space-y-2">
                      {['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].map(dia => (
                         <div key={dia} className="flex items-center gap-2">
-                           <span className="w-8 text-xs font-semibold text-gray-500 uppercase">{dia.substring(0,3)}</span>
+                           <span className="w-8 text-xs font-semibold text-neutral-500 uppercase">{dia.substring(0,3)}</span>
                            <input type="text" name={dia} value={horarioManual[dia]} onChange={handleHorarioChange} placeholder="ej. 08:00-12h00"
-                             className="flex-1 border border-gray-200 rounded px-2 py-1 text-sm bg-gray-50 focus:bg-white focus:border-primary transition" />
+                             className="flex-1 border border-neutral-200 rounded px-2 py-1 text-sm bg-neutral-50 focus:bg-white focus:border-primary transition" />
                         </div>
                      ))}
                   </div>
 
                   <div>
-                     <label className="block text-xs font-medium text-gray-500 mb-1 mt-2">Estado del mes</label>
+                     <label className="block text-xs font-medium text-neutral-500 mb-1 mt-2">Estado del mes</label>
                      <select name="estado" value={horarioManual.estado} onChange={handleHorarioChange}
-                        className="w-full border border-gray-200 rounded text-sm px-2 py-1.5 focus:border-primary">
+                        className="w-full border border-neutral-200 rounded text-sm px-2 py-1.5 focus:border-primary">
                         <option value="DISPONIBLE">DISPONIBLE</option>
                         <option value="VACACIONES">VACACIONES</option>
                         <option value="SIN_ATENCION">SIN ATENCIÓN</option>

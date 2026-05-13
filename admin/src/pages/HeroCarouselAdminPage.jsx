@@ -140,15 +140,16 @@ export default function HeroCarouselAdminPage() {
     
     try {
       // Subir archivos nuevos
-      for (const [index, file] of Object.entries(selectedFiles)) {
-        const formData = new FormData();
-        formData.append('clave', `hero_carousel_${index}`);
-        formData.append('imagen', file);
-        
-        await api.post('/admin/configuracion/imagen', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-      }
+      await Promise.all(
+        Object.entries(selectedFiles).map(([index, file]) => {
+          const formData = new FormData();
+          formData.append('clave', `hero_carousel_${index}`);
+          formData.append('imagen', file);
+          return api.post('/admin/configuracion/imagen', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        })
+      );
 
       // Actualizar configuraciones de texto y ajustes
       const configUpdates = [];
@@ -205,10 +206,10 @@ export default function HeroCarouselAdminPage() {
   return (
     <div className="max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold font-heading text-gray-900 flex items-center gap-2">
+        <h1 className="text-2xl font-semibold font-heading text-neutral-900 flex items-center gap-2">
           <ImageIcon size={28} className="text-primary" /> Carrusel de Imágenes Principal
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-neutral-500 text-sm mt-1">
           Configura las imágenes del carrusel principal (máximo {MAX_IMAGES} imágenes). Cada imagen puede tener título, descripción y ajustes de visualización.
         </p>
       </div>
@@ -228,9 +229,9 @@ export default function HeroCarouselAdminPage() {
             const settings = imageSettings[imageIndex] || {};
 
             return (
-              <div key={image.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
+              <div key={image.id} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="font-semibold text-neutral-900 flex items-center gap-2">
                     <span className="bg-primary text-white text-xs px-2 py-1 rounded-full">
                       {imageIndex}
                     </span>
@@ -250,8 +251,8 @@ export default function HeroCarouselAdminPage() {
 
                 {/* Vista previa con ajustes */}
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">Vista Previa</label>
-                  <div className="relative border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 overflow-hidden h-48">
+                  <label className="block text-sm font-medium text-neutral-700">Vista Previa</label>
+                  <div className="relative border-2 border-dashed border-neutral-200 rounded-xl bg-neutral-50 overflow-hidden h-48">
                     {(hasPreview) ? (
                       <img
                         src={previewUrls[imageIndex] || image.url}
@@ -263,7 +264,7 @@ export default function HeroCarouselAdminPage() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <div className="w-full h-full flex items-center justify-center text-neutral-400">
                         <ImageIcon size={32} className="opacity-30" />
                       </div>
                     )}
@@ -280,7 +281,7 @@ export default function HeroCarouselAdminPage() {
                     <label className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition cursor-pointer border ${
                       hasFile 
                         ? 'bg-blue-50 text-blue-700 border-blue-200' 
-                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                        : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
                     }`}>
                       <Upload size={14} />
                       {hasFile ? 'Cambiar' : 'Subir'} imagen
@@ -292,7 +293,7 @@ export default function HeroCarouselAdminPage() {
                       />
                     </label>
                     {hasFile && (
-                      <span className="text-xs text-gray-500 truncate max-w-xs">
+                      <span className="text-xs text-neutral-500 truncate max-w-xs">
                         {selectedFiles[imageIndex].name}
                       </span>
                     )}
@@ -302,36 +303,36 @@ export default function HeroCarouselAdminPage() {
                 {/* Configuración de la imagen */}
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Título (opcional)</label>
+                    <label className="block text-sm font-medium text-neutral-700 mb-1">Título (opcional)</label>
                     <input
                       type="text"
                       value={settings.title || ''}
                       onChange={(e) => handleSettingChange(imageIndex, 'title', e.target.value)}
                       placeholder="Título de la imagen"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                       maxLength={100}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Descripción (opcional)</label>
+                    <label className="block text-sm font-medium text-neutral-700 mb-1">Descripción (opcional)</label>
                     <textarea
                       value={settings.description || ''}
                       onChange={(e) => handleSettingChange(imageIndex, 'description', e.target.value)}
                       placeholder="Descripción breve de la imagen"
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary resize-none"
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary resize-none"
                       maxLength={200}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Posición</label>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1">Posición</label>
                       <select
                         value={settings.position || 'center center'}
                         onChange={(e) => handleSettingChange(imageIndex, 'position', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                       >
                         <option value="center center">Centro</option>
                         <option value="top center">Superior centro</option>
@@ -346,11 +347,11 @@ export default function HeroCarouselAdminPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tamaño</label>
+                      <label className="block text-sm font-medium text-neutral-700 mb-1">Tamaño</label>
                       <select
                         value={settings.size || 'cover'}
                         onChange={(e) => handleSettingChange(imageIndex, 'size', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                        className="w-full px-3 py-2 border border-neutral-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                       >
                         <option value="cover">Cubrir (Cover)</option>
                         <option value="contain">Contener (Contain)</option>
@@ -364,7 +365,7 @@ export default function HeroCarouselAdminPage() {
           })}
         </div>
 
-        <div className="flex justify-end pt-6 border-t border-gray-100">
+        <div className="flex justify-end pt-6 border-t border-neutral-100">
           <button 
             type="submit" 
             disabled={saving || Object.keys(selectedFiles).length === 0}

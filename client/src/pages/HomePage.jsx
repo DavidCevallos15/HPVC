@@ -58,12 +58,12 @@ function EspecialidadesPreview() {
   }, []);
 
   return (
-    <section className="py-16 bg-gray-50 border-t border-gray-100">
+    <section className="py-16 bg-neutral-50 border-t border-neutral-100">
       <div className="container mx-auto px-6">
         <div className="flex justify-between items-end mb-10">
           <div>
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Nuestros Servicios</span>
-            <h2 className="text-3xl font-bold font-heading text-dark mt-1">Especialidades Médicas</h2>
+            <h2 className="text-3xl font-semibold font-heading text-dark mt-1">Especialidades Médicas</h2>
           </div>
           <Link to="/especialidades" className="hidden md:flex items-center gap-2 text-primary text-sm font-medium hover:underline">
             Ver todas <ArrowRight size={14} />
@@ -73,7 +73,7 @@ function EspecialidadesPreview() {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-100 rounded-card animate-pulse" />
+              <div key={i} className="h-32 bg-neutral-100 rounded-card animate-pulse" />
             ))}
           </div>
         ) : (
@@ -82,7 +82,7 @@ function EspecialidadesPreview() {
               const IconComp = getIconForSpecialty(esp.nombre, esp.icono);
               return (
                 <Link key={esp.id} to={`/especialidades`}
-                  className="group bg-white border border-gray-100 hover:border-primary hover:shadow-card rounded-card p-5 flex flex-col items-center text-center gap-3 transition-all duration-200 hover:-translate-y-1">
+                  className="group bg-white border border-neutral-100 hover:border-primary hover:shadow-card rounded-card p-5 flex flex-col items-center text-center gap-3 transition-all duration-200 hover:-translate-y-1">
                   <div className="w-12 h-12 rounded-full bg-primary-pale group-hover:bg-primary flex items-center justify-center transition-colors">
                     <IconComp size={22} className="text-primary group-hover:text-white transition-colors" />
                   </div>
@@ -128,7 +128,7 @@ function NoticiasRecientes() {
         <div className="flex justify-between items-end mb-10">
           <div>
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Actualidad</span>
-            <h2 className="text-3xl font-bold font-heading text-dark mt-1">Noticias Recientes</h2>
+            <h2 className="text-3xl font-semibold font-heading text-dark mt-1">Noticias Recientes</h2>
           </div>
           <Link to="/noticias" className="hidden md:flex items-center gap-2 text-primary text-sm font-medium hover:underline">
             Ver todas <ArrowRight size={14} />
@@ -138,7 +138,7 @@ function NoticiasRecientes() {
         {loading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 rounded-card animate-pulse" />
+              <div key={i} className="h-64 bg-neutral-200 rounded-card animate-pulse" />
             ))}
           </div>
         ) : (
@@ -147,14 +147,14 @@ function NoticiasRecientes() {
               <Link key={n.id} to={`/noticias/${n.slug}`}
                 className="group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
                 {n.previewMode === 'frame' && n.embedUrl ? (
-                  <div className="h-44 bg-gray-50 border-b border-gray-100 overflow-hidden [&_iframe]:w-full [&_iframe]:h-44 [&_iframe]:border-0 [&_iframe]:pointer-events-none [&_blockquote]:pointer-events-none">
+                  <div className="h-44 bg-neutral-50 border-b border-neutral-100 overflow-hidden [&_iframe]:w-full [&_iframe]:h-44 [&_iframe]:border-0 [&_iframe]:pointer-events-none [&_blockquote]:pointer-events-none">
                     <EmbedRenderer
                       className="w-full h-full"
                       html={n.embedUrl}
                     />
                   </div>
                 ) : toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl) ? (
-                  <div className="h-44 overflow-hidden bg-gray-100">
+                  <div className="h-44 overflow-hidden bg-neutral-100">
                     <img
                       src={toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl)}
                       alt={n.titulo || 'Vista previa de noticia'}
@@ -170,11 +170,11 @@ function NoticiasRecientes() {
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full self-start mb-3 ${catColors[n.categoria] || catColors.default}`}>
                     {n.categoria}
                   </span>
-                  <h3 className="font-bold font-heading text-dark text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                  <h3 className="font-semibold font-heading text-dark text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
                     {n.titulo}
                   </h3>
                   <p className="text-gray text-xs leading-relaxed line-clamp-3 flex-1">{n.extracto}</p>
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
                     <span className="text-xs text-gray">
                       {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                     </span>
@@ -205,7 +205,7 @@ function EmergenciasBanner() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-white">
             <div className="text-accent font-bold text-sm uppercase tracking-widest mb-1">Emergencias</div>
-            <h2 className="text-2xl md:text-3xl font-bold font-heading">Servicio disponible <span className="text-accent">24/7</span></h2>
+            <h2 className="text-2xl md:text-3xl font-semibold font-heading">Servicio disponible <span className="text-accent">24/7</span></h2>
             <p className="text-secondary-pale mt-1 text-sm">No esperes si es una urgencia. Nuestra sala de emergencias está siempre lista.</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-white">
@@ -233,14 +233,14 @@ function RecorridoVirtualBanner() {
 
           <div className="flex-1 relative z-10 text-white">
             <span className="inline-block px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs font-bold tracking-widest uppercase mb-4 text-accent">NUEVO</span>
-            <h2 className="text-3xl md:text-5xl font-bold font-heading leading-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-semibold font-heading leading-tight mb-4">
               Recorrido Virtual 360°
             </h2>
             <p className="text-primary-pale text-lg mb-8 max-w-lg leading-relaxed">
               Descubre nuestras renovadas instalaciones, conoce las áreas de especialidad y ubícate fácilmente antes de tu visita de manera interactiva.
             </p>
             <Link to="/recorrido-virtual"
-              className="inline-flex items-center gap-3 bg-white text-primary-dark hover:bg-gray-100 font-bold py-3.5 px-8 rounded-xl text-base transition-all hover:-translate-y-1 hover:shadow-lg">
+              className="inline-flex items-center gap-3 bg-white text-primary-dark hover:bg-neutral-100 font-bold py-3.5 px-8 rounded-xl text-base transition-all hover:-translate-y-1 hover:shadow-lg">
               <Eye size={20} /> Iniciar Recorrido
             </Link>
           </div>
@@ -310,7 +310,7 @@ function ImagenMesBanner() {
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest mb-4">Noticias del Mes</span>
 
             <div
-              className="relative rounded-2xl overflow-hidden shadow-xl w-full max-w-4xl bg-gray-50 border border-gray-100"
+              className="relative rounded-2xl overflow-hidden shadow-xl w-full max-w-4xl bg-neutral-50 border border-neutral-100"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >

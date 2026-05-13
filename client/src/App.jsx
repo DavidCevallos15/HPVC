@@ -50,8 +50,8 @@ export default function App() {
                 <Route path="/horarios"          element={<HorariosPage />} />
                 <Route path="*" element={
                   <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
-                    <Building2 size={64} className="text-gray-300" />
-                    <h2 className="text-3xl font-bold font-heading text-dark">Página no encontrada</h2>
+                    <Building2 size={64} className="text-neutral-300" />
+                    <h2 className="text-3xl font-semibold font-heading text-dark">Página no encontrada</h2>
                     <p className="text-gray">La ruta que buscas no existe.</p>
                     <a href="/" className="btn-primario mt-2">← Volver al inicio</a>
                   </div>

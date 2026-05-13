@@ -24,7 +24,7 @@ export default function AcercaPage() {
             <span className="mx-2">/</span>
             <span>Acerca de Nosotros</span>
           </nav>
-          <h1 className="text-4xl font-bold font-heading">Acerca de Nosotros</h1>
+          <h1 className="text-4xl font-semibold font-heading">Acerca de Nosotros</h1>
           <p className="text-primary-pale mt-2">Institución pública de salud al servicio de Manabí y el Ecuador.</p>
         </div>
       </div>
@@ -34,7 +34,7 @@ export default function AcercaPage() {
         <div className="max-w-3xl mx-auto">
 
           {/* Tarjeta principal estilo placa */}
-          <div className="bg-white rounded-2xl shadow-card border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-card border border-neutral-100 overflow-hidden">
 
             {/* Encabezado de la placa */}
             <div className="flex flex-col items-center py-10 px-8 border-b-4 border-primary">
@@ -48,7 +48,7 @@ export default function AcercaPage() {
             </div>
 
             {/* Misión */}
-            <div className="px-8 py-8 border-b border-gray-100">
+            <div className="px-8 py-8 border-b border-neutral-100">
               <div className="flex justify-center mb-4">
                 <div className="bg-primary text-white px-8 py-2 rounded-full flex items-center gap-2 shadow-sm">
                   <Target size={16} />
@@ -65,7 +65,7 @@ export default function AcercaPage() {
             </div>
 
             {/* Visión */}
-            <div className="px-8 py-8 border-b border-gray-100 bg-gray-50/60">
+            <div className="px-8 py-8 border-b border-neutral-100 bg-neutral-50/60">
               <div className="flex justify-center mb-4">
                 <div className="bg-primary text-white px-8 py-2 rounded-full flex items-center gap-2 shadow-sm">
                   <Eye size={16} />
@@ -104,7 +104,7 @@ export default function AcercaPage() {
       <section className="bg-white py-14">
         <div className="container mx-auto px-6">
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold font-heading text-dark">Nuestros Valores</h2>
+            <h2 className="text-2xl font-semibold font-heading text-dark">Nuestros Valores</h2>
             <p className="text-gray mt-2 max-w-lg mx-auto">
               Principios que guían cada acción de nuestro equipo de salud.
             </p>
@@ -112,11 +112,11 @@ export default function AcercaPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {valores.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="flex flex-col items-center text-center p-6 rounded-card border border-gray-100 hover:border-primary/30 hover:shadow-card transition-all duration-200 group">
+                className="flex flex-col items-center text-center p-6 rounded-card border border-neutral-100 hover:border-primary/30 hover:shadow-card transition-all duration-200 group">
                 <div className="w-12 h-12 rounded-xl bg-primary-pale flex items-center justify-center mb-4 group-hover:bg-primary transition-colors duration-200">
                   <Icon size={22} className="text-primary group-hover:text-white transition-colors duration-200" />
                 </div>
-                <h3 className="font-bold text-dark mb-2">{title}</h3>
+                <h3 className="font-semibold text-dark mb-2">{title}</h3>
                 <p className="text-sm text-gray leading-relaxed">{desc}</p>
               </div>
             ))}
@@ -127,12 +127,12 @@ export default function AcercaPage() {
       {/* ── CTA contacto ── */}
       <section className="bg-gradient-to-r from-primary to-primary-light py-12">
         <div className="container mx-auto px-6 text-center text-white">
-          <h2 className="text-2xl font-bold font-heading mb-3">¿Necesita más información?</h2>
+          <h2 className="text-2xl font-semibold font-heading mb-3">¿Necesita más información?</h2>
           <p className="text-primary-pale mb-6">
             Nuestro equipo está disponible para atenderle de lunes a viernes de 08h00 a 17h00.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/contacto" className="bg-white text-primary font-semibold px-6 py-2.5 rounded-btn hover:bg-gray-50 transition-colors">
+            <Link to="/contacto" className="bg-white text-primary font-semibold px-6 py-2.5 rounded-btn hover:bg-neutral-50 transition-colors">
               Formulario de Contacto
             </Link>
           </div>

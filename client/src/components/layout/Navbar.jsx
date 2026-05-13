@@ -109,13 +109,13 @@ export default function Navbar() {
                   onMouseEnter={() => handleMouseEnter(link.label)}
                   onMouseLeave={handleMouseLeave}>
                   <button className={`flex items-center gap-1 px-3 py-2 rounded-btn text-sm font-medium transition-colors duration-150 ${
-                    dropdown === link.label ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-gray-50'
+                    dropdown === link.label ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-neutral-50'
                   }`}>
                     {link.label} <ChevronDown size={14} className={`transition-transform duration-150 ${dropdown === link.label ? 'rotate-90' : ''}`} />
                   </button>
                   {dropdown === link.label && (
                     <div className="absolute top-full left-0 pt-2 w-64 z-50 animate-dropdown-quick">
-                      <div className="bg-white rounded-card shadow-sm border border-gray-200 py-1">
+                      <div className="bg-white rounded-card shadow-sm border border-neutral-200 py-1">
                         {link.children.map((child) => {
                           const isExternal = child.to.startsWith('http');
                           return (
@@ -124,7 +124,7 @@ export default function Navbar() {
                               rel={isExternal ? "noopener noreferrer" : undefined}
                               className={`block px-4 py-2.5 text-sm transition-colors duration-150 ${
                                 child.label === 'Sistemas Nacionales (MSP)' || child.label === 'Ver todos los Accesos'
-                                  ? 'font-bold text-primary border-b border-gray-100'
+                                  ? 'font-bold text-primary border-b border-neutral-100'
                                   : 'text-dark hover:bg-primary-pale hover:text-primary'
                               }`}>
                               {child.label}
@@ -138,7 +138,7 @@ export default function Navbar() {
               ) : (
                 <Link key={link.to} to={link.to}
                   className={`px-3 py-2 rounded-btn text-sm font-medium transition-colors ${
-                    location.pathname === link.to ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-gray-50'
+                    location.pathname === link.to ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-neutral-50'
                   }`}>
                   {link.label}
                 </Link>
@@ -151,19 +151,19 @@ export default function Navbar() {
           </div>
 
           {/* Hamburger */}
-          <button onClick={() => setOpen(!open)} className="lg:hidden p-2 rounded-btn text-dark hover:bg-gray-100 transition-colors">
+          <button onClick={() => setOpen(!open)} className="lg:hidden p-2 rounded-btn text-dark hover:bg-neutral-100 transition-colors">
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {open && (
-          <div className="lg:hidden border-t border-gray-100 bg-white pb-4 px-6 animate-fade-in">
+          <div className="lg:hidden border-t border-neutral-100 bg-white pb-4 px-6 animate-fade-in">
             {navLinks.map((link) =>
               link.children ? (
                 <div key={link.label}>
                   <button onClick={() => setDropdown(dropdown === link.label ? null : link.label)}
-                    className="flex items-center justify-between w-full py-3 text-sm font-medium text-dark border-b border-gray-50">
+                    className="flex items-center justify-between w-full py-3 text-sm font-medium text-dark border-b border-neutral-50">
                     {link.label} <ChevronDown size={14} className={`transition-transform ${dropdown === link.label ? 'rotate-180' : ''}`} />
                   </button>
                   {dropdown === link.label && link.children.map((child) => {
@@ -184,7 +184,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <Link key={link.to} to={link.to}
-                  className="block py-3 text-sm font-medium text-dark border-b border-gray-50 hover:text-primary transition-colors">
+                  className="block py-3 text-sm font-medium text-dark border-b border-neutral-50 hover:text-primary transition-colors">
                   {link.label}
                 </Link>
               )

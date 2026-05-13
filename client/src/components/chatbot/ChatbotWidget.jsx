@@ -181,7 +181,7 @@ export default function ChatbotWidget() {
     <>
       {/* ── Panel del chat ── */}
       <div
-        className={`fixed bottom-24 right-5 z-[9998] w-[340px] max-h-[560px] flex flex-col bg-white rounded-card shadow-floating border border-gray-100 transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-24 right-5 z-[9998] w-[340px] max-h-[560px] flex flex-col bg-white rounded-card shadow-floating border border-neutral-100 transition-all duration-300 origin-bottom-right ${
           open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
         }`}
       >
@@ -224,7 +224,7 @@ export default function ChatbotWidget() {
                 className={`max-w-[85%] px-3 py-2.5 rounded-card text-sm ${
                   msg.type === 'user'
                     ? 'bg-primary text-white rounded-br-sm'
-                    : 'bg-gray-50 text-dark rounded-bl-sm border border-gray-100'
+                    : 'bg-neutral-50 text-dark rounded-bl-sm border border-neutral-100'
                 }`}
               >
                 {parseText(msg.text)}
@@ -235,13 +235,13 @@ export default function ChatbotWidget() {
         </div>
 
         {/* Opciones */}
-        <div className="p-3 border-t border-gray-100 space-y-1.5 max-h-48 overflow-y-auto shrink-0 bg-gray-50/50 rounded-b-card">
-          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 px-1">Seleccione una opción</p>
+        <div className="p-3 border-t border-neutral-100 space-y-1.5 max-h-48 overflow-y-auto shrink-0 bg-neutral-50/50 rounded-b-card">
+          <p className="text-[10px] text-neutral-400 uppercase tracking-wider mb-2 px-1">Seleccione una opción</p>
           {currentNode?.opciones?.map((opt, i) => (
             <button
               key={i}
               onClick={() => handleOption(opt)}
-              className="w-full text-left text-xs px-3 py-2 rounded-btn bg-white hover:bg-primary-pale hover:text-primary border border-gray-200 hover:border-primary/30 transition-all duration-150 flex items-center justify-between gap-2 group"
+              className="w-full text-left text-xs px-3 py-2 rounded-btn bg-white hover:bg-primary-pale hover:text-primary border border-neutral-200 hover:border-primary/30 transition-all duration-150 flex items-center justify-between gap-2 group"
             >
               <span className="leading-snug">{opt.label}</span>
               <ChevronRight size={11} className="shrink-0 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-transform" />

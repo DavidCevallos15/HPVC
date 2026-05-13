@@ -19,7 +19,7 @@ const CATEGORIAS = [
   { id: 'estudio', label: 'Estudios', icon: FileBarChart, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100', desc: 'Artículos y estudios clínicos' },
 ];
 
-const DEFAULT_CAT = { label: 'Otros Documentos', icon: FileText, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-100', desc: 'Documentos sin clasificar' };
+const DEFAULT_CAT = { label: 'Otros Documentos', icon: FileText, color: 'text-neutral-600', bg: 'bg-neutral-50', border: 'border-neutral-100', desc: 'Documentos sin clasificar' };
 
 // ── Componente: Chat IA Integrado ──────────────────────────────────────────
 function AiChatPanel({ documento }) {
@@ -53,12 +53,12 @@ function AiChatPanel({ documento }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 border-l border-gray-200">
-      <div className="px-4 py-3 bg-white border-b border-gray-200 flex items-center gap-2 shrink-0">
+    <div className="flex flex-col h-full bg-neutral-50 border-l border-neutral-200">
+      <div className="px-4 py-3 bg-white border-b border-neutral-200 flex items-center gap-2 shrink-0">
         <Sparkles size={18} className="text-primary" />
         <div>
-          <h3 className="font-semibold text-gray-800 text-sm">Asistente HPVC</h3>
-          <p className="text-[10px] text-gray-500">Analizando el documento actual</p>
+          <h3 className="font-semibold text-neutral-800 text-sm">Asistente HPVC</h3>
+          <p className="text-[10px] text-neutral-500">Analizando el documento actual</p>
         </div>
       </div>
 
@@ -68,11 +68,11 @@ function AiChatPanel({ documento }) {
             <div className={`max-w-[90%] text-sm rounded-2xl px-4 py-2.5 leading-relaxed shadow-sm
               ${m.role === 'user'
                 ? 'bg-primary text-white rounded-br-sm'
-                : 'bg-white text-gray-700 border border-gray-100 rounded-bl-sm'}`}>
+                : 'bg-white text-neutral-700 border border-neutral-100 rounded-bl-sm'}`}>
               <p className="whitespace-pre-wrap">{m.content}</p>
               {m.fuentes?.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-gray-100">
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Fuentes en este doc:</p>
+                <div className="mt-3 pt-2 border-t border-neutral-100">
+                  <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">Fuentes en este doc:</p>
                   {m.fuentes.map((f, fi) => (
                     <p key={fi} className="text-[11px] text-primary flex items-center gap-1.5">
                       <FileText size={10} /> Página {f.pagina || '?'}
@@ -85,23 +85,23 @@ function AiChatPanel({ documento }) {
         ))}
         {cargando && (
           <div className="flex justify-start">
-            <div className="bg-white border border-gray-100 shadow-sm rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
+            <div className="bg-white border border-neutral-100 shadow-sm rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
               <Loader2 size={16} className="animate-spin text-primary" />
-              <span className="text-xs text-gray-500 font-medium">Buscando en el documento...</span>
+              <span className="text-xs text-neutral-500 font-medium">Buscando en el documento...</span>
             </div>
           </div>
         )}
         <div ref={bottomRef} />
       </div>
 
-      <div className="p-4 bg-white border-t border-gray-200 shrink-0">
+      <div className="p-4 bg-white border-t border-neutral-200 shrink-0">
         <div className="relative flex items-center">
           <input
             value={pregunta}
             onChange={e => setPregunta(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && enviar()}
             placeholder="Pregunta sobre este documento..."
-            className="w-full text-sm bg-gray-50 border border-gray-200 rounded-full pl-4 pr-12 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full text-sm bg-neutral-50 border border-neutral-200 rounded-full pl-4 pr-12 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
           />
           <button
             onClick={enviar}
@@ -130,30 +130,30 @@ function PdfPreviewModal({ doc, onClose }) {
   const pdfUrl = doc.archivoUrl ? `${API_BASE.replace('/api', '')}${doc.archivoUrl}` : doc.driveUrl;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex bg-gray-900/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex bg-neutral-900/90 backdrop-blur-md">
       <div className="flex-1 flex flex-col h-full bg-white max-w-7xl mx-auto w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-neutral-200 shrink-0">
           <div className="flex items-center gap-4 min-w-0">
-            <button onClick={onClose} className="p-2 -ml-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors">
+            <button onClick={onClose} className="p-2 -ml-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors">
               <ChevronLeft size={24} />
             </button>
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 shrink-0">
               <BookMarked size={20} className="text-blue-600" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-gray-900 text-lg truncate leading-tight">{doc.titulo}</h2>
-              <p className="text-xs text-gray-500 font-medium capitalize">{doc.tipo}</p>
+              <h2 className="font-semibold text-neutral-900 text-lg truncate leading-tight">{doc.titulo}</h2>
+              <p className="text-xs text-neutral-500 font-medium capitalize">{doc.tipo}</p>
             </div>
           </div>
-          <button onClick={onClose} className="hidden sm:block p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition-colors shrink-0">
+          <button onClick={onClose} className="hidden sm:block p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors shrink-0">
             <X size={24} />
           </button>
         </div>
 
         {/* Layout Dividido: Visor */}
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-          <div className="flex-[2] h-full bg-gray-100 relative">
+          <div className="flex-[2] h-full bg-neutral-100 relative">
             <iframe src={pdfUrl} title={doc.titulo} className="absolute inset-0 w-full h-full border-0" />
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function DocumentosPage() {
       : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-neutral-50 pb-20">
       {/* Header Hero */}
       <div className="bg-gradient-to-br from-primary via-blue-800 to-slate-900 text-white pt-32 pb-24 px-6 relative overflow-hidden">
         {/* Patrón de fondo */}
@@ -219,17 +219,17 @@ export default function DocumentosPage() {
 
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                <Search size={20} className="text-gray-400 group-focus-within:text-primary transition-colors" />
+                <Search size={20} className="text-neutral-400 group-focus-within:text-primary transition-colors" />
               </div>
               <input
                 type="text"
                 placeholder="Buscar cualquier documento por título..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white text-gray-900 placeholder-gray-500 shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all text-base font-medium"
+                className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white text-neutral-900 placeholder-gray-500 shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all text-base font-medium"
               />
               {isGlobalSearch && (
-                <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600">
+                <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-600">
                   <X size={18} />
                 </button>
               )}
@@ -241,17 +241,17 @@ export default function DocumentosPage() {
       <div className="container mx-auto max-w-6xl px-6 -mt-10 relative z-20">
         
         {loading ? (
-          <div className="flex justify-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+          <div className="flex justify-center py-20 bg-white rounded-3xl shadow-sm border border-neutral-100">
             <Loader2 size={32} className="animate-spin text-primary" />
           </div>
         ) : isGlobalSearch ? (
           /* Resultados de Búsqueda Global */
-          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 min-h-[400px]">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-neutral-100 min-h-[400px]">
+            <h2 className="text-2xl font-semibold text-neutral-800 mb-6 flex items-center gap-2">
               <Search size={24} className="text-primary" /> Resultados de búsqueda
             </h2>
             {docsToShow.length === 0 ? (
-              <div className="text-center py-16 text-gray-400">
+              <div className="text-center py-16 text-neutral-400">
                 <FileText size={48} className="mx-auto mb-4 opacity-30" />
                 <p className="text-lg">No encontramos ningún documento con ese título.</p>
               </div>
@@ -262,7 +262,7 @@ export default function DocumentosPage() {
                   const Icono = cat.icon;
                   return (
                     <div key={doc.id} onClick={() => setPreviewDoc(doc)}
-                      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all p-5 cursor-pointer flex flex-col h-full">
+                      className="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all p-5 cursor-pointer flex flex-col h-full">
                       <div className="flex items-start gap-4 mb-3">
                         <div className={`w-12 h-12 rounded-xl ${cat.bg} flex items-center justify-center shrink-0`}>
                           <Icono size={22} className={cat.color} />
@@ -271,7 +271,7 @@ export default function DocumentosPage() {
                           {cat.label}
                         </span>
                       </div>
-                      <h3 className="font-semibold text-gray-800 text-[15px] leading-snug group-hover:text-primary transition-colors flex-1">
+                      <h3 className="font-semibold text-neutral-800 text-[15px] leading-snug group-hover:text-primary transition-colors flex-1">
                         {doc.titulo}
                       </h3>
                     </div>
@@ -294,10 +294,10 @@ export default function DocumentosPage() {
                   <div className={`w-14 h-14 rounded-2xl ${cat.bg} flex items-center justify-center mb-5 relative z-10`}>
                     <Icono size={28} className={cat.color} />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2 relative z-10">{cat.label}</h2>
-                  <p className="text-gray-500 text-sm mb-6 flex-1 relative z-10">{cat.desc}</p>
-                  <div className="flex items-center justify-between relative z-10 border-t border-gray-50 pt-4 mt-auto">
-                    <span className="font-semibold text-gray-900 text-lg">{count} <span className="text-sm text-gray-400 font-medium">archivos</span></span>
+                  <h2 className="text-2xl font-semibold text-neutral-800 mb-2 relative z-10">{cat.label}</h2>
+                  <p className="text-neutral-500 text-sm mb-6 flex-1 relative z-10">{cat.desc}</p>
+                  <div className="flex items-center justify-between relative z-10 border-t border-neutral-50 pt-4 mt-auto">
+                    <span className="font-semibold text-neutral-900 text-lg">{count} <span className="text-sm text-neutral-400 font-medium">archivos</span></span>
                     <span className={`text-sm font-bold ${cat.color} group-hover:translate-x-1 transition-transform`}>Ver todos →</span>
                   </div>
                 </div>
@@ -306,25 +306,25 @@ export default function DocumentosPage() {
           </div>
         ) : (
           /* Vista 2: Lista de Documentos de una Categoría */
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 min-h-[500px] overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-sm border border-neutral-100 min-h-[500px] overflow-hidden">
             <div className={`px-8 py-6 ${selectedCategory.bg} border-b ${selectedCategory.border} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`}>
               <div className="flex items-center gap-4">
                 <button onClick={() => setSelectedCategory(null)}
-                  className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors shrink-0">
+                  className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-neutral-50 text-neutral-600 transition-colors shrink-0">
                   <ChevronLeft size={20} />
                 </button>
                 <div>
-                  <h2 className={`text-2xl font-bold ${selectedCategory.color} flex items-center gap-2`}>
+                  <h2 className={`text-2xl font-semibold ${selectedCategory.color} flex items-center gap-2`}>
                     <selectedCategory.icon size={24} /> {selectedCategory.label}
                   </h2>
-                  <p className="text-sm text-gray-600 mt-1">{docsToShow.length} documentos disponibles</p>
+                  <p className="text-sm text-neutral-600 mt-1">{docsToShow.length} documentos disponibles</p>
                 </div>
               </div>
             </div>
             
             <div className="p-8">
               {docsToShow.length === 0 ? (
-                <div className="text-center py-16 text-gray-400">
+                <div className="text-center py-16 text-neutral-400">
                   <BookOpen size={48} className="mx-auto mb-4 opacity-30" />
                   <p className="text-lg">No hay documentos en esta categoría aún.</p>
                 </div>
@@ -332,12 +332,12 @@ export default function DocumentosPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   {docsToShow.map(doc => (
                     <div key={doc.id} onClick={() => setPreviewDoc(doc)}
-                      className="group flex items-start gap-4 p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer">
+                      className="group flex items-start gap-4 p-4 rounded-2xl border border-neutral-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer">
                       <div className={`w-12 h-12 rounded-xl ${selectedCategory.bg} flex items-center justify-center shrink-0`}>
                         <FileText size={20} className={selectedCategory.color} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-800 text-[15px] leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        <h3 className="font-semibold text-neutral-800 text-[15px] leading-snug group-hover:text-primary transition-colors line-clamp-2">
                           {doc.titulo}
                         </h3>
                       

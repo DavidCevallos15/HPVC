@@ -38,9 +38,11 @@ export default function Footer() {
               <div className="w-14 h-14 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm">
                 <img src={logoMsp} alt="Logotipo MSP" className="w-full h-full object-contain" />
               </div>
-              <div>
-                <div className="font-bold text-base leading-none text-white">{config.hospital_nombre?.split(' ')[0]} {config.hospital_nombre?.split(' ')[1]}</div>
-                <div className="font-bold text-accent text-xs tracking-wider mt-1 uppercase">Verdi Cevallos</div>
+              <div className="max-w-[180px]">
+                <div className="font-bold text-sm leading-tight text-white">
+                  {config.hospital_nombre || 'Hospital Provincial de Portoviejo Dr. Verdi Cevallos Balda'}
+                </div>
+                <div className="text-accent text-[10px] tracking-wider mt-1 uppercase font-semibold opacity-80">Ministerio de Salud Pública</div>
               </div>
             </div>
             <p className="text-primary-pale text-sm leading-relaxed mb-6 max-w-sm">
@@ -66,7 +68,7 @@ export default function Footer() {
           <div className="xl:col-span-4 grid grid-cols-2 gap-6">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h4 className="font-bold text-white mb-5 text-sm tracking-wide">{title}</h4>
+                <h4 className="font-semibold text-white mb-5 text-sm tracking-wide">{title}</h4>
                 <ul className="space-y-3">
                   {links.map((l) => (
                     <li key={l.label}>
@@ -91,25 +93,23 @@ export default function Footer() {
 
           {/* Mapa e Info de Contacto Rápido - 4 columnas */}
           <div className="xl:col-span-4 flex flex-col h-full">
-            <h4 className="font-bold text-white mb-5 text-sm tracking-wide">Ubicación</h4>
-            <div className="bg-white/5 p-1 rounded-xl border border-white/10 mb-4 h-40 w-full overflow-hidden shrink-0">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.8954332903745!2d-80.45137148992733!3d-1.0693603864201535!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902b8d33d8a59add%3A0x14899bf3aebea7ce!2sHospital%20de%20Especialidades%20Portoviejo!5e0!3m2!1ses-419!2sec!4v1775058506875!5m2!1ses-419!2sec" 
-                width="100%" 
-                height="100%" 
-                style={{ border: 0, borderRadius: '8px' }} 
-                allowFullScreen="" 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Mapa de ubicación del Hospital Verdi Cevallos Balda"
-              ></iframe>
+            <h4 className="font-semibold text-white mb-5 text-sm tracking-wide">Ubicación</h4>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-2 mb-3">
+                <MapPin size={14} className="text-accent shrink-0 mt-0.5" />
+                <span className="text-primary-pale text-sm leading-snug">
+                  Av. Urbina y Quito, Portoviejo, Manabí, Ecuador
+                </span>
+              </div>
+              <a
+                href="https://geosalud.msp.gob.ec/geovisualizador/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-full text-xs font-semibold mb-1 py-2 px-3 rounded-lg bg-accent/20 border border-accent/40 hover:bg-accent/30 transition-colors text-accent gap-1.5"
+              >
+                <MapPin size={12} /> GeoSalud MSP Oficial
+              </a>
             </div>
-            <Link
-              to="/subcentros"
-              className="inline-flex items-center justify-center text-sm font-medium mb-4 py-2.5 px-4 rounded-lg bg-primary hover:bg-primary-light transition-colors text-white"
-            >
-              Consultar GeoSalud MSP
-            </Link>
             <ul className="space-y-2 mt-auto">
               <li className="flex items-start gap-2 text-sm text-primary-pale">
                 <MapPin size={14} className="mt-0.5 shrink-0 text-accent" />

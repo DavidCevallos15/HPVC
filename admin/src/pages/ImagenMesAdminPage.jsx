@@ -87,10 +87,10 @@ export default function ImagenMesAdminPage() {
   return (
     <div className="max-w-5xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold font-heading text-gray-900 flex items-center gap-2">
+        <h1 className="text-2xl font-semibold font-heading text-neutral-900 flex items-center gap-2">
           <ImageIcon size={28} className="text-primary" /> Carrusel de Noticias del Mes
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-neutral-500 text-sm mt-1">
           Sube hasta {MAX_IMGS} imágenes que rotarán en la sección "Imagen del Mes" de la página principal.
         </p>
       </div>
@@ -104,11 +104,11 @@ export default function ImagenMesAdminPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
 
         {/* Configuración del intervalo */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center gap-4 flex-wrap">
+        <div className="bg-white rounded-xl shadow-sm border border-neutral-100 p-5 flex items-center gap-4 flex-wrap">
           <Clock size={20} className="text-primary shrink-0" />
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Segundos entre imágenes</label>
-            <p className="text-xs text-gray-400">Tiempo que tarda el carrusel en cambiar de imagen automáticamente.</p>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Segundos entre imágenes</label>
+            <p className="text-xs text-neutral-400">Tiempo que tarda el carrusel en cambiar de imagen automáticamente.</p>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -128,7 +128,7 @@ export default function ImagenMesAdminPage() {
             const preview = previewUrls[idx] || imgUrl;
             const hasNew  = !!selectedFiles[idx];
             return (
-              <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-3">
+              <div key={idx} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">
                     Imagen {idx + 1}
@@ -142,7 +142,7 @@ export default function ImagenMesAdminPage() {
                 </div>
 
                 {/* Vista previa */}
-                <div className="relative rounded-lg overflow-hidden bg-gray-50 border border-dashed border-gray-200 h-36 flex items-center justify-center">
+                <div className="relative rounded-lg overflow-hidden bg-neutral-50 border border-dashed border-neutral-200 h-36 flex items-center justify-center">
                   {preview ? (
                     <>
                       <img src={preview} alt={`Imagen ${idx + 1}`} className="w-full h-full object-cover" />
@@ -153,7 +153,7 @@ export default function ImagenMesAdminPage() {
                       )}
                     </>
                   ) : (
-                    <ImageIcon size={28} className="text-gray-300" />
+                    <ImageIcon size={28} className="text-neutral-300" />
                   )}
                 </div>
 
@@ -161,7 +161,7 @@ export default function ImagenMesAdminPage() {
                 <label className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition border ${
                   hasNew
                     ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                    : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
                 }`}>
                   <Upload size={13} />
                   {hasNew ? 'Cambiar' : imgUrl ? 'Reemplazar' : 'Subir imagen'}
@@ -173,7 +173,7 @@ export default function ImagenMesAdminPage() {
           })}
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-gray-100">
+        <div className="flex justify-end pt-4 border-t border-neutral-100">
           <button
             type="submit"
             disabled={saving || (Object.keys(selectedFiles).length === 0)}

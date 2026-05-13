@@ -100,7 +100,7 @@ async function main() {
     "Estación y Subestación de Enfermería Centro Obstétrico", "Farmacia", "Financiero", "Gerencia General", 
     "Gestión al Usuario", "Hospitalización", "Información", "Laboratorio Clínico", "Mantenimiento", 
     "Planificación Estratégica", "Preparación", "Quirófano", "Recaudación", "Sala de Parto", "Sala de Primera Acogida", 
-    "Sala de Quemados", "Sala de TB", "Sala Situacional", "Salud Ocupacional", "Secretaría General", 
+    "Sala de Quemados", "Laboratorio de Tuberculosis", "Sala Situacional", "Salud Ocupacional", "Secretaría General", 
     "Subdirección", "Talento Humano", "TICS", "Trabajo Social", "Triage", "Unidad de Cuidados Intensivos (UCI)", 
     "Vacunación Neonatal", "Ventanilla Única", "Vigilancia Epidemiológica"
   ];
