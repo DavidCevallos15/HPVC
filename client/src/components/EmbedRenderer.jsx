@@ -1,100 +1,138 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ExternalLink, MessageCircle } from 'lucide-react';
 
-export default function EmbedRenderer({ html, className, showDirectAccess = true }) {
+/**
+ * Parsea el iframe y devuelve { src, width, height }
+ * Si no hay height en el atributo, devuelve un default.
+ */
+function parseIframeAttrs(html) {
+  if (!html) return null;
+  const srcMatch  = html.match(/src=["']([^"']+)["']/i);
+  const hMatch    = html.match(/height=["']?(\d+)["']?/i);
+  const wMatch    = html.match(/width=["']?(\d+)["']?/i);
+  if (!srcMatch) return null;
+  return {
+    src:    srcMatch[1],
+    height: hMatch  ? parseInt(hMatch[1],  10) : 500,
+    width:  wMatch  ? parseInt(wMatch[1],  10) : 500,
+  };
+}
+
+/**
+ * Extrae la URL real de la publicación del href= dentro del embed.
+ * Soporta iframes de Facebook/Instagram y blockquotes de Instagram.
+ */
+function extractSocialUrl(html) {
+  if (!html) return '';
+  const hrefMatch = html.match(/href=["']?([^&"'\s>]+)["']?/i);
+  if (hrefMatch) {
+    try { return decodeURIComponent(hrefMatch[1].replace(/["']/g, '')); } catch (_) {}
+  }
+  return '';
+}
+
+export default function EmbedRenderer({ html, className = '', showDirectAccess = true }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
     if (!html || !containerRef.current) return;
-
     const container = containerRef.current;
-    const scripts = container.getElementsByTagName('script');
-    
-    // Clonamos y reemplazamos los scripts para forzar al navegador a ejecutarlos
-    Array.from(scripts).forEach((oldScript) => {
-      const newScript = document.createElement('script');
-      // Copiar todos los atributos (src, async, charset, etc.)
-      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-      // Copiar el contenido interno
-      const scriptText = document.createTextNode(oldScript.innerHTML);
-      newScript.appendChild(scriptText);
-      
-      // Reemplazar el viejo nodo inactivo por el nuevo
-      oldScript.parentNode.replaceChild(newScript, oldScript);
+
+    // Re-ejecutar scripts inyectados (Instagram SDK, Twitter, etc.)
+    Array.from(container.querySelectorAll('script')).forEach((old) => {
+      const s = document.createElement('script');
+      Array.from(old.attributes).forEach(a => s.setAttribute(a.name, a.value));
+      s.textContent = old.textContent;
+      old.parentNode?.replaceChild(s, old);
     });
 
-    // Fallback: Llamar funciones de re-renderizado global de redes sociales si ya están cargadas
-    const timeoutId = setTimeout(() => {
-      if (window.instgrm?.Embeds?.process) window.instgrm.Embeds.process();
-      if (window.twttr?.widgets?.load) window.twttr.widgets.load();
-      if (window.FB?.XFBML?.parse) window.FB.XFBML.parse();
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
+    const tid = setTimeout(() => {
+      try {
+        if (window.instgrm?.Embeds?.process) window.instgrm.Embeds.process();
+        if (window.twttr?.widgets?.load)     window.twttr.widgets.load(container);
+      } catch (_) {}
+    }, 800);
+    return () => clearTimeout(tid);
   }, [html]);
 
-  // Detectar tipo de red social para mostrar botón de acceso directo
+  /* ── Detectar red social ── */
+  const isFacebook  = html && (html.includes('facebook.com') || html.includes('fb-post') || html.includes('fb-video'));
+  const isInstagram = html && (html.includes('instagram.com') || html.includes('instgrm'));
+  const isTwitter   = html && (html.includes('twitter.com')  || html.includes('x.com'));
+
+  /* ── Botón de acceso directo ── */
   const getSocialInfo = () => {
     if (!html) return null;
-    
-    if (html.includes('instagram.com') || html.includes('instgrm')) {
-      return {
-        type: 'instagram',
-        url: 'https://www.instagram.com/hospitalverdi/',
-        icon: ExternalLink,
-        label: 'Ver en Instagram',
-        color: 'bg-gradient-to-r from-purple-500 to-pink-500'
-      };
-    }
-    
-    if (html.includes('facebook.com') || html.includes('fb-post')) {
-      return {
-        type: 'facebook',
-        url: 'https://www.facebook.com/HospitalVerdiCevallosBalda',
-        icon: ExternalLink,
-        label: 'Ver en Facebook',
-        color: 'bg-blue-600'
-      };
-    }
-    
-    if (html.includes('twitter.com') || html.includes('x.com')) {
-      return {
-        type: 'twitter',
-        url: 'https://twitter.com/HospitalVerdi',
-        icon: MessageCircle,
-        label: 'Ver en X',
-        color: 'bg-black'
-      };
-    }
-    
+    const url = extractSocialUrl(html);
+    if (isFacebook)  return { url: url || 'https://www.facebook.com/HospitalVerdiCevallosBalda', icon: ExternalLink,   label: 'Ver en Facebook',  color: 'bg-[#1877F2] hover:bg-[#166FE5]' };
+    if (isInstagram) return { url: url || 'https://www.instagram.com/', icon: ExternalLink, label: 'Ver en Instagram', color: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500' };
+    if (isTwitter)   return { url: url || 'https://twitter.com/',        icon: MessageCircle,label: 'Ver en X',         color: 'bg-neutral-900 hover:bg-black' };
     return null;
   };
-
   const socialInfo = getSocialInfo();
 
-  return (
-    <div className="relative">
-      <div 
-        ref={containerRef}
-        className={className} 
-        dangerouslySetInnerHTML={{ __html: html }} 
-      />
-      
-      {/* Botón de acceso directo a red social */}
-      {showDirectAccess && socialInfo && (
-        <div className="absolute bottom-4 right-4 z-10">
-          <a
-            href={socialInfo.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex items-center gap-2 px-4 py-2 ${socialInfo.color} text-white rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 text-sm font-medium`}
-          >
-            <socialInfo.icon size={16} />
-            {socialInfo.label}
-            <ExternalLink size={14} />
-          </a>
+  /* ── Caso especial: iframe de Facebook → ancho nativo sin comprimir ── */
+  if (isFacebook && html.trim().startsWith('<iframe')) {
+    const attrs = parseIframeAttrs(html);
+    // El iframe de Facebook tiene un ancho fijo (usualmente 500px).
+    // NO usamos maxWidth:100% porque eso comprime el contenido y genera zoom.
+    // En cambio, dejamos el iframe a su tamaño nativo y usamos overflow-x:auto
+    // para que en pantallas angostas se pueda desplazar horizontalmente.
+    const nativeW = attrs?.width  ?? 500;
+    const nativeH = attrs?.height ?? 500; // Usar la altura exacta que calculó Facebook
+    return (
+      <div className={`flex flex-col w-full bg-white rounded-xl border border-neutral-100 overflow-hidden ${className}`}>
+        <div
+          style={{ overflowX: 'hidden', overflowY: 'visible', background: '#f9fafb' }}
+          className="w-full flex justify-center"
+        >
+          {attrs ? (
+            <iframe
+              src={attrs.src}
+              width="100%"
+              height={nativeH}
+              style={{ border: 'none', display: 'block', width: '100%', maxWidth: `${nativeW}px` }}
+              scrolling="no"
+              frameBorder="0"
+              allowFullScreen
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              title="Publicación de Facebook"
+            />
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: html }} ref={containerRef} className="w-full" />
+          )}
         </div>
-      )}
+        {showDirectAccess && socialInfo && <SocialButton info={socialInfo} />}
+      </div>
+    );
+  }
+
+  /* ── Caso genérico: Instagram blockquote, Twitter, YouTube, etc. ── */
+  return (
+    <div className={`flex flex-col w-full bg-neutral-50 rounded-xl overflow-hidden border border-neutral-100 ${className}`}>
+      <div
+        ref={containerRef}
+        className="w-full overflow-hidden flex justify-center items-center"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+      {showDirectAccess && socialInfo && <SocialButton info={socialInfo} />}
+    </div>
+  );
+}
+
+function SocialButton({ info }) {
+  return (
+    <div className="p-3 bg-white border-t border-neutral-100 flex justify-end">
+      <a
+        href={info.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`flex items-center gap-2 px-4 py-1.5 ${info.color} text-white rounded-lg shadow-sm hover:shadow-md transition-all hover:scale-[1.02] text-xs font-semibold`}
+      >
+        <info.icon size={14} />
+        {info.label}
+        <ExternalLink size={12} />
+      </a>
     </div>
   );
 }

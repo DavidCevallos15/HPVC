@@ -69,7 +69,7 @@ export default function DashboardPage() {
             className="flex items-center gap-3 p-4 bg-secondary-pale hover:bg-secondary hover:text-white rounded-xl group transition-all">
             <CheckCircle size={20} className="text-secondary group-hover:text-white" />
             <div>
-              <div className="font-semibold text-sm group-hover:text-white text-dark">Subir Horarios</div>
+              <div className="font-semibold text-sm group-hover:text-white text-dark">Matriz de Guardias</div>
               <div className="text-xs text-gray group-hover:text-white/80">Importar Excel</div>
             </div>
           </Link>

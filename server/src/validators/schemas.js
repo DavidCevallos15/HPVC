@@ -10,20 +10,22 @@ const authSchemas = {
 
 const noticiasSchemas = {
   create: z.object({
-    titulo: z.string().min(1, 'El título es requerido').max(200, 'El título no puede exceder 200 caracteres').optional(),
+    titulo: z.string().max(200, 'El título no puede exceder 200 caracteres').optional().nullable().or(z.literal('')),
     extracto: z.string().max(200, 'El extracto no puede exceder 200 caracteres').optional(),
     contenido: z.string().max(50000, 'El contenido es demasiado largo').optional(),
     categoria: z.string().min(1, 'La categoría es requerida').max(50),
-    embedUrl: z.string().url('URL inválida').optional().nullable(),
+    // embedUrl acepta tanto URL directa como código HTML de iframe completo (Facebook, Instagram, X)
+    embedUrl: z.string().max(50000, 'El embed es demasiado largo').optional().nullable().or(z.literal('')),
     publicado: z.coerce.boolean().optional(),
   }),
   
   update: z.object({
-    titulo: z.string().min(1, 'El título es requerido').max(200, 'El título no puede exceder 200 caracteres').optional(),
+    titulo: z.string().max(200, 'El título no puede exceder 200 caracteres').optional().nullable().or(z.literal('')),
     extracto: z.string().max(200, 'El extracto no puede exceder 200 caracteres').optional(),
     contenido: z.string().max(50000, 'El contenido es demasiado largo').optional(),
     categoria: z.string().min(1, 'La categoría es requerida').max(50).optional(),
-    embedUrl: z.string().url('URL inválida').optional().nullable(),
+    // embedUrl acepta tanto URL directa como código HTML de iframe completo (Facebook, Instagram, X)
+    embedUrl: z.string().max(50000, 'El embed es demasiado largo').optional().nullable().or(z.literal('')),
     publicado: z.coerce.boolean().optional(),
   }),
 };

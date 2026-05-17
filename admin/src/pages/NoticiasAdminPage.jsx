@@ -25,12 +25,12 @@ function reducer(state, action) {
 export default function NoticiasAdminPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { noticias, loading, search, deleting, currentPage } = state;
-  const itemsPerPage = 20;
+  const itemsPerPage = 9;
 
   const fetchNoticias = () => {
     dispatch({ type: 'FETCH_START' });
     api.get('/admin/noticias')
-      .then(r => dispatch({ type: 'FETCH_SUCCESS', payload: r.data.data }))
+      .then(r => dispatch({ type: 'FETCH_SUCCESS', payload: r.data?.data || [] }))
       .catch(() => dispatch({ type: 'FETCH_SUCCESS', payload: [] }));
   };
 
@@ -128,7 +128,15 @@ export default function NoticiasAdminPage() {
             <span className="text-sm text-neutral-500">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filtered.length)} de {filtered.length}
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 items-center">
+              {currentPage > 1 && (
+                <button 
+                  onClick={() => dispatch({ type: 'SET_PAGE', payload: 1 })}
+                  className="px-3 py-1 text-xs font-semibold bg-primary/10 hover:bg-primary text-primary hover:text-white border border-primary/20 rounded transition mr-2"
+                >
+                  Volver al inicio
+                </button>
+              )}
               <button 
                 onClick={() => dispatch({ type: 'SET_PAGE', payload: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1}

@@ -101,10 +101,18 @@ export default function HeroCarouselAdminPage() {
         ...newImages[index - 1],
         url: null,
         title: '',
-        description: ''
+        description: '',
+        position: 'center center',
+        size: 'cover'
       };
       setHeroImages(newImages);
       
+      // Limpiar settings locales de esta imagen
+      const newSettings = { ...imageSettings };
+      newSettings[index] = { title: '', description: '', position: 'center center', size: 'cover' };
+      setImageSettings(newSettings);
+
+      // Limpiar archivo/preview si existía
       const newSelectedFiles = { ...selectedFiles };
       const newPreviewUrls = { ...previewUrls };
       delete newSelectedFiles[index];
@@ -116,80 +124,82 @@ export default function HeroCarouselAdminPage() {
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       console.error('Error removing image:', err);
-      alert('Error al eliminar la imagen');
+      const msg = err?.response?.data?.message || 'Error al eliminar la imagen';
+      alert(msg);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const hasChanges = Object.keys(selectedFiles).length > 0 || 
-      Object.keys(imageSettings).some(index => {
-        const img = heroImages[index - 1];
-        return img && (
-          imageSettings[index].title !== img.title ||
-          imageSettings[index].description !== img.description ||
-          imageSettings[index].position !== img.position ||
-          imageSettings[index].size !== img.size
-        );
-      });
 
-    if (!hasChanges) return;
+    // Determinar qué settings de texto cambiaron respecto al estado guardado
+    const changedTextSettings = {};
+    for (let i = 1; i <= MAX_IMAGES; i++) {
+      const img = heroImages[i - 1];
+      const s   = imageSettings[i] || {};
+      if (!img) continue;
+      if (
+        s.title       !== (img.title       || '') ||
+        s.description !== (img.description || '') ||
+        s.position    !== (img.position    || 'center center') ||
+        s.size        !== (img.size        || 'cover')
+      ) {
+        changedTextSettings[i] = s;
+      }
+    }
+
+    const hasFileChanges = Object.keys(selectedFiles).length > 0;
+    const hasTextChanges = Object.keys(changedTextSettings).length > 0;
+
+    if (!hasFileChanges && !hasTextChanges) return;
 
     setSaving(true);
     
     try {
-      // Subir archivos nuevos
-      await Promise.all(
-        Object.entries(selectedFiles).map(([index, file]) => {
-          const formData = new FormData();
-          formData.append('clave', `hero_carousel_${index}`);
-          formData.append('imagen', file);
-          return api.post('/admin/configuracion/imagen', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
-        })
-      );
+      // 1. Subir imágenes nuevas (en serie para no saturar la red)
+      for (const [index, file] of Object.entries(selectedFiles)) {
+        const formData = new FormData();
+        formData.append('clave', `hero_carousel_${index}`);
+        formData.append('imagen', file);
+        await api.post('/admin/configuracion/imagen', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
 
-      // Actualizar configuraciones de texto y ajustes
+      // 2. Actualizar solo las configuraciones de texto que cambiaron
       const configUpdates = [];
-      for (let i = 1; i <= MAX_IMAGES; i++) {
-        if (imageSettings[i]) {
-          configUpdates.push({
-            clave: `hero_carousel_${i}_title`,
-            valor: imageSettings[i].title || ''
-          });
-          configUpdates.push({
-            clave: `hero_carousel_${i}_description`,
-            valor: imageSettings[i].description || ''
-          });
-          configUpdates.push({
-            clave: `hero_carousel_${i}_position`,
-            valor: imageSettings[i].position || 'center center'
-          });
-          configUpdates.push({
-            clave: `hero_carousel_${i}_size`,
-            valor: imageSettings[i].size || 'cover'
-          });
-        }
+      const indexesToUpdate = hasTextChanges
+        ? Object.keys(changedTextSettings).map(Number)
+        : Object.keys(selectedFiles).map(Number); // al subir imagen, actualizar sus settings también
+
+      const allIndexes = new Set([
+        ...Object.keys(changedTextSettings).map(Number),
+        ...Object.keys(selectedFiles).map(Number)
+      ]);
+
+      for (const i of allIndexes) {
+        const s = imageSettings[i] || {};
+        configUpdates.push({ clave: `hero_carousel_${i}_title`,       valor: s.title       || '' });
+        configUpdates.push({ clave: `hero_carousel_${i}_description`, valor: s.description || '' });
+        configUpdates.push({ clave: `hero_carousel_${i}_position`,    valor: s.position    || 'center center' });
+        configUpdates.push({ clave: `hero_carousel_${i}_size`,        valor: s.size        || 'cover' });
       }
 
       if (configUpdates.length > 0) {
         await api.put('/admin/configuracion', { configs: configUpdates });
       }
 
-      // Limpiar estado
+      // 3. Limpiar estado y recargar
       setSelectedFiles({});
       setPreviewUrls({});
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-      
-      // Recargar datos
       await fetchHeroConfig();
       
     } catch (err) {
       console.error('Error saving hero carousel:', err);
-      alert('Error al guardar el carrusel');
+      const msg = err?.response?.data?.message || 'Error al guardar el carrusel. Intente de nuevo.';
+      alert(msg);
     } finally {
       setSaving(false);
     }
@@ -277,7 +287,7 @@ export default function HeroCarouselAdminPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <label className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition cursor-pointer border ${
                       hasFile 
                         ? 'bg-blue-50 text-blue-700 border-blue-200' 
@@ -292,6 +302,19 @@ export default function HeroCarouselAdminPage() {
                         onChange={(e) => handleFileChange(imageIndex, e.target.files[0])} 
                       />
                     </label>
+                    {hasFile && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFiles(p => { const a = { ...p }; delete a[imageIndex]; return a; });
+                          setPreviewUrls(p  => { const a = { ...p }; delete a[imageIndex]; return a; });
+                        }}
+                        className="px-3 py-2 border border-red-200 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+                        title="Cancelar selección de imagen"
+                      >
+                        Quitar
+                      </button>
+                    )}
                     {hasFile && (
                       <span className="text-xs text-neutral-500 truncate max-w-xs">
                         {selectedFiles[imageIndex].name}
@@ -368,7 +391,19 @@ export default function HeroCarouselAdminPage() {
         <div className="flex justify-end pt-6 border-t border-neutral-100">
           <button 
             type="submit" 
-            disabled={saving || Object.keys(selectedFiles).length === 0}
+            disabled={saving || (
+              Object.keys(selectedFiles).length === 0 &&
+              !Object.keys(imageSettings).some(i => {
+                const img = heroImages[Number(i) - 1];
+                const s   = imageSettings[i] || {};
+                return img && (
+                  s.title       !== (img.title       || '') ||
+                  s.description !== (img.description || '') ||
+                  s.position    !== (img.position    || 'center center') ||
+                  s.size        !== (img.size        || 'cover')
+                );
+              })
+            )}
             className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} 

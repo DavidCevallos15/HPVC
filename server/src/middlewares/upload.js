@@ -49,10 +49,11 @@ const pdfStorage = multer.diskStorage({
 });
 
 const pdfFilter = (req, file, cb) => {
-  if (/\.pdf$/i.test(file.originalname) && file.mimetype === 'application/pdf') {
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (ext === '.pdf' || ext === '.zip') {
     cb(null, true);
   } else {
-    cb(new Error('Solo se permiten archivos PDF.'));
+    cb(new Error('Solo se permiten archivos PDF o ZIP.'));
   }
 };
 
@@ -82,7 +83,7 @@ const documentoStorage = multer.diskStorage({
 
 const uploadDocumento = multer({
   storage: documentoStorage,
-  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB para GPCs grandes
+  limits: { fileSize: 300 * 1024 * 1024 }, // 300 MB para lotes ZIP grandes
   fileFilter: pdfFilter,
 });
 

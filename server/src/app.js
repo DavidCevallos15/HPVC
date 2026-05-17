@@ -12,15 +12,38 @@ const app = express();
 // ── Seguridad ────────────────────────────────────────────────────────
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
-  xFrameOptions: false, // Permitimos iframes (controlado por CSP)
+  xFrameOptions: false,      // Controlado por frameAncestors en CSP
+  permissionsPolicy: false,  // Evitar advertencias de features no reconocidas (web-share, bluetooth, etc.)
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      styleSrc:   ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc:    ["'self'", "https://fonts.gstatic.com"],
-      imgSrc:     ["'self'", "data:", "https:"],
-      scriptSrc:  ["'self'"],
-      connectSrc: ["'self'", "http://localhost:3001", "https://api.hpvc.gob.ec"],
+      defaultSrc:  ["'self'"],
+      styleSrc:    ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://www.facebook.com"],
+      fontSrc:     ["'self'", "https://fonts.gstatic.com"],
+      imgSrc:      ["'self'", "data:", "https:", "blob:"],
+      // scriptSrc: permite los SDK de redes sociales para renderizar embeds
+      scriptSrc:   [
+        "'self'",
+        "'unsafe-inline'",          // Necesario para scripts inline de embeds FB/Instagram
+        "https://connect.facebook.net",
+        "https://www.instagram.com",
+        "https://platform.twitter.com",
+        "https://abs.twimg.com",
+      ],
+      // frame-src: dominios desde los que se pueden cargar iframes
+      frameSrc:    [
+        "'self'",
+        "https://www.facebook.com",
+        "https://web.facebook.com",
+        "https://www.instagram.com",
+        "https://platform.twitter.com",
+        "https://twitter.com",
+        "https://x.com",
+        "https://www.youtube.com",
+        "https://geoportal.salud.gob.ec",
+      ],
+      // media-src: videos de Facebook/Instagram
+      mediaSrc:    ["'self'", "https://video.xx.fbcdn.net", "https:", "blob:"],
+      connectSrc:  ["'self'", "http://localhost:3001", "https://api.hpvc.gob.ec", "https://graph.facebook.com"],
       frameAncestors: ["'self'", "http://localhost:5173", "http://localhost:5174"],
     },
   },
@@ -34,14 +57,34 @@ app.use(cors({
   credentials: true,
 }));
 
-// ── Rate Limit Global ────────────────────────────────────────────────
-app.use(rateLimit({
+// ── Rate Limiters ────────────────────────────────────────────────────
+// Límite permisivo para el panel admin (operaciones legítimas intensivas)
+const adminRateLimit = rateLimit({
+  windowMs: 60_000, // 1 minuto
+  max:      500,    // 500 req/min para admin (cargas de imágenes, etc.)
+  standardHeaders: true,
+  legacyHeaders:   false,
+  skip: (req) => req.path.startsWith('/api/auth'), // auth tiene su propio límite
+  message: { success: false, message: 'Demasiadas solicitudes al admin. Intente más tarde.' },
+});
+
+// Límite estricto para rutas públicas (anti-abuso)
+const publicRateLimit = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-  max:      parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
+  max:      parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '300'),
   standardHeaders: true,
   legacyHeaders:   false,
   message: { success: false, message: 'Demasiadas solicitudes. Intente más tarde.' },
-}));
+});
+
+// Límite muy estricto para autenticación (anti-brute-force)
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60_000, // 15 minutos
+  max:      20,          // solo 20 intentos de login por ventana
+  standardHeaders: true,
+  legacyHeaders:   false,
+  message: { success: false, message: 'Demasiados intentos. Espere 15 minutos.' },
+});
 
 // ── Body Parsers ─────────────────────────────────────────────────────
 app.use(cookieParser());
@@ -63,9 +106,9 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Servidor HPVC Ok.', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth',    require('./routes/auth.routes'));
-app.use('/api/public',  require('./routes/public.routes'));
-app.use('/api/admin',   require('./routes/admin.routes'));
+app.use('/api/auth',    authRateLimit,   require('./routes/auth.routes'));
+app.use('/api/public',  publicRateLimit, require('./routes/public.routes'));
+app.use('/api/admin',   adminRateLimit,  require('./routes/admin.routes'));
 
 // ── Error Handler Global ─────────────────────────────────────────────
 app.use(errorHandler);

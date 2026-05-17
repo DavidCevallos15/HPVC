@@ -10,7 +10,7 @@ const navItems = [
   { to: '/',             Icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/noticias',     Icon: Newspaper,       label: 'Noticias' },
   { to: '/documentos',   Icon: BookOpen,        label: 'Documentos Clínicos' },
-  { to: '/horarios',     Icon: CalendarDays,    label: 'Horarios Excel' },
+  { to: '/horarios',     Icon: CalendarDays,    label: 'Matriz de Guardias' },
   { to: '/medicos',      Icon: Stethoscope,     label: 'Médicos' },
   { to: '/contacto',     Icon: MessageSquare,   label: 'Mensajes' },
   { to: '/configuracion/portada', Icon: Image,  label: 'Imagen del Mes' },

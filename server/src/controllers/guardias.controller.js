@@ -3,6 +3,57 @@ const { parseMatrizGuardias } = require('../services/excel.service');
 
 const prisma = new PrismaClient();
 
+// ── Helpers de normalización ─────────────────────────────────────
+/**
+ * Normaliza el nombre de un área/especialidad al formato institucional.
+ * Capitaliza, elimina ruido y unifica variantes comunes del HPVC.
+ */
+function normalizarNombreArea(areaRaw) {
+  if (!areaRaw || !String(areaRaw).trim()) return 'Medicina General';
+  let area = String(areaRaw).trim()
+    .toLowerCase()
+    .replace(/\b(de|y|la|el)\b/g, (m) => m)
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Mapeos para unificar variantes comunes del Hospital Verdi Cevallos
+  const mapeos = {
+    'Gineco Obstetricia':        'Ginecología y Obstetricia',
+    'Gineco-Obstetricia':        'Ginecología y Obstetricia',
+    'Ginecologia':               'Ginecología y Obstetricia',
+    'Ginecología':               'Ginecología y Obstetricia',
+    'Cirugia General':           'Cirugía General',
+    'Cirugía General':           'Cirugía General',
+    'Cirugia':                   'Cirugía General',
+    'Pediatria':                 'Pediatría',
+    'Medicina Interna':          'Medicina Interna',
+    'Med. Interna':              'Medicina Interna',
+    'Cardiologia':               'Cardiología',
+    'Traumatologia':             'Traumatología',
+    'Traumatología Y Ortopedia': 'Traumatología y Ortopedia',
+    'Uci':                       'UCI (Unidad de Cuidados Intensivos)',
+    'Uci Neonatal':              'UCI Neonatal',
+    'Emergencia':                'Emergencias',
+    'Urgencias':                 'Emergencias',
+  };
+  return mapeos[area] || area;
+}
+
+/**
+ * Limpia un nombre de médico: quita textos entre paréntesis, cargos
+ * y normaliza espacios y capitalización.
+ */
+function normalizarNombreMedico(nombreRaw) {
+  if (!nombreRaw || !String(nombreRaw).trim()) return '';
+  return String(nombreRaw).trim()
+    .replace(/\s+/g, ' ')                             // Quitar espacios múltiples
+    .replace(/\(.*?\)/g, '')                          // Quitar texto entre paréntesis
+    .replace(/\[.*?\]/g, '')                          // Quitar texto entre corchetes
+    .replace(/\b(JEFE|PLANTA|GUARDIA|DR\.?|DRA\.?)\b/gi, '') // Quitar cargos
+    .replace(/\s+/g, ' ')                             // Limpiar espacios resultantes
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());        // Capitalizar cada palabra
+}
+
 // ── PUBLIC: Obtener guardias por mes ─────────────────────────────
 const getGuardiasByMes = async (req, res, next) => {
   try {
@@ -75,12 +126,58 @@ const uploadGuardias = async (req, res, next) => {
       skipDuplicates: false,
     });
 
+    // ── Sincronización automática: Especialidades y Médicos ──────────
+    // Extrae y registra en el directorio a todos los médicos del Excel
+    // que no existan previamente, sin duplicar ni sobreescribir datos.
+    let nuevasEspecialidades = 0;
+    let nuevosMedicos = 0;
+
+    for (const m of medicos) {
+      if (!m.nombreMedico) continue;
+
+      const areaLimpia   = normalizarNombreArea(m.area);
+      const nombreLimpio = normalizarNombreMedico(m.nombreMedico);
+
+      if (!nombreLimpio) continue;
+
+      // A. Obtener o crear la Especialidad
+      const esEspecialidadNueva = !(await prisma.especialidad.findUnique({ where: { nombre: areaLimpia } }));
+      const especialidad = await prisma.especialidad.upsert({
+        where:  { nombre: areaLimpia },
+        update: {},
+        create: {
+          nombre:      areaLimpia,
+          icono:       'Stethoscope',
+          descripcion: `Departamento y consulta externa de ${areaLimpia}`,
+        },
+      });
+      if (esEspecialidadNueva) nuevasEspecialidades++;
+
+      // B. Obtener o crear el Médico (búsqueda insensible a mayúsculas)
+      const medicoExistente = await prisma.medico.findFirst({
+        where: { nombre: { equals: nombreLimpio, mode: 'insensitive' } },
+      });
+
+      if (!medicoExistente) {
+        await prisma.medico.create({
+          data: {
+            nombre:         nombreLimpio,
+            especialidadId: especialidad.id,
+            activo:         true,
+          },
+        });
+        nuevosMedicos++;
+      }
+    }
+
     res.json({
       success: true,
       message: `Guardias de ${mes} importadas correctamente.`,
       total: creados.count,
       mesDetectado,
-      diasEncontrados: Object.keys(diasMap).length,
+      diasEncontrados:    Object.keys(diasMap).length,
+      nuevasEspecialidades,
+      nuevosMedicos,
     });
   } catch (err) { next(err); }
 };

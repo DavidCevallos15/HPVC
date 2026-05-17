@@ -340,9 +340,11 @@ function UploadGuardias() {
               </p>
               {result.ok && (
                 <div className="text-xs text-green-600 mt-1 space-y-0.5">
-                  <div>✅ {result.total} médicos importados</div>
-                  {result.mesDetectado   && <div>📅 Mes detectado: {result.mesDetectado}</div>}
-                  {result.diasEncontrados && <div>📆 Días mapeados: {result.diasEncontrados}</div>}
+                  <div>✅ {result.total} registros de guardia importados</div>
+                  {result.mesDetectado      && <div>📅 Mes detectado: {result.mesDetectado}</div>}
+                  {result.diasEncontrados   && <div>📆 Días mapeados: {result.diasEncontrados}</div>}
+                  {result.nuevosMedicos > 0 && <div>👨‍⚕️ {result.nuevosMedicos} médico(s) nuevos registrados en el directorio</div>}
+                  {result.nuevasEspecialidades > 0 && <div>🏥 {result.nuevasEspecialidades} especialidad(es) nueva(s) creadas</div>}
                 </div>
               )}
               {result.hint && <p className="text-xs text-red-500 mt-1">{result.hint}</p>}
@@ -369,70 +371,7 @@ function UploadGuardias() {
   );
 }
 
-/* ── TAB 2: Formato Legado (medicoId) ────────────────────────────── */
-function UploadHorariosLegado() {
-  const [archivo, setArchivo] = useState(null);
-  const [mes, setMes] = useState(() => {
-    const n = new Date();
-    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
-  });
-  const [loading, setLoading] = useState(false);
-  const [result,  setResult]  = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!archivo) return;
-    setLoading(true);
-    setResult(null);
-    try {
-      const data = new FormData();
-      data.append('archivo', archivo);
-      data.append('mes', mes);
-      const r = await api.post('/admin/horarios/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setResult({ ok: true, ...r.data });
-    } catch (err) {
-      setResult({ ok: false, message: err.response?.data?.message || 'Error al procesar el archivo.' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="max-w-2xl w-full">
-      <div className="mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-neutral-800">Horarios por medicoId (Legado)</h2>
-        <p className="text-neutral-400 text-[11px] sm:text-xs mt-1">Formato antiguo: columnas medicoId, lunes, martes, miercoles, jueves, viernes, estado</p>
-      </div>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-neutral-100 p-4 sm:p-6 space-y-5">
-        <input type="month" value={mes} onChange={e => setMes(e.target.value)} required
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary w-full sm:w-auto" />
-        <div className={`border-2 border-dashed rounded-xl p-6 sm:p-8 text-center ${archivo ? 'border-secondary bg-secondary-pale' : 'border-neutral-200'}`}>
-          <input type="file" id="excel-legado" accept=".xlsx,.xls"
-            onChange={e => { setArchivo(e.target.files[0]); setResult(null); }} className="hidden" required />
-          <label htmlFor="excel-legado" className="cursor-pointer flex flex-col items-center gap-2">
-            {archivo
-              ? <><FileSpreadsheet size={32} className="text-secondary" /><span className="text-xs sm:text-sm text-secondary break-all">{archivo.name}</span></>
-              : <><Upload size={32} className="text-neutral-300" /><span className="text-xs sm:text-sm text-neutral-400">Seleccionar archivo</span></>
-            }
-          </label>
-        </div>
-        {result && (
-          <div className={`p-3 rounded-lg text-xs sm:text-sm ${result.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
-            {result.message}
-          </div>
-        )}
-        <div className="flex justify-end">
-          <button type="submit" disabled={loading || !archivo}
-            className="flex items-center gap-2 px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition disabled:opacity-60">
-            <Upload size={15} /> {loading ? 'Importando...' : 'Importar'}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
 
 /* ── VISUALIZAR HORARIOS: Utilidades ─────────────────────────────── */
 const diasDelMes = (mes) => {
@@ -652,17 +591,10 @@ export default function HorariosPage() {
           }`}>
           <span className="flex items-center gap-2"><Eye size={15}/> Visualizar Horarios</span>
         </button>
-        <button onClick={() => setTab('legado')}
-          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition shrink-0 ${
-            tab === 'legado' ? 'bg-white border border-b-white border-neutral-200 text-neutral-600' : 'text-neutral-500 hover:text-dark'
-          }`}>
-          Formato Legado
-        </button>
       </div>
 
       {tab === 'guardias'   && <UploadGuardias />}
       {tab === 'visualizar' && <VisualizarHorarios />}
-      {tab === 'legado'     && <UploadHorariosLegado />}
     </div>
   );
 }

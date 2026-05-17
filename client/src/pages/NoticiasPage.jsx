@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Newspaper, ArrowRight, Filter } from 'lucide-react';
+import EmbedRenderer from '../components/EmbedRenderer';
 import api from '../api/axios';
 
 const CATEGORIAS = ['Todos', 'Infraestructura', 'Salud Pública', 'Tecnología', 'Educación', 'Institución'];
@@ -25,8 +26,14 @@ export default function NoticiasPage() {
     setLoading(true);
     const cat = categoria !== 'Todos' ? `&categoria=${encodeURIComponent(categoria)}` : '';
     api.get(`/public/noticias?page=${page}&limit=9${cat}`)
-      .then(r => { setNoticias(r.data.data); setTotalPages(r.data.meta.totalPages); })
-      .catch(() => {})
+      .then(r => { 
+        setNoticias(r.data?.data || []); 
+        setTotalPages(r.data?.meta?.totalPages || 1); 
+      })
+      .catch(() => {
+        setNoticias([]);
+        setTotalPages(1);
+      })
       .finally(() => setLoading(false));
   }, [page, categoria]);
 
@@ -81,21 +88,43 @@ export default function NoticiasPage() {
           </div>
         ) : (
           <>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="columns-1 md:columns-2 lg:columns-2 xl:columns-3 gap-6 space-y-6">
               {filtered.map((n) => {
                 if (n.embedUrl) {
                   return (
-                    <div key={n.id} className="bg-white rounded-card shadow-card flex items-center justify-center overflow-hidden p-2">
-                       <div className="w-full flex justify-center [&>iframe]:w-full [&>iframe]:max-w-[100%] [&>iframe]:h-[450px]"
-                          dangerouslySetInnerHTML={{ __html: n.embedUrl }}
-                       />
+                    <div key={n.id} className="break-inside-avoid inline-block w-full mb-6 bg-white rounded-card shadow-card flex flex-col overflow-hidden h-auto transition-all duration-200 hover:-translate-y-1 hover:shadow-hero">
+                      {/* Header con la categoría */}
+                      <div className="p-4 pb-2 flex justify-between items-center bg-white">
+                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${catColors[n.categoria] || catColors.default}`}>
+                          {n.categoria}
+                        </span>
+                        <span className="text-xs text-neutral-400">
+                          {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'short' }) : ''}
+                        </span>
+                      </div>
+                      
+                      {n.titulo && (
+                        <div className="px-4 pb-2">
+                          <h2 className="font-semibold font-heading text-dark text-sm leading-snug line-clamp-1" title={n.titulo}>
+                            {n.titulo}
+                          </h2>
+                        </div>
+                      )}
+
+                      {/* Contenedor del Embed */}
+                      <div className="w-full overflow-hidden">
+                        <EmbedRenderer
+                          html={n.embedUrl}
+                          showDirectAccess={true}
+                        />
+                      </div>
                     </div>
-                  )
+                  );
                 }
 
                 return (
                   <Link key={n.id} to={`/noticias/${n.slug}`}
-                    className="group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
+                    className="break-inside-avoid inline-block w-full mb-6 group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
                     {n.imagenUrl ? (
                       <div className="h-44 overflow-hidden">
                         <img src={`http://localhost:3001${n.imagenUrl}`} alt={n.titulo || 'Noticia'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />

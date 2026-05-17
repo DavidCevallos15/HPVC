@@ -10,6 +10,7 @@ const contactoCtrl     = require('../controllers/contacto.controller');
 const documentoCtrl    = require('../controllers/documentos.controller');
 const configCtrl       = require('../controllers/configuracion.controller');
 const guardiasCtrl     = require('../controllers/guardias.controller');
+const aiCtrl           = require('../controllers/ai.controller');
 
 // Todas las rutas requieren autenticación
 router.use(verifyToken);
@@ -18,6 +19,7 @@ router.use(verifyToken);
 router.get('/stats', configCtrl.getStats);
 
 // ── Noticias CRUD ────────────────────────────────────────────────────
+router.post('/noticias/generate-metadata', requireRole('SUPERADMIN','EDITOR_NOTICIAS'), aiCtrl.generateMetadata);
 router.get('/noticias',         requireRole('SUPERADMIN','EDITOR_NOTICIAS'), noticiaCtrl.getAll);
 router.post('/noticias',        requireRole('SUPERADMIN','EDITOR_NOTICIAS'), uploadImage.single('imagen'), noticiaCtrl.create);
 router.put('/noticias/:id',     requireRole('SUPERADMIN','EDITOR_NOTICIAS'), uploadImage.single('imagen'), noticiaCtrl.update);

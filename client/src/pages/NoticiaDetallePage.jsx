@@ -57,7 +57,7 @@ export default function NoticiaDetallePage() {
         {noticia.embedUrl ? (
           <div className="mb-8 flex justify-center w-full">
             <EmbedRenderer 
-              className="w-full flex justify-center bg-white shadow-sm border border-neutral-100 rounded-lg p-4 [&>iframe]:w-full [&>iframe]:max-w-[100%] overflow-hidden [&_blockquote]:my-0 [&_blockquote]:mx-auto"
+              className="w-full flex justify-center bg-white shadow-sm border border-neutral-100 rounded-lg p-4 [&_iframe]:w-full [&_iframe]:max-w-[100%] overflow-hidden [&_blockquote]:my-0 [&_blockquote]:mx-auto"
               html={noticia.embedUrl}
             />
           </div>

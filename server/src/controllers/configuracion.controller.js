@@ -12,16 +12,28 @@ const getAll = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const updates = req.body; // { clave: valor, ... }
-    if (typeof updates !== 'object' || Array.isArray(updates))
-      return res.status(400).json({ success: false, message: 'Se espera un objeto con pares clave-valor.' });
+    let pairs; // array de {clave, valor}
+
+    // Acepta dos formatos:
+    // 1. { configs: [{clave, valor}, ...] }  ← enviado por HeroCarouselAdminPage
+    // 2. { clave1: valor1, clave2: valor2 }  ← enviado por ConfiguracionPage
+    if (req.body.configs && Array.isArray(req.body.configs)) {
+      pairs = req.body.configs.filter(c => c.clave !== undefined && c.valor !== undefined);
+    } else if (typeof req.body === 'object' && !Array.isArray(req.body)) {
+      pairs = Object.entries(req.body).map(([clave, valor]) => ({ clave, valor }));
+    } else {
+      return res.status(400).json({ success: false, message: 'Formato inválido. Se espera un objeto o {configs:[...]}.' });
+    }
+
+    if (pairs.length === 0)
+      return res.status(400).json({ success: false, message: 'No se proporcionaron configuraciones.' });
 
     const results = await Promise.all(
-      Object.entries(updates).map(([clave, valor]) =>
+      pairs.map(({ clave, valor }) =>
         prisma.configuracion.upsert({
-          where: { clave },
-          update: { valor: String(valor) },
-          create: { clave, valor: String(valor) },
+          where:  { clave },
+          update: { valor: String(valor ?? '') },
+          create: { clave, valor: String(valor ?? '') },
         })
       )
     );
@@ -67,11 +79,12 @@ const deleteConfig = async (req, res, next) => {
   try {
     const { clave } = req.params;
     if (!clave) return res.status(400).json({ success: false, message: 'Clave requerida' });
-    
-    await prisma.configuracion.delete({
+
+    // deleteMany en lugar de delete: no lanza error si el registro no existe
+    await prisma.configuracion.deleteMany({
       where: { clave }
     });
-    
+
     res.json({ success: true, message: 'Configuración eliminada correctamente.' });
   } catch (err) { next(err); }
 };

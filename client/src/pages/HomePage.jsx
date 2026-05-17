@@ -21,28 +21,28 @@ const toAbsoluteMediaUrl = (url) => {
 };
 
 const getIconForSpecialty = (nombre, dbIcon) => {
-   const n = nombre?.toLowerCase() || '';
-   if (n.includes('pediatr') || n.includes('neonat')) return Baby;
-   if (n.includes('cirug') || n.includes('quir') || n.includes('parto')) return Scissors;
-   if (n.includes('cardio') || n.includes('vascular')) return Heart;
-   if (n.includes('trauma') || n.includes('ortop')) return Bone;
-   if (n.includes('neuro') || n.includes('psiquia') || n.includes('psicol')) return Brain;
-   if (n.includes('oftal') || n.includes('optom')) return Eye;
-   if (n.includes('odont') || n.includes('maxilo')) return Smile;
-   if (n.includes('laboratorio') || n.includes('patolog') || n.includes('sangre')) return FlaskConical;
-   if (n.includes('emergencia') || n.includes('uci') || n.includes('triage') || n.includes('intensiv')) return Activity;
-   if (n.includes('gastro') || n.includes('nutri') || n.includes('endocrin')) return TestTube;
-   if (n.includes('gineco') || n.includes('obste')) return Users;
-   
-   if (n.includes('admin') || n.includes('gerencia') || n.includes('direcci') || n.includes('financiero') || n.includes('juridica')) return Briefcase;
-   if (n.includes('farmacia') || n.includes('bodega') || n.includes('compras')) return Package;
-   if (n.includes('archivo') || n.includes('estadist') || n.includes('informacion')) return Archive;
-   if (n.includes('mantenimiento') || n.includes('tics')) return Wrench;
-   if (n.includes('enfermeria') || n.includes('epidemiologia')) return Cross;
-   
-   if (dbIcon === 'building') return Building;
-   if (dbIcon === 'user') return User;
-   return Stethoscope;
+  const n = nombre?.toLowerCase() || '';
+  if (n.includes('pediatr') || n.includes('neonat')) return Baby;
+  if (n.includes('cirug') || n.includes('quir') || n.includes('parto')) return Scissors;
+  if (n.includes('cardio') || n.includes('vascular')) return Heart;
+  if (n.includes('trauma') || n.includes('ortop')) return Bone;
+  if (n.includes('neuro') || n.includes('psiquia') || n.includes('psicol')) return Brain;
+  if (n.includes('oftal') || n.includes('optom')) return Eye;
+  if (n.includes('odont') || n.includes('maxilo')) return Smile;
+  if (n.includes('laboratorio') || n.includes('patolog') || n.includes('sangre')) return FlaskConical;
+  if (n.includes('emergencia') || n.includes('uci') || n.includes('triage') || n.includes('intensiv')) return Activity;
+  if (n.includes('gastro') || n.includes('nutri') || n.includes('endocrin')) return TestTube;
+  if (n.includes('gineco') || n.includes('obste')) return Users;
+
+  if (n.includes('admin') || n.includes('gerencia') || n.includes('direcci') || n.includes('financiero') || n.includes('juridica')) return Briefcase;
+  if (n.includes('farmacia') || n.includes('bodega') || n.includes('compras')) return Package;
+  if (n.includes('archivo') || n.includes('estadist') || n.includes('informacion')) return Archive;
+  if (n.includes('mantenimiento') || n.includes('tics')) return Wrench;
+  if (n.includes('enfermeria') || n.includes('epidemiologia')) return Cross;
+
+  if (dbIcon === 'building') return Building;
+  if (dbIcon === 'user') return User;
+  return Stethoscope;
 };
 
 
@@ -54,13 +54,22 @@ function EspecialidadesPreview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/public/especialidades').then((r) => setEspecialidades(r.data.data.slice(0, 8))).catch(() => { }).finally(() => setLoading(false));
+    // Ya no hacemos slice(0, 8), mostramos TODAS para el carrusel infinito
+    api.get('/public/especialidades').then((r) => setEspecialidades(r.data.data)).catch(() => { }).finally(() => setLoading(false));
   }, []);
 
+  // Para 2 filas perfectas, necesitamos que la cantidad base sea par
+  const safeEspecialidades = [...especialidades];
+  if (safeEspecialidades.length % 2 !== 0 && safeEspecialidades.length > 0) {
+    safeEspecialidades.push(safeEspecialidades[0]);
+  }
+  // Duplicamos el array para lograr el efecto infinito sin cortes
+  const carruselItems = [...safeEspecialidades, ...safeEspecialidades];
+
   return (
-    <section className="py-16 bg-neutral-50 border-t border-neutral-100">
-      <div className="container mx-auto px-6">
-        <div className="flex justify-between items-end mb-10">
+    <section className="py-16 bg-neutral-50 border-t border-neutral-100 overflow-hidden">
+      <div className="container mx-auto px-6 mb-10">
+        <div className="flex justify-between items-end">
           <div>
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Nuestros Servicios</span>
             <h2 className="text-3xl font-semibold font-heading text-dark mt-1">Especialidades Médicas</h2>
@@ -69,35 +78,41 @@ function EspecialidadesPreview() {
             Ver todas <ArrowRight size={14} />
           </Link>
         </div>
+      </div>
 
+      <div className="w-full relative">
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
+          <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
               <div key={i} className="h-32 bg-neutral-100 rounded-card animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {especialidades.map((esp) => {
-              const IconComp = getIconForSpecialty(esp.nombre, esp.icono);
-              return (
-                <Link key={esp.id} to={`/especialidades`}
-                  className="group bg-white border border-neutral-100 hover:border-primary hover:shadow-card rounded-card p-5 flex flex-col items-center text-center gap-3 transition-all duration-200 hover:-translate-y-1">
-                  <div className="w-12 h-12 rounded-full bg-primary-pale group-hover:bg-primary flex items-center justify-center transition-colors">
-                    <IconComp size={22} className="text-primary group-hover:text-white transition-colors" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-dark text-sm leading-tight group-hover:text-primary transition-colors">{esp.nombre}</div>
-                    {esp._count?.medicos > 0 && (
-                      <div className="text-xs text-gray mt-0.5">{esp._count.medicos} médico{esp._count.medicos > 1 ? 's' : ''}</div>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="mask-gradient-x overflow-hidden flex w-full">
+            <div className="grid grid-rows-2 grid-flow-col gap-4 py-4 px-2 w-max animate-marquee hover:[animation-play-state:paused]">
+              {carruselItems.map((esp, i) => {
+                const IconComp = getIconForSpecialty(esp.nombre, esp.icono);
+                return (
+                  <Link key={`${esp.id}-${i}`} to={`/especialidades`}
+                    className="group bg-white border border-neutral-100 hover:border-primary hover:shadow-card rounded-card p-5 flex flex-col items-center justify-center text-center gap-3 transition-all duration-200 hover:-translate-y-1 w-[200px] sm:w-[240px] shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-primary-pale group-hover:bg-primary flex items-center justify-center transition-colors">
+                      <IconComp size={22} className="text-primary group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-dark text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">{esp.nombre}</div>
+                      {esp._count?.medicos > 0 && (
+                        <div className="text-xs text-gray mt-0.5">{esp._count.medicos} médico{esp._count.medicos > 1 ? 's' : ''}</div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
+      </div>
 
+      <div className="container mx-auto px-6">
         <Link to="/especialidades" className="flex md:hidden items-center justify-center gap-2 mt-6 text-primary text-sm font-medium">
           Ver todas las especialidades <ArrowRight size={14} />
         </Link>
@@ -111,9 +126,61 @@ function NoticiasRecientes() {
   const [noticias, setNoticias] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Guardamos qué 3 noticias (por índice) se están mostrando actualmente
+  const [displayedIndices, setDisplayedIndices] = useState([0, 1, 2]);
+  // Guardamos qué tarjeta está en proceso de desvanecimiento
+  const [fadingOutIndex, setFadingOutIndex] = useState(null);
+
   useEffect(() => {
-    api.get('/public/noticias?limit=3').then((r) => setNoticias(r.data.data)).catch(() => { }).finally(() => setLoading(false));
+    // Pedimos más noticias para tener un pozo del cual rotar (ej: 15)
+    api.get('/public/noticias?limit=15')
+      .then((r) => {
+        const data = r.data?.data || [];
+        setNoticias(data);
+        if (data.length > 3) setDisplayedIndices([0, 1, 2]);
+        else setDisplayedIndices(data.map((_, i) => i));
+      })
+      .catch(() => setNoticias([]))
+      .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    // Si tenemos 3 o menos noticias, no hay nada que rotar
+    if (noticias.length <= 3) return;
+
+    const interval = setInterval(() => {
+      // 1. Elegimos un slot al azar de los 3 que se muestran (0, 1 o 2)
+      const slotToSwap = Math.floor(Math.random() * 3);
+
+      // 2. Elegimos una nueva noticia del pozo que no esté mostrándose actualmente
+      let newIndex = Math.floor(Math.random() * noticias.length);
+      while (displayedIndices.includes(newIndex)) {
+        newIndex = Math.floor(Math.random() * noticias.length);
+      }
+
+      // 3. Iniciamos el efecto de desvanecimiento (fade out)
+      setFadingOutIndex(slotToSwap);
+
+      // 4. CAMBIO DE CONTENIDO (Paso 1): Cambiamos la noticia cuando está totalmente invisible
+      // Puedes ajustar los 300ms de abajo si quieres que el cambio de datos ocurra más rápido o lento.
+      setTimeout(() => {
+        setDisplayedIndices(prev => {
+          const newArr = [...prev];
+          newArr[slotToSwap] = newIndex;
+          return newArr;
+        });
+      }, -600); // 300ms coincide exactamente con la duración de la transición CSS (duration-300)
+
+      // 5. APARICIÓN (Paso 2): Le damos 100ms al navegador para renderizar la nueva imagen
+      // antes de iniciar el desvanecimiento de entrada (fade in).
+      setTimeout(() => {
+        setFadingOutIndex(null);
+      }, 700); // 400ms en total (300ms invisible + 100ms de espera/buffer)
+
+    }, 4500); // Rota una tarjeta cada 4.5 segundos
+
+    return () => clearInterval(interval);
+  }, [noticias, displayedIndices]);
 
   const catColors = {
     'Infraestructura': 'bg-blue-100 text-blue-700',
@@ -143,48 +210,62 @@ function NoticiasRecientes() {
           </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
-            {noticias.map((n) => (
-              <Link key={n.id} to={`/noticias/${n.slug}`}
-                className="group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
-                {n.previewMode === 'frame' && n.embedUrl ? (
-                  <div className="h-44 bg-neutral-50 border-b border-neutral-100 overflow-hidden [&_iframe]:w-full [&_iframe]:h-44 [&_iframe]:border-0 [&_iframe]:pointer-events-none [&_blockquote]:pointer-events-none">
-                    <EmbedRenderer
-                      className="w-full h-full"
-                      html={n.embedUrl}
-                    />
-                  </div>
-                ) : toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl) ? (
-                  <div className="h-44 overflow-hidden bg-neutral-100">
-                    <img
-                      src={toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl)}
-                      alt={n.titulo || 'Vista previa de noticia'}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-44 bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-                    <Newspaper size={40} className="text-white/40" />
-                  </div>
-                )}
-                <div className="p-5 flex flex-col flex-1">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full self-start mb-3 ${catColors[n.categoria] || catColors.default}`}>
-                    {n.categoria}
-                  </span>
-                  <h3 className="font-semibold font-heading text-dark text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                    {n.titulo}
-                  </h3>
-                  <p className="text-gray text-xs leading-relaxed line-clamp-3 flex-1">{n.extracto}</p>
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
-                    <span className="text-xs text-gray">
-                      {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
-                    </span>
-                    <span className="text-primary text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Leer <ArrowRight size={12} />
-                    </span>
-                  </div>
+            {displayedIndices.map((newsIndex, slotIndex) => {
+              const n = noticias[newsIndex];
+              if (!n) return <div key={slotIndex} />;
+
+              const isFading = fadingOutIndex === slotIndex;
+
+              return (
+                <div key={slotIndex} className={`transition-all duration-300 ease-out ${isFading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+                  <Link to={`/noticias/${n.slug}`}
+                    className="group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col h-full min-h-[500px]">
+
+                    {/* AQUI PUEDES AJUSTAR LA ALTURA DE LA VISTA PREVIA (EJ: h-[300px], h-[350px], h-[400px], etc.) */}
+                    {n.previewMode === 'frame' && n.embedUrl ? (
+                      <div className="h-[400px] bg-neutral-50 border-b border-neutral-100 overflow-hidden [&_iframe]:w-full [&_iframe]:h-[550px] [&_iframe]:border-0 [&_iframe]:pointer-events-none [&_blockquote]:pointer-events-none">
+                        <EmbedRenderer
+                          className="w-full h-full"
+                          html={n.embedUrl}
+                          showDirectAccess={false}
+                        />
+                      </div>
+                    ) : toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl) ? (
+                      <div className="h-[350px] overflow-hidden bg-neutral-100">
+                        <img
+                          src={toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl)}
+                          alt={n.titulo || 'Vista previa de noticia'}
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-[350px] bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
+                        <Newspaper size={40} className="text-white/40" />
+                      </div>
+                    )}
+                    {/* FIN DEL AJUSTE DE ALTURA DE VISTA PREVIA */}
+
+                    <div className="p-6 md:p-8 flex flex-col flex-1">
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full self-start mb-4 ${catColors[n.categoria] || catColors.default}`}>
+                        {n.categoria}
+                      </span>
+                      <h3 className="font-semibold font-heading text-dark text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                        {n.titulo}
+                      </h3>
+                      <p className="text-gray text-xs leading-relaxed line-clamp-3 flex-1">{n.extracto}</p>
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
+                        <span className="text-xs text-gray">
+                          {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                        </span>
+                        <span className="text-primary text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                          Leer <ArrowRight size={12} />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -264,12 +345,12 @@ function RecorridoVirtualBanner() {
 
 // ── Imagen Mes Banner (Carrusel) ───────────────────────────────────
 function ImagenMesBanner() {
-  const [images,    setImages]    = useState([]);
+  const [images, setImages] = useState([]);
   const [intervalMs, setIntervalMs] = useState(5000);
-  const [current,   setCurrent]   = useState(0);
-  const [isPaused,  setIsPaused]  = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const intervalRef               = React.useRef(null);
+  const intervalRef = React.useRef(null);
 
   useEffect(() => {
     api.get('/public/configuracion').then((r) => {
@@ -286,7 +367,7 @@ function ImagenMesBanner() {
       setImages(imgs);
       const secs = parseInt(data.imagen_mes_intervalo || '5', 10);
       setIntervalMs(Math.max(2, secs) * 1000);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   // Auto-play
@@ -304,79 +385,85 @@ function ImagenMesBanner() {
 
   return (
     <>
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col items-center">
-            <span className="text-secondary text-sm font-semibold uppercase tracking-widest mb-4">Noticias del Mes</span>
+      <section className="py-12 bg-white overflow-hidden">
+        <div className="container mx-auto px-6 mb-6 text-center">
+          <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Noticias del Mes</span>
+        </div>
 
-            <div
-              className="relative rounded-2xl overflow-hidden shadow-xl w-full max-w-4xl bg-neutral-50 border border-neutral-100"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-            >
-              {/* Slides */}
-              <div className="relative max-h-[600px] overflow-hidden cursor-pointer" onClick={() => setModalOpen(true)}>
-                {images.map((url, idx) => (
-                  <div
-                    key={idx}
-                    className={`transition-opacity duration-700 ${idx === current ? 'opacity-100 relative' : 'opacity-0 absolute inset-0'}`}
-                  >
+        <div className="relative w-full max-w-[1400px] mx-auto"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}>
+
+          {/* Carrusel Flex Container */}
+          <div
+            className="flex items-center transition-transform duration-700 ease-in-out"
+            style={{ transform: `translateX(calc(-${current * 60}% + 20%))` }}
+          >
+            {images.map((url, idx) => {
+              const isCurrent = idx === current;
+              return (
+                <div
+                  key={idx}
+                  className={`w-[60%] flex-shrink-0 px-2 sm:px-4 transition-all duration-700 ease-in-out ${isCurrent ? 'opacity-100 scale-100 z-10' : 'opacity-40 scale-[0.85] z-0 cursor-pointer'}`}
+                  onClick={() => { if (!isCurrent) setCurrent(idx); else setModalOpen(true); }}
+                >
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl bg-neutral-100 group">
                     <img
                       src={url}
                       alt={`Noticia del Mes ${idx + 1}`}
-                      className="w-full h-auto object-contain max-h-[600px]"
+                      className="w-full h-[350px] sm:h-[450px] md:h-[550px] object-cover"
                       loading={idx === 0 ? 'eager' : 'lazy'}
                     />
+                    {isCurrent && (
+                      <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                        <div className="bg-white/90 text-primary-dark px-6 py-3 rounded-full font-bold shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex items-center gap-2">
+                          <Eye size={20} /> Ver en grande
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ))}
-
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                  <div className="bg-white/90 text-primary-dark px-6 py-3 rounded-full font-bold shadow-lg transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all flex items-center gap-2">
-                    <Eye size={20} /> Ver en grande
-                  </div>
                 </div>
-              </div>
-
-              {/* Flechas */}
-              {images.length > 1 && (
-                <>
-                  <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm shadow-lg z-10" aria-label="Anterior">
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm shadow-lg z-10" aria-label="Siguiente">
-                    <ChevronRight size={20} />
-                  </button>
-                </>
-              )}
-
-              {/* Indicadores */}
-              {images.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => { clearInterval(intervalRef.current); setCurrent(idx); }}
-                      className={`rounded-full transition-all duration-300 ${idx === current ? 'w-6 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-white/60 hover:bg-white'}`}
-                      aria-label={`Imagen ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Contador */}
-              {images.length > 1 && (
-                <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full z-10">
-                  {current + 1} / {images.length}
-                </div>
-              )}
-            </div>
-
-            {/* Click hint */}
-            <p className="text-xs text-gray mt-3 flex items-center gap-1">
-              <Eye size={12} /> Haz clic en la imagen para verla en grande
-            </p>
+              );
+            })}
           </div>
+
+          {/* Flechas Flotantes Laterales */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={prev}
+                className="absolute left-[8%] md:left-[12%] top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 bg-white/90 hover:bg-white text-dark rounded-full flex items-center justify-center transition-transform hover:scale-110 shadow-lg z-20 border border-neutral-200"
+                aria-label="Anterior"
+              >
+                <ChevronLeft size={24} className="text-dark" />
+              </button>
+              <button
+                onClick={next}
+                className="absolute right-[8%] md:right-[12%] top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 bg-white/90 hover:bg-white text-dark rounded-full flex items-center justify-center transition-transform hover:scale-110 shadow-lg z-20 border border-neutral-200"
+                aria-label="Siguiente"
+              >
+                <ChevronRight size={24} className="text-dark" />
+              </button>
+            </>
+          )}
+
+          {/* Indicadores */}
+          {images.length > 1 && (
+            <div className="flex justify-center gap-2 mt-8">
+              {images.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => { clearInterval(intervalRef.current); setCurrent(idx); }}
+                  className={`rounded-full transition-all duration-300 ${idx === current ? 'w-8 h-2.5 bg-primary' : 'w-2.5 h-2.5 bg-neutral-300 hover:bg-primary-pale'}`}
+                  aria-label={`Imagen ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
+
+          <p className="text-xs text-gray mt-4 flex items-center justify-center gap-1">
+            <Eye size={12} /> Haz clic en la imagen central para verla en grande
+          </p>
         </div>
       </section>
 

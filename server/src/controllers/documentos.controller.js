@@ -5,6 +5,7 @@
 
 const path   = require('path');
 const fs     = require('fs');
+const unzipper = require('unzipper');
 const { PrismaClient } = require('@prisma/client');
 const { indexarDocumento } = require('../services/documentos.service');
 const { preguntarProtocolo } = require('../services/ai.service');
@@ -51,7 +52,7 @@ const preguntar = async (req, res, next) => {
 /** GET /admin/documentos */
 const getAll = async (req, res, next) => {
   try {
-    const { tipo, q, page = 1, limit = 20 } = req.query;
+    const { tipo, q, page = 1, limit = 1000 } = req.query;
     const where = {};
     if (tipo && tipo !== 'Todos') where.tipo = tipo;
     if (q) where.titulo = { contains: q, mode: 'insensitive' };
@@ -72,29 +73,127 @@ const getAll = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-/** POST /admin/documentos  (multipart: archivo PDF + body) */
+/** POST /admin/documentos  (multipart: archivo PDF/ZIP + body) */
 const create = async (req, res, next) => {
   try {
-    const { titulo, tipo } = req.body;
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Se requiere un archivo PDF.' });
+    const { titulo, tipo, driveUrl } = req.body;
+
+    // A. Validar que tengamos al menos archivo o enlace externo
+    if (!req.file && !driveUrl) {
+      return res.status(400).json({ success: false, message: 'Se requiere un archivo PDF/ZIP o una URL de Drive.' });
     }
-    if (!titulo || !tipo) {
-      return res.status(400).json({ success: false, message: 'Título y tipo son requeridos.' });
+    if (!tipo) {
+      return res.status(400).json({ success: false, message: 'La categoría (tipo) es requerida.' });
     }
 
-    const archivoUrl = `/uploads/documentos/${req.file.filename}`;
+    // B. CASO 1: Subida de archivo ZIP (Procesamiento por lote)
+    if (req.file && req.file.filename.toLowerCase().endsWith('.zip')) {
+      const zipPath = path.join(__dirname, '../../public/uploads/documentos', req.file.filename);
+      const directory = await unzipper.Open.file(zipPath);
+      
+      const createdDocs = [];
 
-    const doc = await prisma.documentoAcademico.create({
-      data: { titulo, tipo, archivoUrl },
-    });
+      for (const entry of directory.files) {
+        // Solo extraer archivos PDF y omitir los ocultos de macOS (__MACOSX)
+        if (entry.path.toLowerCase().endsWith('.pdf') && !entry.path.includes('__MACOSX')) {
+          const baseName = path.basename(entry.path)
+            .replace(/[^a-zA-Z0-9ÁáÉéÍíÓóÚúÑñ._\- ]/g, '')
+            .replace(/\s+/g, '_');
+          
+          const uniqueFilename = `${Date.now()}_${baseName}`;
+          const destPath = path.join(__dirname, '../../public/uploads/documentos', uniqueFilename);
+          
+          // Guardar archivo físico en el servidor
+          const buffer = await entry.buffer();
+          fs.writeFileSync(destPath, buffer);
+          
+          // Limpiar el nombre para el título
+          const rawName = path.basename(entry.path, '.pdf');
+          let cleanTitle = rawName
+            .replace(/[-_]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/\b\w/g, c => c.toUpperCase());
+          
+          if (!cleanTitle) cleanTitle = 'Documento sin título';
 
-    // Indexar en segundo plano (no bloqueamos la respuesta)
-    indexarDocumento(doc.id, archivoUrl).catch(e =>
-      console.error(`[Indexación] Error en doc ${doc.id}:`, e.message)
-    );
+          // Crear registro en base de datos
+          const doc = await prisma.documentoAcademico.create({
+            data: {
+              titulo: cleanTitle,
+              tipo,
+              archivoUrl: `/uploads/documentos/${uniqueFilename}`,
+            },
+          });
 
-    res.status(201).json({ success: true, data: doc, message: 'Documento creado. La indexación IA continúa en segundo plano.' });
+          // Iniciar indexación en segundo plano
+          indexarDocumento(doc.id, doc.archivoUrl).catch(e =>
+            console.error(`[Indexación Lote] Error en doc ${doc.id}:`, e.message)
+          );
+
+          createdDocs.push(doc);
+        }
+      }
+
+      // Eliminar el archivo ZIP subido temporalmente
+      if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+
+      return res.status(201).json({
+        success: true,
+        message: `Lote procesado. Se extrajeron e indexaron ${createdDocs.length} documentos PDF exitosamente.`,
+        data: createdDocs,
+      });
+    }
+
+    // C. CASO 2: Enlace externo (Drive) únicamente
+    if (!req.file && driveUrl) {
+      if (!titulo) {
+        return res.status(400).json({ success: false, message: 'El título es requerido para enlaces externos.' });
+      }
+
+      const doc = await prisma.documentoAcademico.create({
+        data: { titulo, tipo, driveUrl },
+      });
+
+      return res.status(201).json({ success: true, data: doc, message: 'Enlace externo guardado correctamente.' });
+    }
+
+    // D. CASO 3: Subida de PDF individual estándar
+    if (req.file && !driveUrl) {
+      if (!titulo) {
+        return res.status(400).json({ success: false, message: 'El título es requerido.' });
+      }
+
+      const archivoUrl = `/uploads/documentos/${req.file.filename}`;
+      const doc = await prisma.documentoAcademico.create({
+        data: { titulo, tipo, archivoUrl },
+      });
+
+      indexarDocumento(doc.id, archivoUrl).catch(e =>
+        console.error(`[Indexación] Error en doc ${doc.id}:`, e.message)
+      );
+
+      return res.status(201).json({ success: true, data: doc, message: 'Documento PDF creado. La indexación IA continúa en segundo plano.' });
+    }
+
+    // E. CASO 4: Subida de PDF individual Y enlace de Drive
+    if (req.file && driveUrl) {
+      if (!titulo) {
+        return res.status(400).json({ success: false, message: 'El título es requerido.' });
+      }
+
+      const archivoUrl = `/uploads/documentos/${req.file.filename}`;
+      const doc = await prisma.documentoAcademico.create({
+        data: { titulo, tipo, archivoUrl, driveUrl },
+      });
+
+      indexarDocumento(doc.id, archivoUrl).catch(e =>
+        console.error(`[Indexación] Error en doc ${doc.id}:`, e.message)
+      );
+
+      return res.status(201).json({ success: true, data: doc, message: 'Documento PDF creado y vinculado con URL de Drive.' });
+    }
+
   } catch (err) { next(err); }
 };
 

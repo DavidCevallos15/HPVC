@@ -157,17 +157,32 @@ export default function ImagenMesAdminPage() {
                   )}
                 </div>
 
-                {/* Botón subir */}
-                <label className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition border ${
-                  hasNew
-                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
-                }`}>
-                  <Upload size={13} />
-                  {hasNew ? 'Cambiar' : imgUrl ? 'Reemplazar' : 'Subir imagen'}
-                  <input type="file" accept="image/*" className="hidden"
-                    onChange={e => handleFileChange(idx, e.target.files[0])} />
-                </label>
+                {/* Botón subir y Cancelar */}
+                <div className="flex gap-2 w-full">
+                  <label className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition border ${
+                    hasNew
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
+                  }`}>
+                    <Upload size={13} />
+                    {hasNew ? 'Cambiar' : imgUrl ? 'Reemplazar' : 'Subir imagen'}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={e => handleFileChange(idx, e.target.files[0])} />
+                  </label>
+                  {hasNew && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFiles(p => { const a = { ...p }; delete a[idx]; return a; });
+                        setPreviewUrls(p  => { const a = { ...p }; delete a[idx]; return a; });
+                      }}
+                      className="px-3 py-2 border border-red-200 text-red-500 rounded-lg text-xs font-medium hover:bg-red-50 transition-colors"
+                      title="Cancelar selección"
+                    >
+                      Quitar
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}

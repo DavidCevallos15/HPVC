@@ -16,7 +16,6 @@ const categorias = [
       { nombre: "Drive Zonal", url: "https://nube.mspz4.gob.ec/login", Icono: HardDrive },
       { nombre: "Drive 13d01 MSP", url: "https://app.13d01.mspz4.gob.ec/", Icono: Folder },
       { nombre: "Consulta de Citas Verdi", url: "http://186.47.77.45:8082/consulta_cita/", Icono: Calendar },
-      { nombre: "Consulta de Recetas Médicas", url: "http://186.47.77.45:8082/consulta_cita/", Icono: Form },
       { nombre: "Sistema de Información Hospitalaria", url: "http://186.47.77.45:8082/syshpvc/", Icono: Monitor },
     ]
   },

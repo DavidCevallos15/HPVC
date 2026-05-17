@@ -28,9 +28,19 @@ const navLinks = [
     label: 'Accesos Directos', 
     children: [
       { label: 'Quipux', to: 'https://www.gestiondocumental.gob.ec/' },
-      { label: 'Plataformas Web Z4', to: '/sis_adm/index.php' },
-      { label: 'Correo Zimbra', to: 'https://mail.mspz4.gob.ec' },
-      { label: 'Ver todos los Accesos', to: '/accesos' },
+      { label: 'Correo Zimbra', to: 'https://mail.hpvc.gob.ec/' },
+      { label: 'Drive Zonal', to: 'https://nube.mspz4.gob.ec/login' },
+      { label: 'Drive 13d01 MSP', to: 'https://app.13d01.mspz4.gob.ec/' },
+      { label: 'Consulta de Citas Verdi', to: 'http://186.47.77.45:8082/consulta_cita/' },
+      { label: 'Sistema de Información Hosp.', to: 'http://186.47.77.45:8082/syshpvc/' },
+      { label: 'PahoFlu', to: 'https://sive.msp.gob.ec/Account/Login?ReturnUrl=%2F' },
+      { label: 'Agendamiento MSP', to: 'https://agendamiento.msp.gob.ec/login' },
+      { label: 'PRAS', to: 'https://sgrdacaa.msp.gob.ec/' },
+      { label: 'Apps MSP', to: 'https://app.13d01.mspz4.gob.ec/' },
+      { label: 'Portal Trámites', to: 'https://www.gob.ec/' },
+      { label: 'Contacto Ciudadano', to: 'https://www.contactociudadano.gob.ec/' },
+      { label: 'SNI Público', to: 'https://sni.msp.gob.ec/app/home/' },
+      { label: 'Ver todos los Accesos →', to: '/accesos' },
     ]
   },
   { label: 'Contáctenos', to: '/contacto' },
@@ -115,7 +125,7 @@ export default function Navbar() {
                   </button>
                   {dropdown === link.label && (
                     <div className="absolute top-full left-0 pt-2 w-64 z-50 animate-dropdown-quick">
-                      <div className="bg-white rounded-card shadow-sm border border-neutral-200 py-1">
+                      <div className="bg-white rounded-card shadow-sm border border-neutral-200 py-1 overflow-hidden">
                         {link.children.map((child) => {
                           const isExternal = child.to.startsWith('http');
                           return (
