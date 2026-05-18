@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Trash2, Edit, Search, Loader2, BookOpen, AlertCircle, CheckCircle, RotateCcw } from 'lucide-react';
 import api from '../api/axios';
 import JSZip from 'jszip';
+import Skeleton from '../components/ui/Skeleton';
 
 const TIPOS = [
   { id: 'guia', label: 'Guías Clínicas' },
@@ -499,7 +500,12 @@ export default function DocumentosAdminPage() {
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-primary" size={24} /></div>
+            <div className="p-6 space-y-4">
+              <Skeleton className="h-10 w-full rounded-lg" />
+              <Skeleton className="h-14 w-full rounded-lg" />
+              <Skeleton className="h-14 w-full rounded-lg" />
+              <Skeleton className="h-14 w-full rounded-lg" />
+            </div>
           ) : filteredDocs.length === 0 ? (
             <div className="p-8 text-center text-neutral-500 text-sm">No se encontraron documentos.</div>
           ) : (

@@ -11,3 +11,5 @@ server/public/uploads/documentos/
 server/temp_docs.zip
 *.zip
 admin/GUIAS PRACTICAS CLINICAS/
+backups/
+*.sql

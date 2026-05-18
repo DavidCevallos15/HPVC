@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Eye, EyeOff, Search } from 'lucide-react';
 import api from '../api/axios';
+import Skeleton from '../components/ui/Skeleton';
 
 const initialState = {
   noticias: [],
@@ -71,7 +72,13 @@ export default function NoticiasAdminPage() {
       {/* Table */}
       <div className="bg-white rounded-xl shadow-sm border border-neutral-100 overflow-hidden">
         {loading ? (
-          <div className="p-8 space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="h-10 bg-neutral-100 rounded animate-pulse" />)}</div>
+          <div className="p-6 space-y-4">
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
         ) : (
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 border-b border-neutral-100">

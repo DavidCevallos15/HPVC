@@ -98,7 +98,7 @@ export default function Footer() {
               <div className="flex items-start gap-2 mb-3">
                 <MapPin size={14} className="text-accent shrink-0 mt-0.5" />
                 <span className="text-primary-pale text-sm leading-snug">
-                  Av. Urbina y Quito, Portoviejo, Manabí, Ecuador
+                  Calle 12 de Marzo y Rocafuerte, Portoviejo, Ecuador, 130105
                 </span>
               </div>
               <a

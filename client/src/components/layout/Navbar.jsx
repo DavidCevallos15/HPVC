@@ -6,26 +6,28 @@ import logoNuevoEcuador from '../../assets/Footer.png';
 
 const navLinks = [
   { label: 'Inicio', to: '/' },
-  {
-    label: 'Servicios',
+  { 
+    label: 'Servicios', 
+    to: '/servicios',
     children: [
       { label: 'Especialidades Médicas', to: '/especialidades' },
       { label: 'Directorio de Médicos', to: '/directorio' },
       { label: 'Horarios de Atención', to: '/horarios' },
-      { label: 'Recorrido Virtual', to: '/recorrido-virtual' },
-    ],
+    ]
   },
-  {
-    label: 'Institución',
+  { 
+    label: 'Institución', 
+    to: '/institucion',
     children: [
-      { label: 'Acerca de Nosotros', to: '/acerca' },
+      { label: 'Recorrido Virtual', to: '/recorrido-virtual' },
       { label: 'Noticias y Actualidad', to: '/noticias' },
       { label: 'Documentos y Transparencia', to: '/documentos' },
       { label: 'GeoSalud MSP', to: '/subcentros' },
-    ],
+    ]
   },
   { 
     label: 'Accesos Directos', 
+    to: '/accesos',
     children: [
       { label: 'Quipux', to: 'https://www.gestiondocumental.gob.ec/' },
       { label: 'Correo Zimbra', to: 'https://mail.hpvc.gob.ec/' },
@@ -72,7 +74,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => { setOpen(false); setDropdown(null); }, [location]);
+  useEffect(() => {
+    setOpen(false);
+    setDropdown(null);
+  }, [location]);
 
   return (
     <>
@@ -118,11 +123,11 @@ export default function Navbar() {
                 <div key={link.label} className="relative"
                   onMouseEnter={() => handleMouseEnter(link.label)}
                   onMouseLeave={handleMouseLeave}>
-                  <button className={`flex items-center gap-1 px-3 py-2 rounded-btn text-sm font-medium transition-colors duration-150 ${
-                    dropdown === link.label ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-neutral-50'
+                  <Link to={link.to} className={`flex items-center gap-1 px-3 py-2 rounded-btn text-sm font-medium transition-colors duration-150 ${
+                    location.pathname === link.to || dropdown === link.label ? 'text-primary bg-primary-pale' : 'text-dark hover:text-primary hover:bg-neutral-50'
                   }`}>
-                    {link.label} <ChevronDown size={14} className={`transition-transform duration-150 ${dropdown === link.label ? 'rotate-90' : ''}`} />
-                  </button>
+                    {link.label}
+                  </Link>
                   {dropdown === link.label && (
                     <div className="absolute top-full left-0 pt-2 w-64 z-50 animate-dropdown-quick">
                       <div className="bg-white rounded-card shadow-sm border border-neutral-200 py-1 overflow-hidden">
@@ -172,10 +177,15 @@ export default function Navbar() {
             {navLinks.map((link) =>
               link.children ? (
                 <div key={link.label}>
-                  <button onClick={() => setDropdown(dropdown === link.label ? null : link.label)}
-                    className="flex items-center justify-between w-full py-3 text-sm font-medium text-dark border-b border-neutral-50">
-                    {link.label} <ChevronDown size={14} className={`transition-transform ${dropdown === link.label ? 'rotate-180' : ''}`} />
-                  </button>
+                  <div className="flex items-center justify-between border-b border-neutral-50">
+                    <Link to={link.to} className="py-3 text-sm font-medium text-dark flex-grow hover:text-primary transition-colors">
+                      {link.label}
+                    </Link>
+                    <button onClick={() => setDropdown(dropdown === link.label ? null : link.label)}
+                      className="p-3 text-dark hover:bg-neutral-50 rounded-md">
+                      <ChevronDown size={14} className={`transition-transform ${dropdown === link.label ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
                   {dropdown === link.label && link.children.map((child) => {
                     const isExternal = child.to.startsWith('http');
                     return (

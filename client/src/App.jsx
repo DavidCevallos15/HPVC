@@ -1,5 +1,17 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from './components/ui/PageTransition';
 import { Building2 } from 'lucide-react';
 import { ConfigProvider } from './context/ConfigContext';
 import Navbar from './components/layout/Navbar';
@@ -18,6 +30,10 @@ const AccesosPage         = lazy(() => import('./pages/AccesosPage'));
 const SubcentrosPage      = lazy(() => import('./pages/SubcentrosPage'));
 const AcercaPage          = lazy(() => import('./pages/AcercaPage'));
 const HorariosPage        = lazy(() => import('./pages/HorariosPage'));
+const ServiciosPacientePage = lazy(() => import('./pages/ServiciosPacientePage'));
+const AsistenteClinicoPage = lazy(() => import('./pages/AsistenteClinicoPage'));
+const InstitucionPage     = lazy(() => import('./pages/InstitucionPage'));
+const ServiciosPage       = lazy(() => import('./pages/ServiciosPage'));
 
 function PageLoader() {
   return (
@@ -27,36 +43,53 @@ function PageLoader() {
   );
 }
 
+function AnimatedRoutes() {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <PageTransition key={location.pathname}>
+        <Routes location={location}>
+          <Route path="/"                  element={<HomePage />} />
+          <Route path="/especialidades"    element={<EspecialidadesPage />} />
+          <Route path="/directorio"        element={<DirectorioPage />} />
+          <Route path="/noticias"          element={<NoticiasPage />} />
+          <Route path="/noticias/:slug"    element={<NoticiaDetallePage />} />
+          <Route path="/contacto"          element={<ContactoPage />} />
+          <Route path="/documentos"        element={<DocumentosPage />} />
+          <Route path="/recorrido-virtual" element={<RecorridoVirtualPage />} />
+          <Route path="/accesos"           element={<AccesosPage />} />
+          <Route path="/subcentros"        element={<SubcentrosPage />} />
+          <Route path="/acerca"            element={<AcercaPage />} />
+          <Route path="/horarios"          element={<HorariosPage />} />
+          <Route path="/servicios-paciente" element={<ServiciosPacientePage />} />
+          <Route path="/asistente-clinico" element={<AsistenteClinicoPage />} />
+          <Route path="/institucion"       element={<InstitucionPage />} />
+          <Route path="/servicios"         element={<ServiciosPage />} />
+          <Route path="*" element={
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
+              <Building2 size={64} className="text-neutral-300" />
+              <h2 className="text-3xl font-semibold font-heading text-dark">Página no encontrada</h2>
+              <p className="text-gray">La ruta que buscas no existe.</p>
+              <a href="/" className="btn-primario mt-2">← Volver al inicio</a>
+            </div>
+          } />
+        </Routes>
+      </PageTransition>
+    </AnimatePresence>
+  );
+}
+
 export default function App() {
   return (
     <ConfigProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-grow">
             <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/"                  element={<HomePage />} />
-                <Route path="/especialidades"    element={<EspecialidadesPage />} />
-                <Route path="/directorio"        element={<DirectorioPage />} />
-                <Route path="/noticias"          element={<NoticiasPage />} />
-                <Route path="/noticias/:slug"    element={<NoticiaDetallePage />} />
-                <Route path="/contacto"          element={<ContactoPage />} />
-                <Route path="/documentos"        element={<DocumentosPage />} />
-                <Route path="/recorrido-virtual" element={<RecorridoVirtualPage />} />
-                <Route path="/accesos"           element={<AccesosPage />} />
-                <Route path="/subcentros"        element={<SubcentrosPage />} />
-                <Route path="/acerca"            element={<AcercaPage />} />
-                <Route path="/horarios"          element={<HorariosPage />} />
-                <Route path="*" element={
-                  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
-                    <Building2 size={64} className="text-neutral-300" />
-                    <h2 className="text-3xl font-semibold font-heading text-dark">Página no encontrada</h2>
-                    <p className="text-gray">La ruta que buscas no existe.</p>
-                    <a href="/" className="btn-primario mt-2">← Volver al inicio</a>
-                  </div>
-                } />
-              </Routes>
+              <AnimatedRoutes />
             </Suspense>
           </main>
           <Footer />

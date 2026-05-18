@@ -6,6 +6,7 @@ import {
   Layers, Stethoscope, AlertCircle, FileBarChart, ShieldCheck
 } from 'lucide-react';
 import api from '../api/axios';
+import Skeleton from '../components/ui/Skeleton';
 
 // ── Configuración Visual ───────────────────────────────────────────────────
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -241,8 +242,18 @@ export default function DocumentosPage() {
       <div className="container mx-auto max-w-6xl px-6 -mt-10 relative z-20">
         
         {loading ? (
-          <div className="flex justify-center py-20 bg-white rounded-3xl shadow-sm border border-neutral-100">
-            <Loader2 size={32} className="animate-spin text-primary" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm flex flex-col h-[200px]">
+                <Skeleton className="w-14 h-14 rounded-2xl mb-5" />
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-6 flex-1" />
+                <div className="flex justify-between items-center mt-auto">
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : isGlobalSearch ? (
           /* Resultados de Búsqueda Global */

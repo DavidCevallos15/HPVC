@@ -169,13 +169,13 @@ function NoticiasRecientes() {
           newArr[slotToSwap] = newIndex;
           return newArr;
         });
-      }, -600); // 300ms coincide exactamente con la duración de la transición CSS (duration-300)
+      }, 300); // 300ms coincide exactamente con la duración de la transición CSS (duration-300)
 
       // 5. APARICIÓN (Paso 2): Le damos 100ms al navegador para renderizar la nueva imagen
       // antes de iniciar el desvanecimiento de entrada (fade in).
       setTimeout(() => {
         setFadingOutIndex(null);
-      }, 700); // 400ms en total (300ms invisible + 100ms de espera/buffer)
+      }, 400); // 400ms en total (300ms invisible + 100ms de espera/buffer)
 
     }, 4500); // Rota una tarjeta cada 4.5 segundos
 
@@ -292,8 +292,8 @@ function EmergenciasBanner() {
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-white">
             <div className="text-center">
               <div className="text-accent font-bold text-sm uppercase tracking-widest mb-2">Ubicación</div>
-              <div className="text-lg font-semibold">Av. Urbina y Quito</div>
-              <div className="text-sm opacity-90">Portoviejo, Manabí, Ecuador</div>
+              <div className="text-lg font-semibold">Calle 12 de Marzo y Rocafuerte</div>
+              <div className="text-sm opacity-90">Portoviejo, Ecuador, 130105</div>
             </div>
           </div>
         </div>
@@ -327,14 +327,14 @@ function RecorridoVirtualBanner() {
           </div>
 
           <div className="w-full md:w-5/12 relative z-10 flex justify-center">
-            <div className="relative w-full aspect-square max-w-sm rounded-2xl overflow-hidden border border-white/20 shadow-2xl group flex items-center justify-center bg-black/40">
+            <Link to="/recorrido-virtual" className="relative w-full aspect-square max-w-sm rounded-2xl overflow-hidden border border-white/20 shadow-2xl group flex items-center justify-center bg-black/40 cursor-pointer block">
               {/* Image Placeholder representing 360 view */}
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 to-transparent"></div>
               <div className="w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg relative z-10 text-primary-dark group-hover:scale-110 group-hover:bg-accent transition-all animate-pulse">
                 <PlayCircle size={24} className="ml-1" />
               </div>
-            </div>
+            </Link>
           </div>
 
         </div>
@@ -492,11 +492,11 @@ export default function HomePage() {
   return (
     <>
       <HeroCarousel />
+      <EmergenciasBanner />
       <EspecialidadesPreview />
       <RecorridoVirtualBanner />
-      <ImagenMesBanner />
       <NoticiasRecientes />
-      <EmergenciasBanner />
+      <ImagenMesBanner />
     </>
   );
 }

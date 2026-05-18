@@ -8,7 +8,7 @@ export function ConfigProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const fetchConfig = useCallback(() => {
-    api.get('/public/configuracion')
+    api.get('/public/configuracion', { silent: true })
       .then(res => setConfig(res.data.data || {}))
       .catch(err => console.error('Error al cargar configuración', err))
       .finally(() => setLoading(false));

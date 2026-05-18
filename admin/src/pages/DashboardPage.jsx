@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Newspaper, Stethoscope, MessageSquare, CheckCircle, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import Skeleton from '../components/ui/Skeleton';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ export default function DashboardPage() {
       {/* Stats Cards */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          {[...Array(4)].map((_, i) => <div key={`skeleton-${i}`} className="h-28 bg-neutral-200 rounded-xl animate-pulse" />)}
+          {[...Array(4)].map((_, i) => <Skeleton key={`skeleton-${i}`} className="h-28 w-full rounded-xl" />)}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
