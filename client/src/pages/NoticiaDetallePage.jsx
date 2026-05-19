@@ -4,6 +4,9 @@ import { ArrowLeft, Calendar, Tag, Newspaper } from 'lucide-react';
 import EmbedRenderer from '../components/EmbedRenderer';
 import api from '../api/axios';
 
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+
 export default function NoticiaDetallePage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -63,7 +66,7 @@ export default function NoticiaDetallePage() {
           </div>
         ) : noticia.imagenUrl ? (
           <div className="w-full h-64 md:h-96 rounded-card overflow-hidden mb-8">
-            <img src={`http://localhost:3001${noticia.imagenUrl}`} alt={noticia.titulo || 'Noticia'} className="w-full h-full object-cover" />
+            <img src={`${API_ORIGIN}${noticia.imagenUrl}`} alt={noticia.titulo || 'Noticia'} className="w-full h-full object-cover" />
           </div>
         ) : null}
 

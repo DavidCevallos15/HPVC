@@ -8,8 +8,8 @@ mkdir -p backups
 # Nombre del archivo con la fecha actual
 FILENAME="backups/backup_$(date +%Y-%m-%d_%H%M%S).sql"
 
-# Ejecutar pg_dump dentro del contenedor Docker
-docker exec -t hpvc_postgres pg_dump -U hpvc_user -d hpvc_db > "$FILENAME"
+# Ejecutar pg_dump dentro del contenedor Docker (sin -t para evitar corrupción de saltos de línea CRLF)
+docker exec hpvc_postgres pg_dump -U hpvc_user -d hpvc_db > "$FILENAME"
 
 # También guardar una copia fija como backup_latest.sql para restauración rápida
 cp "$FILENAME" backups/backup_latest.sql

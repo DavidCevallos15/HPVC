@@ -4,6 +4,9 @@ import api from '../api/axios';
 import JSZip from 'jszip';
 import Skeleton from '../components/ui/Skeleton';
 
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+
 const TIPOS = [
   { id: 'guia', label: 'Guías Clínicas' },
   { id: 'protocolo', label: 'Protocolos' },
@@ -534,7 +537,7 @@ export default function DocumentosAdminPage() {
                     </td>
                     <td className="px-6 py-4 text-neutral-500">
                       {doc.archivoUrl ? (
-                        <a href={`http://localhost:3001${doc.archivoUrl}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">PDF Local</a>
+                        <a href={`${API_ORIGIN}${doc.archivoUrl}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">PDF Local</a>
                       ) : doc.driveUrl ? (
                         <a href={doc.driveUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">Ver enlace</a>
                       ) : (

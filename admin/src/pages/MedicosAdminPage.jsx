@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Search, User, AlertCircle, Loader2, RotateCcw } from 'lucide-react';
 import api from '../api/axios';
 
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+
 export default function MedicosAdminPage() {
   const navigate = useNavigate();
   const [medicos, setMedicos] = useState([]);
@@ -263,7 +266,7 @@ export default function MedicosAdminPage() {
                      <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center overflow-hidden shrink-0">
                            {medico.foto ? (
-                              <img src={`http://localhost:3001${medico.foto}`} alt={medico.nombre} className="w-full h-full object-cover" />
+                              <img src={`${API_ORIGIN}${medico.foto}`} alt={medico.nombre} className="w-full h-full object-cover" />
                            ) : (
                               <User size={18} className="text-neutral-400" />
                            )}

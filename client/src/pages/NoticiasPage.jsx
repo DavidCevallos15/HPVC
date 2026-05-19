@@ -4,6 +4,9 @@ import { Search, Newspaper, ArrowRight, Filter } from 'lucide-react';
 import EmbedRenderer from '../components/EmbedRenderer';
 import api from '../api/axios';
 
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+
 const CATEGORIAS = ['Todos', 'Infraestructura', 'Salud Pública', 'Tecnología', 'Educación', 'Institución'];
 const catColors = {
   'Infraestructura': 'bg-blue-100 text-blue-700',
@@ -127,7 +130,7 @@ export default function NoticiasPage() {
                     className="break-inside-avoid inline-block w-full mb-6 group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
                     {n.imagenUrl ? (
                       <div className="h-44 overflow-hidden">
-                        <img src={`http://localhost:3001${n.imagenUrl}`} alt={n.titulo || 'Noticia'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img src={`${API_ORIGIN}${n.imagenUrl}`} alt={n.titulo || 'Noticia'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       </div>
                     ) : (
                       <div className="h-44 bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">

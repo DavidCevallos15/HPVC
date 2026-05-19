@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { Search, User, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../api/axios';
 
+const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+
+
 export default function DirectorioPage() {
   const [medicos, setMedicos] = useState([]);
   const [especialidades, setEspecialidades] = useState([]);
@@ -79,7 +82,7 @@ export default function DirectorioPage() {
                 <div key={m.id} className="bg-white rounded-xl shadow-sm border border-neutral-100 hover:border-primary/50 hover:shadow-md transition-all p-5 flex items-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-primary-pale border border-primary/10 flex items-center justify-center overflow-hidden shrink-0">
                     {m.foto ? (
-                      <img src={`http://localhost:3001${m.foto}`} alt={m.nombre} className="w-full h-full object-cover" />
+                      <img src={`${API_ORIGIN}${m.foto}`} alt={m.nombre} className="w-full h-full object-cover" />
                     ) : (
                       <User size={24} className="text-primary/70" />
                     )}

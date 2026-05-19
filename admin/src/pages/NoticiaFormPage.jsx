@@ -159,9 +159,9 @@ export default function NoticiaFormPage() {
               Publicación de Redes Sociales
               <span className="ml-2 text-xs font-normal text-neutral-400">(Opcional)</span>
             </label>
-            <button type="button" onClick={handleAIGenerate} disabled={aiLoading} className="flex items-center gap-1.5 text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-50">
+            {/* <button type="button" onClick={handleAIGenerate} disabled={aiLoading} className="flex items-center gap-1.5 text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-50">
               <Sparkles size={14} /> {aiLoading ? 'Extrayendo...' : 'Autocompletar con IA'}
-            </button>
+            </button> */}
           </div>
           <p className="text-xs text-neutral-400 mb-2">
             Pega el código de inserción de Facebook, Instagram o X. En Facebook: 
