@@ -43,8 +43,8 @@ app.use(helmet({
       ],
       // media-src: videos de Facebook/Instagram
       mediaSrc:    ["'self'", "https://video.xx.fbcdn.net", "https:", "blob:"],
-      connectSrc:  ["'self'", "http://localhost:3001", "https://api.hpvc.gob.ec", "https://graph.facebook.com"],
-      frameAncestors: ["'self'", "http://localhost:5173", "http://localhost:5174"],
+      connectSrc:  ["'self'", "http://localhost:3001", "http://192.168.5.134:3001", "https://api.hpvc.gob.ec", "https://graph.facebook.com"],
+      frameAncestors: ["'self'", "http://localhost:5173", "http://localhost:5174", "http://192.168.5.134:5173", "http://192.168.5.134:5174"],
     },
   },
 }));
@@ -52,8 +52,15 @@ app.use(helmet({
 // ── CORS ─────────────────────────────────────────────────────────────
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://hpvc.gob.ec', 'https://www.hpvc.gob.ec']
-    : ['http://localhost:5173', 'http://localhost:5174'],
+    ? [
+        'https://hpvc.gob.ec', 
+        'https://www.hpvc.gob.ec', 
+        'http://192.168.5.134:5173', 
+        'http://192.168.5.134:5174', 
+        'http://localhost:5173', 
+        'http://localhost:5174'
+      ]
+    : function (origin, callback) { callback(null, true); }, // Permite cualquier IP/Puerto local en desarrollo
   credentials: true,
 }));
 
