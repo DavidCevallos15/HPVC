@@ -34,6 +34,7 @@ router.post('/contacto', enviar);
 router.get('/configuracion',    getConfiguracion);
 
 // Descarga de POA
+router.get('/poa',              poaCtrl.getAll);
 router.get('/poa/download',     poaCtrl.downloadLatest);
 
 module.exports = router;

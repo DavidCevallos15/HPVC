@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import api from '../api/axios';
 import Skeleton from '../components/ui/Skeleton';
+import * as XLSX from 'xlsx';
 
 // ── Configuración Visual ───────────────────────────────────────────────────
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -163,6 +164,285 @@ function PdfPreviewModal({ doc, onClose }) {
   );
 }
 
+// ── Componente: Visor Excel Interactivo ───────────────────────────────────
+function ExcelPreviewModal({ doc, onClose }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [excelData, setExcelData] = useState(null);
+  const [activeSheet, setActiveSheet] = useState('');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  const excelUrl = doc.archivoUrl ? `${API_BASE.replace('/api', '')}${doc.archivoUrl}` : null;
+
+  useEffect(() => {
+    if (!excelUrl) return;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const res = await fetch(excelUrl);
+        if (!res.ok) throw new Error('Error al descargar el archivo Excel');
+        const buffer = await res.arrayBuffer();
+        const data = new Uint8Array(buffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        const parsed = {
+          sheetNames: workbook.SheetNames,
+          sheets: {}
+        };
+        
+        workbook.SheetNames.forEach(name => {
+          const sheet = workbook.Sheets[name];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+          parsed.sheets[name] = rows;
+        });
+        
+        setExcelData(parsed);
+        setActiveSheet(workbook.SheetNames[0] || '');
+      } catch (err) {
+        console.error('Error al procesar Excel:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [excelUrl, doc.archivoUrl]);
+
+  const rows = excelData?.sheets[activeSheet] || [];
+  const headers = rows[0] || [];
+  const dataRows = rows.slice(1);
+
+  // Filtrar filas
+  const filteredDataRows = dataRows.filter(row => {
+    if (!search.trim()) return true;
+    return row.some(cell => String(cell).toLowerCase().includes(search.toLowerCase()));
+  });
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex bg-neutral-900/90 backdrop-blur-md">
+      <div className="flex-1 flex flex-col h-full bg-white max-w-7xl mx-auto w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-neutral-200 shrink-0">
+          <div className="flex items-center gap-4 min-w-0">
+            <button onClick={onClose} className="p-2 -ml-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors">
+              <ChevronLeft size={24} />
+            </button>
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-50 shrink-0">
+              <FileText size={20} className="text-green-600" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-neutral-900 text-lg truncate leading-tight">Plan Operativo Anual (POA) - {doc.anio}</h2>
+              <p className="text-xs text-neutral-500 font-medium">Visualizador de Planificación Institucional</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {excelUrl && (
+              <a href={excelUrl} download className="btn-secundario text-xs py-2 px-3 border border-neutral-200 rounded-lg hover:bg-neutral-50 font-semibold text-neutral-700">
+                Descargar Excel Original
+              </a>
+            )}
+            <button onClick={onClose} className="hidden sm:block p-2 rounded-xl hover:bg-neutral-100 text-neutral-500 transition-colors">
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-neutral-50">
+          {loading ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-3">
+              <Loader2 size={36} className="animate-spin text-primary" />
+              <p className="text-sm text-neutral-500 font-medium">Procesando y cargando planilla Excel...</p>
+            </div>
+          ) : error ? (
+            <div className="flex-1 flex flex-col items-center justify-center gap-3">
+              <AlertCircle size={36} className="text-red-500" />
+              <p className="text-sm text-neutral-600 font-medium">Ocurrió un error al intentar abrir el archivo Excel.</p>
+              {excelUrl && (
+                <a href={excelUrl} download className="btn-primario text-xs py-2 px-4 mt-2">
+                  Descargar archivo para ver en Excel
+                </a>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Sidebar */}
+              <div className="w-full md:w-60 bg-white border-r border-neutral-200 flex flex-col shrink-0 overflow-y-auto">
+                <div className="p-4 border-b border-neutral-100 shrink-0">
+                  <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Hojas de cálculo</p>
+                </div>
+                <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible p-2 gap-1">
+                  {excelData?.sheetNames.map(name => (
+                    <button
+                      key={name}
+                      onClick={() => { setActiveSheet(name); setSearch(''); }}
+                      className={`px-3 py-2 text-left text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+                        activeSheet === name
+                          ? 'bg-green-50 text-green-700'
+                          : 'text-neutral-600 hover:bg-neutral-50'
+                      }`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Main Panel */}
+              <div className="flex-1 flex flex-col overflow-hidden p-6">
+                <div className="mb-4 relative shrink-0">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Search size={16} className="text-neutral-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={`Buscar en la hoja "${activeSheet}"...`}
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium text-neutral-800"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-neutral-400 hover:text-neutral-600">
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1 overflow-auto border border-neutral-200 rounded-2xl bg-white shadow-sm">
+                  {rows.length === 0 ? (
+                    <div className="p-8 text-center text-neutral-400 text-xs">
+                      Esta hoja de cálculo está vacía.
+                    </div>
+                  ) : (
+                    <table className="min-w-full divide-y divide-neutral-200 text-left text-[11px] font-medium">
+                      <thead className="bg-neutral-50 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                          {headers.map((h, colIdx) => (
+                            <th key={colIdx} className="px-3 py-2.5 font-bold text-neutral-700 border-b border-neutral-200 bg-neutral-50 whitespace-nowrap">
+                              {String(h || `Columna ${colIdx + 1}`)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-neutral-100 bg-white">
+                        {filteredDataRows.map((row, rowIdx) => (
+                          <tr key={rowIdx} className="hover:bg-neutral-50/50 transition-colors">
+                            {headers.map((_, colIdx) => (
+                              <td key={colIdx} className="px-3 py-2 text-neutral-600 border-b border-neutral-50 whitespace-nowrap max-w-xs truncate" title={String(row[colIdx] || '')}>
+                                {String(row[colIdx] || '')}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                        {filteredDataRows.length === 0 && (
+                          <tr>
+                            <td colSpan={headers.length} className="px-3 py-6 text-center text-neutral-400">
+                              No se encontraron resultados para la búsqueda.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Componente: Sección POA ───────────────────────────────────────────────
+function PoaSection({ setSelectedPoa }) {
+  const [poas, setPoas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const { data } = await api.get('/public/poa');
+        setPoas(data.data || []);
+      } catch (err) {
+        console.error('Error al obtener POAs:', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm h-[180px]">
+            <Skeleton className="w-12 h-12 rounded-xl mb-4" />
+            <Skeleton className="h-6 w-1/2 mb-2" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-3xl p-8 shadow-sm border border-neutral-100 min-h-[400px]">
+      <div className="max-w-xl mb-8">
+        <h2 className="text-2xl font-bold text-neutral-800 mb-2 flex items-center gap-2">
+          <FileText size={24} className="text-green-600" /> Planificación y Transparencia
+        </h2>
+        <p className="text-sm text-neutral-500 leading-relaxed font-medium">
+          Seleccione el año correspondiente para visualizar el archivo de planificación detallada de la institución.
+        </p>
+      </div>
+
+      {poas.length === 0 ? (
+        <div className="text-center py-16 text-neutral-400">
+          <BookOpen size={48} className="mx-auto mb-4 opacity-30" />
+          <p className="text-lg">No se han registrado planes operativos anuales en el sistema.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {poas.map(poa => (
+            <div
+              key={poa.id}
+              onClick={() => setSelectedPoa(poa)}
+              className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+            >
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center mb-4 text-green-600 group-hover:bg-green-100 transition-colors">
+                  <FileText size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-neutral-800 mb-1 group-hover:text-green-700 transition-colors">
+                  Plan Operativo Anual {poa.anio}
+                </h3>
+                <p className="text-xs text-neutral-400 font-medium truncate" title={poa.nombreOriginal}>
+                  {poa.nombreOriginal}
+                </p>
+              </div>
+              <div className="border-t border-neutral-100 pt-4 mt-6 flex items-center justify-between">
+                <span className="text-xs text-neutral-500 font-semibold">Ver documento →</span>
+                <span className="text-[10px] bg-green-50 text-green-700 font-bold px-2 py-0.5 rounded uppercase">
+                  Excel
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Página Principal ───────────────────────────────────────────────────────
 export default function DocumentosPage() {
   const [docs, setDocs] = useState([]);
@@ -170,6 +450,8 @@ export default function DocumentosPage() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [activeMainTab, setActiveMainTab] = useState('biblioteca'); // 'biblioteca' | 'poa'
+  const [selectedPoa, setSelectedPoa] = useState(null);
   const timerRef = useRef(null);
 
   const fetchDocs = useCallback(async (q) => {
@@ -190,7 +472,7 @@ export default function DocumentosPage() {
   }, [search, fetchDocs]);
 
   // Si hay búsqueda global activa, ignoramos la categoría seleccionada para mostrar todos los resultados
-  const isGlobalSearch = search.trim().length > 0;
+  const isGlobalSearch = activeMainTab === 'biblioteca' && search.trim().length > 0;
   const docsToShow = isGlobalSearch
     ? docs
     : selectedCategory
@@ -240,8 +522,35 @@ export default function DocumentosPage() {
       </div>
 
       <div className="container mx-auto max-w-6xl px-6 -mt-10 relative z-20">
-        
-        {loading ? (
+        {/* Selector de Pestaña Principal */}
+        <div className="flex gap-4 mb-8 bg-white p-1.5 rounded-2xl shadow-sm border border-neutral-200 max-w-md">
+          <button
+            onClick={() => { setActiveMainTab('biblioteca'); setSelectedCategory(null); }}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 ${
+              activeMainTab === 'biblioteca'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+            }`}
+          >
+            <BookOpen size={16} />
+            Biblioteca Clínica
+          </button>
+          <button
+            onClick={() => setActiveMainTab('poa')}
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 ${
+              activeMainTab === 'poa'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+            }`}
+          >
+            <FileText size={16} />
+            Plan Operativo Anual (POA)
+          </button>
+        </div>
+
+        {activeMainTab === 'poa' ? (
+          <PoaSection setSelectedPoa={setSelectedPoa} />
+        ) : loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm flex flex-col h-[200px]">
@@ -364,6 +673,7 @@ export default function DocumentosPage() {
 
       {/* Modal Visor + Chat */}
       {previewDoc && <PdfPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />}
+      {selectedPoa && <ExcelPreviewModal doc={selectedPoa} onClose={() => setSelectedPoa(null)} />}
     </div>
   );
 }

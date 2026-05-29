@@ -25,7 +25,6 @@ const navLinks = [
       { label: 'Noticias y Actualidad', to: '/noticias' },
       { label: 'Documentos y Transparencia', to: '/documentos' },
       { label: 'GeoSalud MSP', to: '/subcentros' },
-      { label: 'POA 2026', to: 'http://drive.hpvc.gob.ec/owncloud/index.php/s/RzphFTzamzyzLxN' },
     ]
   },
   { 
