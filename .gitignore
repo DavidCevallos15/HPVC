@@ -13,3 +13,4 @@ server/temp_docs.zip
 admin/GUIAS PRACTICAS CLINICAS/
 backups/
 *.sql
+!**/prisma/migrations/**/*.sql
