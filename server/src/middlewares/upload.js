@@ -139,4 +139,26 @@ const uploadExcel = multer({
   },
 });
 
-module.exports = { uploadImage, uploadPDF, uploadDocumento, uploadMedico, uploadExcel };
+// ── Almacenamiento a disco (POA Excel) ───────────────────────────────
+const poaStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = './public/uploads/poa';
+    ensureDir(dir);
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, unique + path.extname(file.originalname).toLowerCase());
+  },
+});
+
+const uploadPOA = multer({
+  storage: poaStorage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+  fileFilter: (req, file, cb) => {
+    if (/\.(xlsx|xls)$/i.test(file.originalname)) cb(null, true);
+    else cb(new Error('Solo se permiten archivos Excel (.xlsx, .xls).'));
+  },
+});
+
+module.exports = { uploadImage, uploadPDF, uploadDocumento, uploadMedico, uploadExcel, uploadPOA };

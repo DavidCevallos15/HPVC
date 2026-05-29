@@ -4,6 +4,8 @@ import { Menu, X, ChevronDown, Phone, Mail, Clock } from 'lucide-react';
 import logoMsp from '../../assets/logo-msp-remove.png';
 import logoNuevoEcuador from '../../assets/Footer.png';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 const navLinks = [
   { label: 'Inicio', to: '/' },
   { 
@@ -23,6 +25,7 @@ const navLinks = [
       { label: 'Noticias y Actualidad', to: '/noticias' },
       { label: 'Documentos y Transparencia', to: '/documentos' },
       { label: 'GeoSalud MSP', to: '/subcentros' },
+      { label: 'POA', to: `${API_BASE}/public/poa/download` },
     ]
   },
   { 

@@ -17,6 +17,7 @@ import MedicoFormPage    from './pages/MedicoFormPage';
 import DocumentosAdminPage from './pages/DocumentosAdminPage';
 import ImagenMesAdminPage  from './pages/ImagenMesAdminPage';
 import HeroCarouselAdminPage from './pages/HeroCarouselAdminPage';
+import PoaAdminPage        from './pages/PoaAdminPage';
 
 function Loader() {
   return (
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
         <Route path="medicos/nuevo"        element={<MedicoFormPage />} />
         <Route path="medicos/editar/:id"   element={<MedicoFormPage />} />
         <Route path="documentos"           element={<DocumentosAdminPage />} />
+        <Route path="poa"                  element={<PoaAdminPage />} />
       </Route>
 
       {/* Fallback */}

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { verifyToken, requireRole } = require('../middlewares/auth');
-const { uploadImage, uploadDocumento, uploadMedico, uploadExcel } = require('../middlewares/upload');
+const { uploadImage, uploadDocumento, uploadMedico, uploadExcel, uploadPOA } = require('../middlewares/upload');
 
 const noticiaCtrl      = require('../controllers/noticias.controller');
 const especialidadCtrl = require('../controllers/especialidades.controller');
@@ -11,6 +11,7 @@ const documentoCtrl    = require('../controllers/documentos.controller');
 const configCtrl       = require('../controllers/configuracion.controller');
 const guardiasCtrl     = require('../controllers/guardias.controller');
 const aiCtrl           = require('../controllers/ai.controller');
+const poaCtrl          = require('../controllers/poa.controller');
 
 // Todas las rutas requieren autenticación
 router.use(verifyToken);
@@ -64,5 +65,10 @@ router.post('/documentos',                requireRole('SUPERADMIN'), uploadDocum
 router.put('/documentos/:id',             requireRole('SUPERADMIN'), uploadDocumento.single('archivo'), documentoCtrl.update);
 router.delete('/documentos/:id',          requireRole('SUPERADMIN'), documentoCtrl.remove);
 router.post('/documentos/:id/re-indexar', requireRole('SUPERADMIN'), documentoCtrl.reIndexar);
+
+// ── POA CRUD ────────────────────────────────────────────────────────
+router.get('/poa',                        requireRole('SUPERADMIN'), poaCtrl.getAll);
+router.post('/poa',                       requireRole('SUPERADMIN'), uploadPOA.single('archivo'), poaCtrl.create);
+router.delete('/poa/:id',                 requireRole('SUPERADMIN'), poaCtrl.remove);
 
 module.exports = router;

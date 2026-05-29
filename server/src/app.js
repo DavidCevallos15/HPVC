@@ -9,6 +9,9 @@ const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
+// Confiar en el proxy inverso (Nginx) para leer la IP del cliente real
+app.set('trust proxy', 1);
+
 // ── Seguridad ────────────────────────────────────────────────────────
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },

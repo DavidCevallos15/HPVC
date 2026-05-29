@@ -195,3 +195,13 @@ model MensajeContacto {
   @@index([creadoEn])
   @@map("mensajes_contacto")
 }
+
+model Poa {
+  id             Int      @id @default(autoincrement())
+  anio           Int      @unique
+  archivoUrl     String
+  nombreOriginal String
+  creadoEn       DateTime @default(now())
+
+  @@map("poas")
+}

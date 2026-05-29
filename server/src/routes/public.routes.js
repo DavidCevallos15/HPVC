@@ -8,6 +8,7 @@ const { getGuardiasByMes, getMesesDisponibles } = require('../controllers/guardi
 const { enviar }      = require('../controllers/contacto.controller');
 const { getPublicos, preguntar } = require('../controllers/documentos.controller');
 const { getAll: getConfiguracion }     = require('../controllers/configuracion.controller');
+const poaCtrl = require('../controllers/poa.controller');
 
 // Noticias públicas
 router.get('/noticias',         getPublicas);
@@ -31,5 +32,8 @@ router.post('/contacto', enviar);
 
 // Configuración pública (teléfono, dirección, horario, etc.)
 router.get('/configuracion',    getConfiguracion);
+
+// Descarga de POA
+router.get('/poa/download',     poaCtrl.downloadLatest);
 
 module.exports = router;

@@ -3,13 +3,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Newspaper, CalendarDays, MessageSquare,
-  Settings, LogOut, ChevronLeft, ChevronRight, Stethoscope, BookOpen, Image
+  Settings, LogOut, ChevronLeft, ChevronRight, Stethoscope, BookOpen, Image, FileSpreadsheet
 } from 'lucide-react';
 
 const navItems = [
   { to: '/',             Icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/noticias',     Icon: Newspaper,       label: 'Noticias' },
   { to: '/documentos',   Icon: BookOpen,        label: 'Documentos Clínicos' },
+  { to: '/poa',          Icon: FileSpreadsheet, label: 'Plan Operativo Anual' },
   { to: '/horarios',     Icon: CalendarDays,    label: 'Matriz de Guardias' },
   { to: '/medicos',      Icon: Stethoscope,     label: 'Médicos' },
   { to: '/contacto',     Icon: MessageSquare,   label: 'Mensajes' },
