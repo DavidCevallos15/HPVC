@@ -95,7 +95,7 @@ export default function EmbedRenderer({ html, className = '', showDirectAccess =
               scrolling="no"
               frameBorder="0"
               allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
               title="Publicación de Facebook"
             />
           ) : (

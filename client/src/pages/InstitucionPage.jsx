@@ -119,7 +119,7 @@ export default function InstitucionPage() {
               titulo: "Hospitalización y Cuidados",
               icono: <Bed size={24} className="text-primary" />,
               items: [
-                "Hospitalización (200 camas).",
+                "Hospitalización (205 camas).",
                 "Terapia Intensiva (6 camas): 3 adultos y 3 pediátricas.",
                 "Neonatología: 8 básicos, 7 intermedios, 5 intensivos."
               ]

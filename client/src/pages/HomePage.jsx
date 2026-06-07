@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Stethoscope, Baby, Scissors, Heart, Bone, Activity,
@@ -123,75 +123,32 @@ function EspecialidadesPreview() {
 
 // ── Noticias Recientes ──────────────────────────────────────────────
 function NoticiasRecientes() {
-  const [noticias, setNoticias] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Guardamos qué 3 noticias (por índice) se están mostrando actualmente
-  const [displayedIndices, setDisplayedIndices] = useState([0, 1, 2]);
-  // Guardamos qué tarjeta está en proceso de desvanecimiento
-  const [fadingOutIndex, setFadingOutIndex] = useState(null);
-
   useEffect(() => {
-    // Pedimos más noticias para tener un pozo del cual rotar (ej: 15)
-    api.get('/public/noticias?limit=15')
-      .then((r) => {
-        const data = r.data?.data || [];
-        setNoticias(data);
-        if (data.length > 3) setDisplayedIndices([0, 1, 2]);
-        else setDisplayedIndices(data.map((_, i) => i));
-      })
-      .catch(() => setNoticias([]))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    // Si tenemos 3 o menos noticias, no hay nada que rotar
-    if (noticias.length <= 3) return;
-
-    const interval = setInterval(() => {
-      // 1. Elegimos un slot al azar de los 3 que se muestran (0, 1 o 2)
-      const slotToSwap = Math.floor(Math.random() * 3);
-
-      // 2. Elegimos una nueva noticia del pozo que no esté mostrándose actualmente
-      let newIndex = Math.floor(Math.random() * noticias.length);
-      while (displayedIndices.includes(newIndex)) {
-        newIndex = Math.floor(Math.random() * noticias.length);
+    // 1. Definimos el ID del script de Elfsight
+    const scriptId = 'elfsight-platform-script';
+    
+    // 2. Verificamos si el script ya existe en el documento para no duplicarlo
+    let script = document.getElementById(scriptId);
+    
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = "https://elfsightcdn.com/platform.js";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    } else {
+      // Si el script ya existía, forzamos a Elfsight a inicializar el widget
+      if (window.ElfsightApps) {
+        window.ElfsightApps.init();
       }
-
-      // 3. Iniciamos el efecto de desvanecimiento (fade out)
-      setFadingOutIndex(slotToSwap);
-
-      // 4. CAMBIO DE CONTENIDO (Paso 1): Cambiamos la noticia cuando está totalmente invisible
-      // Puedes ajustar los 300ms de abajo si quieres que el cambio de datos ocurra más rápido o lento.
-      setTimeout(() => {
-        setDisplayedIndices(prev => {
-          const newArr = [...prev];
-          newArr[slotToSwap] = newIndex;
-          return newArr;
-        });
-      }, 300); // 300ms coincide exactamente con la duración de la transición CSS (duration-300)
-
-      // 5. APARICIÓN (Paso 2): Le damos 100ms al navegador para renderizar la nueva imagen
-      // antes de iniciar el desvanecimiento de entrada (fade in).
-      setTimeout(() => {
-        setFadingOutIndex(null);
-      }, 400); // 400ms en total (300ms invisible + 100ms de espera/buffer)
-
-    }, 4500); // Rota una tarjeta cada 4.5 segundos
-
-    return () => clearInterval(interval);
-  }, [noticias, displayedIndices]);
-
-  const catColors = {
-    'Infraestructura': 'bg-blue-100 text-blue-700',
-    'Salud Pública': 'bg-green-100 text-green-700',
-    'Tecnología': 'bg-purple-100 text-purple-700',
-    'default': 'bg-primary-pale text-primary',
-  };
+    }
+  }, []);
 
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-6">
+        {/* Encabezado */}
         <div className="flex justify-between items-end mb-10">
           <div>
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Actualidad</span>
@@ -202,72 +159,14 @@ function NoticiasRecientes() {
           </Link>
         </div>
 
-        {loading ? (
-          <div className="grid md:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-64 bg-neutral-200 rounded-card animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {displayedIndices.map((newsIndex, slotIndex) => {
-              const n = noticias[newsIndex];
-              if (!n) return <div key={slotIndex} />;
-
-              const isFading = fadingOutIndex === slotIndex;
-
-              return (
-                <div key={slotIndex} className={`transition-all duration-300 ease-out ${isFading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
-                  <Link to={`/noticias/${n.slug}`}
-                    className="group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col h-full min-h-[500px]">
-
-                    {/* AQUI PUEDES AJUSTAR LA ALTURA DE LA VISTA PREVIA (EJ: h-[300px], h-[350px], h-[400px], etc.) */}
-                    {n.previewMode === 'frame' && n.embedUrl ? (
-                      <div className="h-[400px] bg-neutral-50 border-b border-neutral-100 overflow-hidden [&_iframe]:w-full [&_iframe]:h-[550px] [&_iframe]:border-0 [&_iframe]:pointer-events-none [&_blockquote]:pointer-events-none">
-                        <EmbedRenderer
-                          className="w-full h-full"
-                          html={n.embedUrl}
-                          showDirectAccess={false}
-                        />
-                      </div>
-                    ) : toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl) ? (
-                      <div className="h-[350px] overflow-hidden bg-neutral-100">
-                        <img
-                          src={toAbsoluteMediaUrl(n.previewImageUrl || n.imagenUrl)}
-                          alt={n.titulo || 'Vista previa de noticia'}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-[350px] bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-                        <Newspaper size={40} className="text-white/40" />
-                      </div>
-                    )}
-                    {/* FIN DEL AJUSTE DE ALTURA DE VISTA PREVIA */}
-
-                    <div className="p-6 md:p-8 flex flex-col flex-1">
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-full self-start mb-4 ${catColors[n.categoria] || catColors.default}`}>
-                        {n.categoria}
-                      </span>
-                      <h3 className="font-semibold font-heading text-dark text-sm leading-snug mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {n.titulo}
-                      </h3>
-                      <p className="text-gray text-xs leading-relaxed line-clamp-3 flex-1">{n.extracto}</p>
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
-                        <span className="text-xs text-gray">
-                          {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
-                        </span>
-                        <span className="text-primary text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                          Leer <ArrowRight size={12} />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {/* Contenedor del Feed de Elfsight */}
+        <div className="w-full bg-white rounded-2xl shadow-sm border border-neutral-100 p-4 md:p-6 min-h-[500px]">
+          {/* Elfsight Social Feed */}
+          <div 
+            className="elfsight-app-fe556dbd-9c7d-4eff-a4a2-59d0d4d4859a w-full" 
+            data-elfsight-app-lazy
+          ></div>
+        </div>
       </div>
     </section>
   );
@@ -387,7 +286,7 @@ function ImagenMesBanner() {
     <>
       <section className="py-12 bg-white overflow-hidden">
         <div className="container mx-auto px-6 mb-6 text-center">
-          <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Noticias del Mes</span>
+          <span className="text-secondary text-sm font-semibold uppercase tracking-widest">EFEMÉRIDES</span>
         </div>
 
         <div className="relative w-full max-w-[1400px] mx-auto"

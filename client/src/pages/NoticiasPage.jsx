@@ -1,173 +1,226 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Newspaper, ArrowRight, Filter } from 'lucide-react';
-import EmbedRenderer from '../components/EmbedRenderer';
-import api from '../api/axios';
+import React, { useEffect } from 'react';
+import { ExternalLink } from 'lucide-react';
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+/* ─── Iconos SVG ─────────────────────────────────────────────── */
+const FacebookIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.8z" />
+  </svg>
+);
 
+const InstagramIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
 
-const CATEGORIAS = ['Todos', 'Infraestructura', 'Salud Pública', 'Tecnología', 'Educación', 'Institución'];
-const catColors = {
-  'Infraestructura': 'bg-blue-100 text-blue-700',
-  'Salud Pública':   'bg-green-100 text-green-700',
-  'Tecnología':      'bg-purple-100 text-purple-700',
-  'Educación':       'bg-orange-100 text-orange-700',
-  'Institución':     'bg-primary-pale text-primary',
-  'default':         'bg-neutral-100 text-gray',
-};
+const XIcon = ({ size = 24, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
-export default function NoticiasPage() {
-  const [noticias, setNoticias] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [categoria, setCategoria] = useState('Todos');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+/* ─── IDs de widgets Elfsight ─────────────────────────────────── */
+const ELFSIGHT_INSTAGRAM = 'elfsight-app-b64000ac-aef1-4efd-b211-847e5794f442';
+const ELFSIGHT_TWITTER   = 'elfsight-app-d65137e4-2e4c-4c52-afa0-e5dcf3f139ef';
 
-  useEffect(() => {
-    setLoading(true);
-    const cat = categoria !== 'Todos' ? `&categoria=${encodeURIComponent(categoria)}` : '';
-    api.get(`/public/noticias?page=${page}&limit=9${cat}`)
-      .then(r => { 
-        setNoticias(r.data?.data || []); 
-        setTotalPages(r.data?.meta?.totalPages || 1); 
-      })
-      .catch(() => {
-        setNoticias([]);
-        setTotalPages(1);
-      })
-      .finally(() => setLoading(false));
-  }, [page, categoria]);
-
-  const handleCat = (c) => { setCategoria(c); setPage(1); };
-
-  const filtered = search
-    ? noticias.filter(n => (n.titulo || '').toLowerCase().includes(search.toLowerCase()) || (n.extracto || '').toLowerCase().includes(search.toLowerCase()))
-    : noticias;
-
+/* ─── Componente reutilizable: tarjeta de red social ─────────── */
+function SocialCard({ header, feedHeight = 480, feedContent, footerHref, footerLabel }) {
   return (
-    <div className="min-h-screen bg-gray-light">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary-light text-white py-16">
-        <div className="container mx-auto px-6">
-          <nav className="text-primary-pale text-sm mb-4">
-            <Link to="/" className="hover:text-white">Inicio</Link>
-            <span className="mx-2">/</span>
-            <span>Noticias</span>
-          </nav>
-          <h1 className="text-4xl font-semibold font-heading">Noticias Institucionales</h1>
-          <p className="text-primary-pale mt-2">Mantente al día con las novedades del Hospital Verdi Cevallos.</p>
-        </div>
+    <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col transition-all hover:shadow-md">
+      {/* Header con color de marca */}
+      <div className="flex-shrink-0">{header}</div>
+
+      {/* Feed con altura fija y scroll interno */}
+      <div
+        style={{ height: feedHeight, overflowY: 'auto', overflowX: 'hidden' }}
+        className="w-full bg-neutral-50 flex-shrink-0"
+      >
+        {feedContent}
       </div>
 
-      <div className="container mx-auto px-6 py-10">
-        {/* Filtros */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1 max-w-xs">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray" />
-            <input type="text" placeholder="Buscar noticia..." value={search} onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-neutral-200 rounded-btn text-sm focus:outline-none focus:border-primary" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIAS.map(c => (
-              <button key={c} onClick={() => handleCat(c)}
-                className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${categoria === c ? 'bg-primary text-white border-primary' : 'bg-white text-gray border-neutral-200 hover:border-primary hover:text-primary'}`}>
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Grid */}
-        {loading ? (
-          <div className="grid md:grid-cols-3 gap-6">
-            {[...Array(9)].map((_, i) => <div key={i} className="h-64 bg-neutral-200 rounded-card animate-pulse" />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-gray">
-            <Newspaper size={40} className="mx-auto mb-3 opacity-30" />
-            <p>No hay noticias disponibles con los filtros actuales.</p>
-          </div>
-        ) : (
-          <>
-            <div className="columns-1 md:columns-2 lg:columns-2 xl:columns-3 gap-6 space-y-6">
-              {filtered.map((n) => {
-                if (n.embedUrl) {
-                  return (
-                    <div key={n.id} className="break-inside-avoid inline-block w-full mb-6 bg-white rounded-card shadow-card flex flex-col overflow-hidden h-auto transition-all duration-200 hover:-translate-y-1 hover:shadow-hero">
-                      {/* Header con la categoría */}
-                      <div className="p-4 pb-2 flex justify-between items-center bg-white">
-                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${catColors[n.categoria] || catColors.default}`}>
-                          {n.categoria}
-                        </span>
-                        <span className="text-xs text-neutral-400">
-                          {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'short' }) : ''}
-                        </span>
-                      </div>
-                      
-                      {n.titulo && (
-                        <div className="px-4 pb-2">
-                          <h2 className="font-semibold font-heading text-dark text-sm leading-snug line-clamp-1" title={n.titulo}>
-                            {n.titulo}
-                          </h2>
-                        </div>
-                      )}
-
-                      {/* Contenedor del Embed */}
-                      <div className="w-full overflow-hidden">
-                        <EmbedRenderer
-                          html={n.embedUrl}
-                          showDirectAccess={true}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-
-                return (
-                  <Link key={n.id} to={`/noticias/${n.slug}`}
-                    className="break-inside-avoid inline-block w-full mb-6 group bg-white rounded-card shadow-card hover:shadow-hero transition-all duration-200 hover:-translate-y-1 overflow-hidden flex flex-col">
-                    {n.imagenUrl ? (
-                      <div className="h-44 overflow-hidden">
-                        <img src={`${API_ORIGIN}${n.imagenUrl}`} alt={n.titulo || 'Noticia'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      </div>
-                    ) : (
-                      <div className="h-44 bg-gradient-to-br from-primary to-primary-light flex items-center justify-center">
-                        <Newspaper size={36} className="text-white/30" />
-                      </div>
-                    )}
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex justify-between items-center mb-3">
-                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full self-start ${catColors[n.categoria] || catColors.default}`}>{n.categoria}</span>
-                      </div>
-                      <h2 className="font-semibold font-heading text-dark text-sm leading-snug group-hover:text-primary transition-colors line-clamp-3 flex-1">{n.titulo || 'Sin Título'}</h2>
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-100">
-                        <span className="text-xs text-gray">
-                          {n.publicadoEn ? new Date(n.publicadoEn).toLocaleDateString('es-EC', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
-                        </span>
-                        <span className="text-primary text-xs font-medium flex items-center gap-1">Leer <ArrowRight size={11} /></span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Paginación */}
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10">
-                {[...Array(totalPages)].map((_, i) => (
-                  <button key={i} onClick={() => setPage(i + 1)}
-                    className={`w-9 h-9 rounded-btn text-sm font-medium transition-colors ${page === i + 1 ? 'bg-primary text-white' : 'bg-white text-gray hover:bg-primary-pale hover:text-primary border border-neutral-200'}`}>
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+      {/* Footer — botón de enlace */}
+      <div className="p-4 border-t border-neutral-100 bg-white flex-shrink-0">
+        {footerHref}
       </div>
     </div>
+  );
+}
+
+/* ─── Página principal ───────────────────────────────────────── */
+export default function NoticiasPage() {
+
+  useEffect(() => {
+    // Un único script de Elfsight sirve para todos los widgets de la página
+    const scriptId = 'elfsight-platform-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id    = scriptId;
+      script.src   = 'https://elfsightcdn.com/platform.js';
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    } else if (window.ElfsightApps) {
+      // Re-init si el componente se monta después de una navegación SPA
+      window.ElfsightApps.init();
+    }
+  }, []);
+
+  return (
+    <main className="w-full min-h-screen bg-neutral-50 py-10 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+
+        {/* ── Encabezado ── */}
+        <div className="text-center md:text-left space-y-2 border-b border-neutral-200 pb-6">
+          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
+            Canales Oficiales y Redes Sociales
+          </h1>
+          <p className="text-base text-neutral-500 max-w-2xl">
+            Mantente informado en tiempo real con las últimas actualizaciones, comunicados y
+            actividades oficiales de nuestra comunidad de salud.
+          </p>
+        </div>
+
+        {/*
+          ┌────────────────────────────┬────────────────┐
+          │  Instagram  (Elfsight)     │                │
+          ├────────────────────────────┤   Facebook     │
+          │  Twitter/X  (Elfsight)     │   (iframe)     │
+          └────────────────────────────┴────────────────┘
+          Columna izquierda: 2/3 del ancho
+          Columna derecha:   1/3 del ancho
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+
+          {/* ══ COLUMNA IZQUIERDA — Instagram + Twitter apilados ══ */}
+          <div className="lg:col-span-3 flex flex-col gap-8">
+
+            {/* ── Instagram (Elfsight) ── */}
+            <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col transition-all hover:shadow-md">
+              {/* Header */}
+              <div className="p-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <InstagramIcon size={22} />
+                  <div>
+                    <h3 className="font-semibold text-sm">Instagram Oficial</h3>
+                    <p className="text-xs text-pink-100">@hospitalverdi</p>
+                  </div>
+                </div>
+                <span className="bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full font-medium">Oficial</span>
+              </div>
+
+              {/* Feed Elfsight — clase exacta que necesita el script de Elfsight */}
+              <div className="w-full bg-neutral-50 overflow-x-hidden">
+                <div
+                  className="elfsight-app-b64000ac-aef1-4efd-b211-847e5794f442"
+                  data-elfsight-app-lazy
+                  style={{ width: '100%' }}
+                ></div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-neutral-100 bg-white flex-shrink-0">
+                <a
+                  href="https://www.instagram.com/hospitalverdi/?hl=es"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:opacity-95 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm"
+                >
+                  <ExternalLink size={14} />
+                  Ir a Instagram
+                </a>
+              </div>
+            </div>
+
+            {/* ── Twitter / X (Elfsight) ── */}
+            <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col transition-all hover:shadow-md">
+              {/* Header */}
+              <div className="p-4 bg-neutral-900 text-white flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <XIcon size={22} />
+                  <div>
+                    <h3 className="font-semibold text-sm">X (Twitter) Oficial</h3>
+                    <p className="text-xs text-neutral-400">@HospitalVerdi</p>
+                  </div>
+                </div>
+                <span className="bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full font-medium">Oficial</span>
+              </div>
+
+              {/* Feed Elfsight — overflow visible para que el widget multi-columna no se corte */}
+              <div className="w-full bg-neutral-50" style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+                <div
+                  className="elfsight-app-d65137e4-2e4c-4c52-afa0-e5dcf3f139ef"
+                  data-elfsight-app-lazy
+                  style={{ width: '100%', minWidth: 0 }}
+                ></div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-neutral-100 bg-white flex-shrink-0">
+                <a
+                  href="https://x.com/HospitalVerdi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <ExternalLink size={14} />
+                  Ir a X (Twitter)
+                </a>
+              </div>
+            </div>
+
+          </div>{/* fin columna izquierda */}
+
+          {/* ══ COLUMNA DERECHA — Facebook fijo al costado, con sticky y altura máxima ══ */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col transition-all hover:shadow-md lg:sticky lg:top-8 self-start">
+            {/* Header */}
+            <div className="p-4 bg-[#1877F2] text-white flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <FacebookIcon size={22} className="fill-current" />
+                <div>
+                  <h3 className="font-semibold text-sm">Facebook Oficial</h3>
+                  <p className="text-xs text-blue-100">Hospital Verdi Cevallos</p>
+                </div>
+              </div>
+              <span className="bg-white/20 text-white text-xs px-2.5 py-0.5 rounded-full font-medium">Oficial</span>
+            </div>
+
+            {/* Feed — altura máxima de viewport menos header/footer */}
+            <div
+              className="w-full bg-neutral-50"
+              style={{ height: '800px', overflowY: 'auto', overflowX: 'hidden' }}
+            >
+              <iframe
+                src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61570730374806&tabs=timeline&width=680&height=800&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false&appId"
+                width="100%"
+                height="800"
+                style={{ border: 'none', overflow: 'hidden', display: 'block' }}
+                scrolling="no"
+                frameBorder="0"
+                allowFullScreen={true}
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                title="Facebook Feed"
+              ></iframe>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-neutral-100 bg-white flex-shrink-0">
+              <a
+                href="https://www.facebook.com/profile.php?id=61570730374806"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 px-4 bg-[#1877F2] hover:bg-[#1877F2]/90 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
+              >
+                <ExternalLink size={14} />
+                Ir a Facebook
+              </a>
+            </div>
+          </div>
+
+        </div>{/* fin grid */}
+      </div>
+    </main>
   );
 }
