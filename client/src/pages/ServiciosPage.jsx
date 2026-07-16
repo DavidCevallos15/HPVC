@@ -1,6 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Stethoscope, FlaskConical, ScanLine, Baby, Footprints, ChevronRight, Phone, Clock, Users, Building2 } from 'lucide-react';
+import emergenciaImg from '../assets/EMERGENCIA.jpeg';
+import consultaExternaImg from '../assets/CONSULTA-EXTERNA.jpeg';
+import laboratorioClinicoImg from '../assets/LABORATORIO-CLINICO.jpeg';
+import imagenologiaImg from '../assets/IMAGENOLOGIA.jpeg';
+import bancoLecheImg from '../assets/BANCO-DE-LECHE.jpeg';
+import pieDiabeticoImg from '../assets/PIE-DIABETICO.jpeg';
 
 const servicios = [
   {
@@ -8,7 +14,7 @@ const servicios = [
     titulo: 'Emergencias 24/7',
     descripcion: 'Atención urgente permanente con equipo médico especializado y áreas de estabilización.',
     icono: Activity,
-    imagen: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800',
+    imagen: emergenciaImg,
     size: 'col-span-1 md:col-span-2 row-span-2',
   },
   {
@@ -16,7 +22,7 @@ const servicios = [
     titulo: 'Consulta Externa',
     descripcion: 'Atención programada integral en múltiples especialidades médicas.',
     icono: Stethoscope,
-    imagen: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&q=80&w=800',
+    imagen: consultaExternaImg,
     size: 'col-span-1 md:col-span-1 row-span-1',
   },
   {
@@ -24,7 +30,7 @@ const servicios = [
     titulo: 'Laboratorio Clínico',
     descripcion: 'Análisis y diagnósticos de alta precisión',
     icono: FlaskConical,
-    imagen: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800',
+    imagen: laboratorioClinicoImg,
     color: 'from-accent to-accent-light',
     size: 'col-span-1 md:col-span-1 row-span-1',
   },
@@ -33,7 +39,7 @@ const servicios = [
     titulo: 'Imagenología',
     descripcion: 'Rayos X, ecografías y estudios diagnósticos',
     icono: ScanLine,
-    imagen: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800',
+    imagen: imagenologiaImg,
     color: 'from-primary to-primary-light',
     size: 'col-span-1 md:col-span-1 row-span-1',
   },
@@ -42,7 +48,7 @@ const servicios = [
     titulo: 'Banco de Leche',
     descripcion: 'Unidad especializada en lactancia materna',
     icono: Baby,
-    imagen: 'https://images.unsplash.com/photo-1531983412531-1f49a365ffed?auto=format&fit=crop&q=80&w=800',
+    imagen: bancoLecheImg,
     color: 'from-accent to-accent-light',
     size: 'col-span-1 md:col-span-1 row-span-1',
   },
@@ -51,7 +57,7 @@ const servicios = [
     titulo: 'Pie Diabético',
     descripcion: 'Atención especializada en podología',
     icono: Footprints,
-    imagen: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=800',
+    imagen: pieDiabeticoImg,
     color: 'from-primary to-primary-light',
     size: 'col-span-1 md:col-span-1 row-span-1',
   },

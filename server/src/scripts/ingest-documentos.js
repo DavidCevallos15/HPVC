@@ -22,7 +22,9 @@ const { PrismaClient } = require('@prisma/client');
 const { indexarDocumento } = require('../services/documentos.service');
 
 const prisma = new PrismaClient();
-const groq   = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq   = process.env.GROQ_API_KEY
+  ? new Groq({ apiKey: process.env.GROQ_API_KEY })
+  : null;
 
 const DOCS_DIR    = path.join(__dirname, '../../public/uploads/documentos');
 const RESET_FLAG  = process.argv.includes('--reset');
@@ -31,6 +33,8 @@ const RESET_FLAG  = process.argv.includes('--reset');
 const TIPOS_VALIDOS = ['guia', 'protocolo', 'manual', 'normativa', 'instructivo', 'estudio'];
 
 async function clasificarConIA(nombreArchivo) {
+  if (!groq) return clasificarPorNombre(nombreArchivo);
+
   const prompt = `Clasifica este documento médico del Ministerio de Salud Pública de Ecuador.
 Nombre del archivo: "${nombreArchivo}"
 

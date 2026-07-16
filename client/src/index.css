@@ -119,4 +119,63 @@
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   }
+
+  .sociablekit-feed-shell,
+  .sociablekit-feed-shell .sk-instagram-feed,
+  .sociablekit-feed-shell .sk-ww-ig-feed-container,
+  .sociablekit-feed-shell .sk-slider-container,
+  .sociablekit-feed-shell .swiper-container,
+  .sociablekit-feed-shell .swiper-wrapper,
+  .sociablekit-feed-shell .swiper-slide,
+  .sociablekit-feed-shell .sk-ig-all-posts {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .sociablekit-feed-shell .sk-ig-all-posts {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+
+  .sociablekit-feed-shell .sk-instagram-feed-item,
+  .sociablekit-feed-shell .sk-ig-card-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .sociablekit-feed-shell .sk-ig-post-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: clamp(300px, 94vw, 376px) !important;
+    object-fit: cover !important;
+  }
+
+  .sociablekit-feed-shell .sk-instagram-feed {
+    overflow-x: hidden;
+  }
+
+  .sociablekit-feed-shell img,
+  .sociablekit-feed-shell video {
+    max-width: 100% !important;
+  }
+
+  @media (max-width: 639px) {
+    .sociablekit-feed-shell {
+      min-height: 420px;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .sociablekit-feed-shell .sk-ig-all-posts {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sociablekit-feed-shell .sk-ig-all-posts {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 
 /* ─── Iconos SVG ─────────────────────────────────────────────── */
@@ -23,11 +23,13 @@ const XIcon = ({ size = 24, className = '' }) => (
 );
 
 /* ─── IDs de widgets Elfsight ─────────────────────────────────── */
-const ELFSIGHT_INSTAGRAM = 'elfsight-app-b64000ac-aef1-4efd-b211-847e5794f442';
-const ELFSIGHT_TWITTER   = 'elfsight-app-d65137e4-2e4c-4c52-afa0-e5dcf3f139ef';
+const FACEBOOK_PAGE_URL = 'https://www.facebook.com/p/Hospital-General-Dr-Verdi-Cevallos-Balda-61570730374806/';
+const FACEBOOK_WIDGET_URL = 'https://widgets.sociablekit.com/facebook-page-posts/iframe/25697669';
+const FACEBOOK_WIDGET_HEIGHT = 3200;
+const FACEBOOK_WIDGET_BASE_WIDTH = 500;
 
 /* ─── Componente reutilizable: tarjeta de red social ─────────── */
-function SocialCard({ header, feedHeight = 480, feedContent, footerHref, footerLabel }) {
+function SocialCard({ header, feedHeight = 480, feedContent, footerHref }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col transition-all hover:shadow-md">
       {/* Header con color de marca */}
@@ -51,6 +53,11 @@ function SocialCard({ header, feedHeight = 480, feedContent, footerHref, footerL
 
 /* ─── Página principal ───────────────────────────────────────── */
 export default function NoticiasPage() {
+  const facebookWidgetRef = useRef(null);
+  const [facebookWidgetLayout, setFacebookWidgetLayout] = useState({
+    scale: 1,
+    width: FACEBOOK_WIDGET_BASE_WIDTH,
+  });
 
   useEffect(() => {
     // Un único script de Elfsight sirve para todos los widgets de la página
@@ -67,6 +74,38 @@ export default function NoticiasPage() {
       window.ElfsightApps.init();
     }
   }, []);
+
+  useEffect(() => {
+    const node = facebookWidgetRef.current;
+    if (!node) return undefined;
+
+    const updateScale = () => {
+      const width = node.clientWidth || FACEBOOK_WIDGET_BASE_WIDTH;
+      const iframeWidth = Math.max(FACEBOOK_WIDGET_BASE_WIDTH, Math.floor(width));
+      const scale = Math.min(1, width / iframeWidth);
+
+      setFacebookWidgetLayout((current) => {
+        if (current.width === iframeWidth && Math.abs(current.scale - scale) < 0.001) {
+          return current;
+        }
+
+        return { scale, width: iframeWidth };
+      });
+    };
+
+    updateScale();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateScale);
+      observer.observe(node);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
+  const facebookIframeHeight = Math.ceil(FACEBOOK_WIDGET_HEIGHT / facebookWidgetLayout.scale);
 
   return (
     <main className="w-full min-h-screen bg-neutral-50 py-10 px-4 md:px-8">
@@ -190,25 +229,40 @@ export default function NoticiasPage() {
             {/* Feed — altura máxima de viewport menos header/footer */}
             <div
               className="w-full bg-neutral-50"
-              style={{ height: '800px', overflowY: 'auto', overflowX: 'hidden' }}
+              style={{ height: '1000px', overflowY: 'auto', overflowX: 'hidden' }}
             >
-              <iframe
-                src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61570730374806&tabs=timeline&width=680&height=800&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false&appId"
-                width="100%"
-                height="800"
-                style={{ border: 'none', overflow: 'hidden', display: 'block' }}
-                scrolling="no"
-                frameBorder="0"
-                allowFullScreen={true}
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                title="Facebook Feed"
-              ></iframe>
+              <div
+                ref={facebookWidgetRef}
+                className="relative w-full overflow-hidden"
+                style={{ height: FACEBOOK_WIDGET_HEIGHT }}
+              >
+                <iframe
+                  src={FACEBOOK_WIDGET_URL}
+                  width={facebookWidgetLayout.width}
+                  height={facebookIframeHeight}
+                  style={{
+                    border: 'none',
+                    display: 'block',
+                    width: facebookWidgetLayout.width,
+                    height: facebookIframeHeight,
+                    maxWidth: 'none',
+                    minWidth: facebookWidgetLayout.width,
+                    transform: `scale(${facebookWidgetLayout.scale})`,
+                    transformOrigin: 'top left',
+                  }}
+                  scrolling="yes"
+                  frameBorder="0"
+                  allowFullScreen={true}
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Facebook Feed"
+                ></iframe>
+              </div>
             </div>
 
             {/* Footer */}
             <div className="p-4 border-t border-neutral-100 bg-white flex-shrink-0">
               <a
-                href="https://www.facebook.com/profile.php?id=61570730374806"
+                href={FACEBOOK_PAGE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-2.5 px-4 bg-[#1877F2] hover:bg-[#1877F2]/90 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"

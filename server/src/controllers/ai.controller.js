@@ -1,6 +1,8 @@
 const axios = require('axios');
 const Groq = require('groq-sdk');
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = process.env.GROQ_API_KEY
+  ? new Groq({ apiKey: process.env.GROQ_API_KEY })
+  : null;
 
 /**
  * Extrae la URL directa del post o video del código embed de Facebook
@@ -67,6 +69,13 @@ const generateMetadata = async (req, res, next) => {
         : 'No pudimos extraer texto del código proporcionado. Por favor, asegúrate de que el código incluya texto o pega el contenido manualmente en "Contenido completo" para analizarlo.';
         
       return res.status(400).json({ success: false, message });
+    }
+
+    if (!groq) {
+      return res.status(503).json({
+        success: false,
+        message: 'La generación automática con IA requiere configurar GROQ_API_KEY en server/.env.',
+      });
     }
 
     const completion = await groq.chat.completions.create({

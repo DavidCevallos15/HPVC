@@ -7,7 +7,9 @@
 const Groq = require('groq-sdk');
 const { buscarChunks } = require('./documentos.service');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = process.env.GROQ_API_KEY
+  ? new Groq({ apiKey: process.env.GROQ_API_KEY })
+  : null;
 
 const SYSTEM_PROMPT = `Eres un asistente clínico del Hospital Provincial Verdi Cevallos (HPVC).
 Tu función es responder preguntas sobre protocolos, guías clínicas, manuales y normativas del hospital,
@@ -43,6 +45,29 @@ async function preguntarProtocolo(pregunta, documentoId = null) {
       `[Fragmento #${i + 1} | Documento: "${c.titulo}" | Tipo: ${c.tipo}]\n${c.contenido}`
     )
     .join('\n\n---\n\n');
+
+  if (!groq) {
+    const respuesta = [
+      'Modo local: no hay GROQ_API_KEY configurada, por lo que no se generó una respuesta redactada por IA externa.',
+      'Estos son los fragmentos más relevantes encontrados en los documentos indexados:',
+      ...chunks.slice(0, 3).map((c, i) => `${i + 1}. ${c.contenido.slice(0, 700)}${c.contenido.length > 700 ? '...' : ''}`),
+    ].join('\n\n');
+
+    const fuentesMap = new Map();
+    chunks.forEach(c => {
+      if (!fuentesMap.has(c.documentoId)) {
+        fuentesMap.set(c.documentoId, {
+          documentoId: c.documentoId,
+          titulo: c.titulo,
+          tipo: c.tipo,
+          archivoUrl: c.archivoUrl,
+          similitud: parseFloat(c.similitud),
+        });
+      }
+    });
+
+    return { respuesta, fuentes: Array.from(fuentesMap.values()) };
+  }
 
   // 3. Llamar a Groq
   const completion = await groq.chat.completions.create({
