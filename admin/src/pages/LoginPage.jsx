@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
 import backgroundImage from "../assets/background-hero-section.jpeg";
+import posthog from "posthog-js";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -17,10 +18,15 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      const user = await login(form.email, form.password);
+      posthog.identify(String(user?.id), { role: user?.rol || 'admin' });
+      posthog.capture('admin_login_success');
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Error al iniciar sesión.");
+      const errorMsg = err.response?.data?.message || "Error al iniciar sesión.";
+      setError(errorMsg);
+      posthog.capture('admin_login_failed', { error: errorMsg });
+      posthog.captureException(err);
     } finally {
       setLoading(false);
     }

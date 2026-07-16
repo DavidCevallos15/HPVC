@@ -1,11 +1,12 @@
 import React from 'react';
-import { 
-  FileText, BookOpen, Users, IdCard, List, Pill, 
-  Monitor, Archive, Mail, Cloud, HardDrive, Folder, 
-  Globe, MessageCircle, Landmark, ExternalLink, Calendar, 
+import {
+  FileText, BookOpen, Users, IdCard, List, Pill,
+  Monitor, Archive, Mail, Cloud, HardDrive, Folder,
+  Globe, MessageCircle, Landmark, ExternalLink, Calendar,
   Form,
   User
 } from 'lucide-react';
+import posthog from 'posthog-js';
 
 const categorias = [
   {
@@ -75,6 +76,7 @@ export default function AccesosPage() {
                       href={enlace.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => posthog.capture('external_access_clicked', { platform_name: enlace.nombre, category: categoria.titulo })}
                       className="group bg-white rounded-xl p-5 shadow-sm hover:shadow-md border border-neutral-100 hover:border-primary/20 transition-all duration-300 flex items-center justify-between pointer-events-auto hover:-translate-y-1"
                     >
                       <div className="flex items-center gap-4">

@@ -6,6 +6,7 @@ import {
   Stethoscope, Info
 } from 'lucide-react';
 import api from '../api/axios';
+import posthog from 'posthog-js';
 
 /* ── Utilidades de fecha ─────────────────────────────────────────── */
 const diasDelMes = (mes) => {
@@ -200,7 +201,7 @@ export default function HorariosPage() {
             {dias.map(d => (
               <button
                 key={d}
-                onClick={() => setDia(d)}
+                onClick={() => { posthog.capture('schedule_day_selected', { mes, dia: d }); setDia(d); }}
                 className={`w-9 h-9 rounded-lg text-xs font-bold transition-all ${
                   d === diaSeleccionado
                     ? 'bg-primary text-white shadow-sm ring-2 ring-primary/30 ring-offset-1'
