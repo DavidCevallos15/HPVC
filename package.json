@@ -4,7 +4,7 @@
   "description": "Sistema Web Institucional Hospital Verdi Cevallos",
   "scripts": {
     "start": "concurrently \"npm run start:server\" \"npm run start:client\" \"npm run start:admin\"",
-    "predev": "fuser -k 3001/tcp 5173/tcp 5174/tcp >/dev/null 2>&1 || true",
+    "predev": "node -e \"process.exit(0)\"",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:admin\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",

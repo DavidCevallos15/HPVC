@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Stethoscope, Baby, Scissors, Heart, Bone, Activity,
@@ -9,10 +9,88 @@ import {
 import api from '../api/axios';
 import EmbedRenderer from '../components/EmbedRenderer';
 import HeroCarousel from '../components/HeroCarousel';
-import footerImg from '../assets/Footer-escudo.png';
 import bgFooter from '../assets/background-footer.jpg';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+const SOCIABLEKIT_EMBED_ID = '25697673';
+const SOCIABLEKIT_SCRIPT_ID = 'sociablekit-instagram-feed-script';
+const SOCIABLEKIT_SCRIPT_URL = 'https://widgets.sociablekit.com/instagram-feed/widget.js';
+const SOCIABLEKIT_HOST_ID = 'sociablekit-instagram-feed-host';
+const SOCIABLEKIT_CACHE_ID = 'sociablekit-instagram-feed-cache';
+
+let sociableKitScriptPromise = null;
+
+const getSociableKitCache = () => {
+  let cache = document.getElementById(SOCIABLEKIT_CACHE_ID);
+
+  if (!cache) {
+    cache = document.createElement('div');
+    cache.id = SOCIABLEKIT_CACHE_ID;
+    cache.hidden = true;
+    cache.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(cache);
+  }
+
+  return cache;
+};
+
+const getSociableKitHost = () => {
+  let host = document.getElementById(SOCIABLEKIT_HOST_ID);
+
+  if (!host) {
+    host = document.createElement('div');
+    host.id = SOCIABLEKIT_HOST_ID;
+    host.className = 'w-full min-w-0';
+
+    const feed = document.createElement('div');
+    feed.className = 'sk-instagram-feed w-full min-w-0';
+    feed.dataset.embedId = SOCIABLEKIT_EMBED_ID;
+    host.appendChild(feed);
+  }
+
+  return host;
+};
+
+const loadSociableKitScript = () => {
+  const host = getSociableKitHost();
+  const feed = host.querySelector('.sk-instagram-feed');
+  const existingScript = document.getElementById(SOCIABLEKIT_SCRIPT_ID);
+  const existingMarker = document.querySelector(`div[src="${SOCIABLEKIT_SCRIPT_URL}"]`);
+
+  if (feed?.childElementCount) return Promise.resolve();
+  if (sociableKitScriptPromise) return sociableKitScriptPromise;
+
+  if (existingScript && existingScript.dataset.loaded !== 'true' && !existingMarker) {
+    sociableKitScriptPromise = new Promise((resolve, reject) => {
+      existingScript.addEventListener('load', resolve, { once: true });
+      existingScript.addEventListener('error', reject, { once: true });
+    });
+    return sociableKitScriptPromise;
+  }
+
+  // Recupera una inicializacion incompleta sin afectar la navegacion normal.
+  existingScript?.remove();
+  document.querySelectorAll(`div[src="${SOCIABLEKIT_SCRIPT_URL}"]`).forEach((marker) => marker.remove());
+
+  sociableKitScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.id = SOCIABLEKIT_SCRIPT_ID;
+    script.src = SOCIABLEKIT_SCRIPT_URL;
+    script.defer = true;
+    script.onload = () => {
+      script.dataset.loaded = 'true';
+      resolve();
+    };
+    script.onerror = (error) => {
+      sociableKitScriptPromise = null;
+      script.remove();
+      reject(error);
+    };
+    document.body.appendChild(script);
+  });
+
+  return sociableKitScriptPromise;
+};
 
 const toAbsoluteMediaUrl = (url) => {
   if (!url) return null;
@@ -123,50 +201,92 @@ function EspecialidadesPreview() {
 
 // ── Noticias Recientes ──────────────────────────────────────────────
 function NoticiasRecientes() {
+  const feedMountRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const mount = feedMountRef.current;
+    if (!mount) return undefined;
+
+    const host = getSociableKitHost();
+    mount.appendChild(host);
+
+    let animationFrame;
+    let resizeTimer;
+    let lastWidth = 0;
+
+    const refreshFeedLayout = (force = false) => {
+      const width = Math.round(mount.getBoundingClientRect().width);
+      if (!force && (!width || Math.abs(width - lastWidth) < 2)) return;
+      lastWidth = width;
+
+      cancelAnimationFrame(animationFrame);
+      window.clearTimeout(resizeTimer);
+
+      animationFrame = requestAnimationFrame(() => {
+        const updateSwiper = () => {
+          const swiper = host.querySelector('.swiper-container')?.swiper;
+          swiper?.updateSize?.();
+          swiper?.updateSlides?.();
+          swiper?.updateProgress?.();
+          swiper?.updateSlidesClasses?.();
+          swiper?.update?.();
+        };
+
+        window.dispatchEvent(new Event('resize'));
+        updateSwiper();
+
+        // El widget termina de calcular alturas después de cambiar sus columnas.
+        resizeTimer = window.setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+          updateSwiper();
+        }, 180);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(() => refreshFeedLayout());
+    const mutationObserver = new MutationObserver(() => refreshFeedLayout(true));
+
+    resizeObserver.observe(mount);
+    mutationObserver.observe(host, { childList: true, subtree: true });
+    refreshFeedLayout(true);
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      cancelAnimationFrame(animationFrame);
+      window.clearTimeout(resizeTimer);
+      getSociableKitCache().appendChild(host);
+    };
+  }, []);
+
   useEffect(() => {
-    // 1. Definimos el ID del script de Elfsight
-    const scriptId = 'elfsight-platform-script';
-    
-    // 2. Verificamos si el script ya existe en el documento para no duplicarlo
-    let script = document.getElementById(scriptId);
-    
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.src = "https://elfsightcdn.com/platform.js";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    } else {
-      // Si el script ya existía, forzamos a Elfsight a inicializar el widget
-      if (window.ElfsightApps) {
-        window.ElfsightApps.init();
-      }
-    }
+    loadSociableKitScript().catch(() => {
+      // El contenedor permanece disponible para que un reintento posterior pueda recuperarlo.
+    });
   }, []);
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-6">
+    <section className="bg-white py-12 sm:py-16 lg:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Encabezado */}
-        <div className="flex justify-between items-end mb-10">
+        <div className="mb-6 flex items-end justify-between gap-4 sm:mb-8 lg:mb-10">
           <div>
             <span className="text-secondary text-sm font-semibold uppercase tracking-widest">Actualidad</span>
-            <h2 className="text-3xl font-semibold font-heading text-dark mt-1">Noticias Recientes</h2>
+            <h2 className="mt-1 text-2xl font-semibold font-heading text-dark sm:text-3xl">Noticias Recientes</h2>
           </div>
           <Link to="/noticias" className="hidden md:flex items-center gap-2 text-primary text-sm font-medium hover:underline">
             Ver todas <ArrowRight size={14} />
           </Link>
         </div>
 
-        {/* Contenedor del Feed de Elfsight */}
-        <div className="w-full bg-white rounded-2xl shadow-sm border border-neutral-100 p-4 md:p-6 min-h-[500px]">
-          {/* Elfsight Social Feed */}
-          <div 
-            className="elfsight-app-fe556dbd-9c7d-4eff-a4a2-59d0d4d4859a w-full" 
-            data-elfsight-app-lazy
-          ></div>
+        {/* Contenedor del Feed de Instagram */}
+        <div className="sociablekit-feed-shell w-full min-w-0 overflow-hidden rounded-lg border border-neutral-100 bg-white p-2 shadow-sm sm:min-h-[500px] sm:p-4 lg:min-h-[560px] lg:p-6">
+          <div ref={feedMountRef} className="w-full min-w-0" />
         </div>
+
+        <Link to="/noticias" className="mt-6 flex items-center justify-center gap-2 text-sm font-medium text-primary hover:underline md:hidden">
+          Ver todas <ArrowRight size={14} />
+        </Link>
       </div>
     </section>
   );

@@ -14,3 +14,5 @@ admin/GUIAS PRACTICAS CLINICAS/
 backups/
 *.sql
 !**/prisma/migrations/**/*.sql
+logs/
+outputs/
