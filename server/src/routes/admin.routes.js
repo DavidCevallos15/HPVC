@@ -12,12 +12,18 @@ const configCtrl       = require('../controllers/configuracion.controller');
 const guardiasCtrl     = require('../controllers/guardias.controller');
 const aiCtrl           = require('../controllers/ai.controller');
 const poaCtrl          = require('../controllers/poa.controller');
+const seccionesCtrl    = require('../controllers/secciones.controller');
+const analyticsCtrl    = require('../controllers/analytics.controller');
 
 // Todas las rutas requieren autenticación
 router.use(verifyToken);
 
 // ── Dashboard Stats ──────────────────────────────────────────────────
-router.get('/stats', configCtrl.getStats);
+router.get('/stats', analyticsCtrl.getDashboardStats);
+
+// ── Disponibilidad de secciones públicas ─────────────────────────────
+router.get('/secciones-publicas', seccionesCtrl.getAdmin);
+router.put('/secciones-publicas/:clave', requireRole('SUPERADMIN'), seccionesCtrl.updateEstado);
 
 // ── Noticias CRUD ────────────────────────────────────────────────────
 router.post('/noticias/generate-metadata', requireRole('SUPERADMIN','EDITOR_NOTICIAS'), aiCtrl.generateMetadata);
@@ -50,6 +56,7 @@ router.delete('/guardias/:mes',       requireRole('SUPERADMIN'), guardiasCtrl.de
 
 // ── Mensajes de Contacto ─────────────────────────────────────────────
 router.get('/contacto',           requireRole('SUPERADMIN'), contactoCtrl.getAll);
+router.get('/contacto-resumen',   requireRole('SUPERADMIN'), contactoCtrl.getUnreadSummary);
 router.put('/contacto/:id/leer',  requireRole('SUPERADMIN'), contactoCtrl.marcarLeido);
 router.delete('/contacto/:id',    requireRole('SUPERADMIN'), contactoCtrl.eliminar);
 

@@ -18,11 +18,12 @@ import DocumentosAdminPage from './pages/DocumentosAdminPage';
 import ImagenMesAdminPage  from './pages/ImagenMesAdminPage';
 import HeroCarouselAdminPage from './pages/HeroCarouselAdminPage';
 import PoaAdminPage        from './pages/PoaAdminPage';
+import SeccionesPublicasAdminPage from './pages/SeccionesPublicasAdminPage';
 
 function Loader() {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   );
 }
@@ -46,6 +47,7 @@ function AnimatedRoutes() {
         <Route path="horarios"             element={<HorariosPage />} />
         <Route path="contacto"             element={<ContactoAdminPage />} />
         <Route path="configuracion"        element={<ConfiguracionPage />} />
+        <Route path="secciones-publicas"   element={<SeccionesPublicasAdminPage />} />
         <Route path="configuracion/portada" element={<ImagenMesAdminPage />} />
         <Route path="configuracion/carrusel" element={<HeroCarouselAdminPage />} />
         <Route path="medicos"              element={<MedicosAdminPage />} />

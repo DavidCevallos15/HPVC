@@ -16,3 +16,5 @@ backups/
 !**/prisma/migrations/**/*.sql
 logs/
 outputs/
+.cursor/
+hpvc-qr-accesos-export/

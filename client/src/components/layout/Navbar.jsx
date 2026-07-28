@@ -7,29 +7,32 @@ import logoNuevoEcuador from '../../assets/Footer.png';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 const navLinks = [
-  { label: 'Inicio', to: '/' },
+  { label: 'Inicio', to: '/', section: 'inicio' },
   { 
     label: 'Servicios', 
     to: '/servicios',
+    section: 'servicios',
     children: [
-      { label: 'Especialidades Médicas', to: '/especialidades' },
-      { label: 'Directorio de Médicos', to: '/directorio' },
-      { label: 'Horarios de Atención', to: '/horarios' },
+      { label: 'Especialidades Médicas', to: '/especialidades', section: 'especialidades' },
+      { label: 'Directorio de Médicos', to: '/directorio', section: 'directorio' },
+      { label: 'Horarios de Atención', to: '/horarios', section: 'horarios' },
     ]
   },
   { 
     label: 'Institución', 
     to: '/institucion',
+    section: 'institucion',
     children: [
-      { label: 'Recorrido Virtual', to: '/recorrido-virtual' },
-      { label: 'Noticias y Actualidad', to: '/noticias' },
-      { label: 'Documentos y Transparencia', to: '/documentos' },
-      { label: 'GeoSalud MSP', to: '/subcentros' },
+      { label: 'Recorrido Virtual', to: '/recorrido-virtual', section: 'recorrido_virtual' },
+      { label: 'Noticias y Actualidad', to: '/noticias', section: 'noticias' },
+      { label: 'Documentos y Transparencia', to: '/documentos', section: 'documentos' },
+      { label: 'GeoSalud MSP', to: '/subcentros', section: 'subcentros' },
     ]
   },
   { 
     label: 'Accesos Directos', 
     to: '/accesos',
+    section: 'accesos',
     children: [
       { label: 'Quipux', to: 'https://www.gestiondocumental.gob.ec/' },
       { label: 'Correo Zimbra', to: 'https://mail.hpvc.gob.ec/' },
@@ -47,7 +50,7 @@ const navLinks = [
       { label: 'Ver todos los Accesos →', to: '/accesos' },
     ]
   },
-  { label: 'Contáctenos', to: '/contacto' },
+  { label: 'Contáctenos', to: '/contacto', section: 'contacto' },
 ];
 import { useConfig } from '../../context/ConfigContext';
 
@@ -56,8 +59,14 @@ export default function Navbar() {
   const [dropdown, setDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { config } = useConfig();
+  const { config, isSectionEnabled } = useConfig();
   const timeoutRef = React.useRef(null);
+  const visibleNavLinks = navLinks
+    .filter(link => isSectionEnabled(link.section))
+    .map(link => ({
+      ...link,
+      children: link.children?.filter(child => isSectionEnabled(child.section)),
+    }));
 
   const handleMouseEnter = (label) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -120,7 +129,7 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) =>
+            {visibleNavLinks.map((link) =>
               link.children ? (
                 <div key={link.label} className="relative"
                   onMouseEnter={() => handleMouseEnter(link.label)}
@@ -161,10 +170,12 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Link to="/horarios"
-              className="ml-2 btn-primario text-sm py-2 px-4 inline-flex items-center gap-2">
-              <Clock size={16} /> Horarios
-            </Link>
+            {isSectionEnabled('horarios') && (
+              <Link to="/horarios"
+                className="ml-2 btn-primario text-sm py-2 px-4 inline-flex items-center gap-2">
+                <Clock size={16} /> Horarios
+              </Link>
+            )}
           </div>
 
           {/* Hamburger */}
@@ -176,7 +187,7 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {open && (
           <div className="lg:hidden border-t border-neutral-100 bg-white pb-4 px-6 animate-fade-in">
-            {navLinks.map((link) =>
+            {visibleNavLinks.map((link) =>
               link.children ? (
                 <div key={link.label}>
                   <div className="flex items-center justify-between border-b border-neutral-50">
@@ -211,9 +222,11 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Link to="/horarios" className="btn-primario w-full mt-4 text-sm justify-center inline-flex items-center gap-2">
-              <Clock size={16} /> Ver Horarios
-            </Link>
+            {isSectionEnabled('horarios') && (
+              <Link to="/horarios" className="btn-primario w-full mt-4 text-sm justify-center inline-flex items-center gap-2">
+                <Clock size={16} /> Ver Horarios
+              </Link>
+            )}
           </div>
         )}
       </nav>

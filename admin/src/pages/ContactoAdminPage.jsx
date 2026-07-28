@@ -19,6 +19,7 @@ export default function ContactoAdminPage() {
   const markRead = async (id) => {
     await api.put(`/admin/contacto/${id}/leer`);
     fetch();
+    window.dispatchEvent(new Event('hpvc:messages-changed'));
     if (selected?.id === id) setSelected({ ...selected, leido: true });
   };
 
@@ -27,6 +28,7 @@ export default function ContactoAdminPage() {
     await api.delete(`/admin/contacto/${id}`);
     setSelected(null);
     fetch();
+    window.dispatchEvent(new Event('hpvc:messages-changed'));
   };
 
   return (

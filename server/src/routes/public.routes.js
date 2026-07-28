@@ -9,32 +9,40 @@ const { enviar }      = require('../controllers/contacto.controller');
 const { getPublicos, preguntar } = require('../controllers/documentos.controller');
 const { getAll: getConfiguracion }     = require('../controllers/configuracion.controller');
 const poaCtrl = require('../controllers/poa.controller');
+const seccionesCtrl = require('../controllers/secciones.controller');
+const analyticsCtrl = require('../controllers/analytics.controller');
+const { requireSeccionHabilitada } = require('../middlewares/seccionPublica');
+
+router.post('/analytics/visit', analyticsCtrl.registrarVisita);
 
 // Noticias públicas
-router.get('/noticias',         getPublicas);
-router.get('/noticias/:slug',   getBySlug);
+router.get('/noticias',         requireSeccionHabilitada('noticias'), getPublicas);
+router.get('/noticias/:slug',   requireSeccionHabilitada('noticias'), getBySlug);
 
 // Especialidades y directorio médico
-router.get('/especialidades',   getDisponibles);
-router.get('/medicos',          getDirectorio);
-router.get('/horarios/:mes',    getByMes);
+router.get('/especialidades',   requireSeccionHabilitada('especialidades'), getDisponibles);
+router.get('/medicos',          requireSeccionHabilitada('directorio'), getDirectorio);
+router.get('/horarios/:mes',    requireSeccionHabilitada('horarios'), getByMes);
 
 // Guardias Matriz institucional
-router.get('/guardias/:mes',       getGuardiasByMes);
-router.get('/guardias-meses',      getMesesDisponibles);
+router.get('/guardias/:mes',       requireSeccionHabilitada('horarios'), getGuardiasByMes);
+router.get('/guardias-meses',      requireSeccionHabilitada('horarios'), getMesesDisponibles);
 
 // Documentos académicos + Asistente IA
-router.get('/documentos',          getPublicos);
-router.post('/documentos/preguntar', preguntar);
+router.get('/documentos',          requireSeccionHabilitada('documentos'), getPublicos);
+router.post('/documentos/preguntar', requireSeccionHabilitada('documentos'), preguntar);
 
 // Contacto (con rate limit y validación)
-router.post('/contacto', enviar);
+router.post('/contacto', requireSeccionHabilitada('contacto'), enviar);
 
 // Configuración pública (teléfono, dirección, horario, etc.)
-router.get('/configuracion',    getConfiguracion);
+router.get('/configuracion',    requireSeccionHabilitada('configuracion'), getConfiguracion);
+
+// Estado de navegación y disponibilidad de las secciones
+router.get('/secciones-publicas', seccionesCtrl.getPublicas);
 
 // Descarga de POA
-router.get('/poa',              poaCtrl.getAll);
-router.get('/poa/download',     poaCtrl.downloadLatest);
+router.get('/poa',              requireSeccionHabilitada('documentos'), poaCtrl.getAll);
+router.get('/poa/download',     requireSeccionHabilitada('documentos'), poaCtrl.downloadLatest);
 
 module.exports = router;

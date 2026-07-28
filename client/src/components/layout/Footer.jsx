@@ -7,21 +7,21 @@ import logoNuevoEcuador from '../../assets/logo-nuevo-ecuador.svg';
 
 const footerLinks = {
   'Servicios': [
-    { label: 'Especialidades Médicas', to: '/especialidades' },
-    { label: 'Directorio Médico', to: '/directorio' },
-    { label: 'Horarios de Atención', to: '/directorio' },
-    { label: 'Recorrido Virtual', to: '/recorrido-virtual' },
+    { label: 'Especialidades Médicas', to: '/especialidades', section: 'especialidades' },
+    { label: 'Directorio Médico', to: '/directorio', section: 'directorio' },
+    { label: 'Horarios de Atención', to: '/horarios', section: 'horarios' },
+    { label: 'Recorrido Virtual', to: '/recorrido-virtual', section: 'recorrido_virtual' },
   ],
   'Institución': [
-    { label: 'Acerca de Nosotros', to: '/acerca' },
-    { label: 'Noticias y Actualidad', to: '/noticias' },
-    { label: 'Documentos Académicos', to: '/documentos' },
-    { label: 'Contáctenos', to: '/contacto' },
+    { label: 'Acerca de Nosotros', to: '/acerca', section: 'acerca' },
+    { label: 'Noticias y Actualidad', to: '/noticias', section: 'noticias' },
+    { label: 'Documentos Académicos', to: '/documentos', section: 'documentos' },
+    { label: 'Contáctenos', to: '/contacto', section: 'contacto' },
   ],
 };
 
 export default function Footer() {
-  const { config } = useConfig();
+  const { config, isSectionEnabled } = useConfig();
 
   return (
     <footer className="bg-primary-dark text-white border-t border-primary relative overflow-hidden">
@@ -70,7 +70,7 @@ export default function Footer() {
               <div key={title}>
                 <h4 className="font-semibold text-white mb-5 text-sm tracking-wide">{title}</h4>
                 <ul className="space-y-3">
-                  {links.map((l) => (
+                  {links.filter(l => isSectionEnabled(l.section)).map((l) => (
                     <li key={l.label}>
                       {l.to ? (
                         <Link to={l.to} className="text-primary-pale hover:text-accent text-sm transition-colors flex items-center gap-2">

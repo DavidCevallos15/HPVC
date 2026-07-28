@@ -4,25 +4,31 @@
 
 @layer base {
   :root {
-    --color-primary:        #003A70;
-    --color-primary-light:  #005BAC;
-    --color-primary-pale:   #D6E6F5;
-    --color-primary-dark:   #080B5E;
-    --color-secondary:      #007A4D;
-    --color-secondary-light:#00A86B;
-    --color-secondary-pale: #D4F0E3;
-    --color-accent:         #F5C400;
-    --color-dark:           #1A1A2E;
-    --color-gray:           #64748B;
-    --color-gray-light:     #F1F5F9;
+    --color-primary:        #2E7D6F;
+    --color-primary-light:  #449789;
+    --color-primary-pale:   #E4F2EE;
+    --color-primary-dark:   #225E55;
+    --color-secondary:      #C96F48;
+    --color-secondary-light:#DD8A64;
+    --color-secondary-pale: #F9E9DF;
+    --color-accent:         #E9B949;
+    --color-dark:           #243B36;
+    --color-gray:           #66756F;
+    --color-gray-light:     #F3F6F3;
     --color-white:          #FFFFFF;
-    --color-error:          #E30613;
-    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --color-error:          #C94D4D;
+    --font-heading: 'Manrope', 'Segoe UI', sans-serif;
+    --font-body:    'Source Sans 3', 'Segoe UI', sans-serif;
   }
 
   html { font-family: var(--font-body); }
+  body {
+    margin: 0;
+    background: #f5f7f3;
+    color: #314a43;
+  }
   * { box-sizing: border-box; }
+  button, input, textarea, select { font: inherit; }
 }
 
 @layer components {
@@ -33,19 +39,61 @@
     @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border;
   }
   .badge-disponible {
-    background-color: #D4F0E3;
-    color: #007A4D;
-    border-color: #007A4D;
+    background-color: #E4F2EE;
+    color: #2E7D6F;
+    border-color: #2E7D6F;
   }
   .badge-vacaciones {
     background-color: #FEF9C3;
     color: #A16207;
-    border-color: #F5C400;
+    border-color: #E9B949;
   }
   .badge-sin-atencion {
     background-color: #FEF2F2;
-    color: #E30613;
-    border-color: #E30613;
+    color: #C94D4D;
+    border-color: #C94D4D;
   }
   .font-heading { font-family: var(--font-heading); }
+
+  .dashboard-action {
+    @apply flex items-center gap-3 rounded-xl border border-[#e7ece8] bg-[#fafbf8] p-3 transition duration-200 hover:border-[#b7d5cc] hover:bg-white hover:shadow-[0_10px_25px_rgba(46,80,70,0.08)];
+  }
+
+  .dashboard-action-icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-xl;
+  }
+}
+
+.admin-shell {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(46, 125, 111, 0.08), transparent 24rem),
+    radial-gradient(circle at 88% 92%, rgba(201, 111, 72, 0.08), transparent 26rem);
+}
+
+.dashboard-grid-pattern {
+  background-image:
+    linear-gradient(rgba(46, 125, 111, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 125, 111, 0.07) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to right, transparent, black 30%, black);
+}
+
+.dashboard-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -35% -55% auto;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(46, 125, 111, 0.09), transparent 68%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

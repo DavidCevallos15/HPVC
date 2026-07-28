@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const rateLimit = require('express-rate-limit');
 const { contactoSchemas } = require('../validators/schemas');
 const { validate } = require('../middlewares/validate');
+const { createContactEmailJob } = require('../services/emailQueue.service');
 const prisma = new PrismaClient();
 
 // Rate limit específico para formulario de contacto
@@ -19,10 +20,16 @@ const enviar = [
     try {
       const { nombre, email, telefono, asunto, mensaje } = req.body;
 
-    const msg = await prisma.mensajeContacto.create({
-      data: { nombre, email, telefono: telefono || null, asunto, mensaje },
-    });
-    res.status(201).json({ success: true, message: 'Mensaje enviado correctamente. Nos comunicaremos pronto.', data: { id: msg.id } });
+      const msg = await prisma.$transaction(async (tx) => {
+        const savedMessage = await tx.mensajeContacto.create({
+          data: { nombre, email, telefono: telefono || null, asunto, mensaje },
+        });
+
+        await createContactEmailJob(tx, savedMessage);
+        return savedMessage;
+      });
+
+      res.status(201).json({ success: true, message: 'Mensaje enviado correctamente. Nos comunicaremos pronto.', data: { id: msg.id } });
     } catch (err) { next(err); }
   }
 ];
@@ -38,6 +45,30 @@ const getAll = async (req, res, next) => {
     });
     const totalNoLeidos = await prisma.mensajeContacto.count({ where: { leido: false } });
     res.json({ success: true, data: mensajes, meta: { totalNoLeidos } });
+  } catch (err) { next(err); }
+};
+
+const getUnreadSummary = async (req, res, next) => {
+  try {
+    const [totalNoLeidos, recientes] = await Promise.all([
+      prisma.mensajeContacto.count({ where: { leido: false } }),
+      prisma.mensajeContacto.findMany({
+        where: { leido: false },
+        orderBy: { creadoEn: 'desc' },
+        take: 3,
+        select: {
+          id: true,
+          nombre: true,
+          asunto: true,
+          creadoEn: true,
+        },
+      }),
+    ]);
+
+    res.json({
+      success: true,
+      data: { totalNoLeidos, recientes },
+    });
   } catch (err) { next(err); }
 };
 
@@ -58,4 +89,4 @@ const eliminar = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { enviar, getAll, marcarLeido, eliminar, contactoLimiter };
+module.exports = { enviar, getAll, getUnreadSummary, marcarLeido, eliminar, contactoLimiter };

@@ -84,7 +84,37 @@ async function main() {
   }
   console.log(`✅ ${configs.length} configuraciones base creadas.`);
 
-  // ── 5. NOTICIAS DE MUESTRA ───────────────────────────────────────
+  // ── 5. SECCIONES PÚBLICAS ─────────────────────────────────────────
+  const seccionesPublicas = [
+    { clave: 'inicio', rutaBase: '/', nombre: 'Inicio', protegida: true, descripcion: 'Página principal del portal institucional.' },
+    { clave: 'servicios', rutaBase: '/servicios', nombre: 'Servicios', descripcion: 'Información general de los servicios hospitalarios.' },
+    { clave: 'servicios_paciente', rutaBase: '/servicios-paciente', nombre: 'Servicios al paciente', descripcion: 'Servicios y orientación disponibles para pacientes.' },
+    { clave: 'especialidades', rutaBase: '/especialidades', nombre: 'Especialidades médicas', descripcion: 'Catálogo público de especialidades.' },
+    { clave: 'directorio', rutaBase: '/directorio', nombre: 'Directorio médico', descripcion: 'Directorio público de profesionales.' },
+    { clave: 'horarios', rutaBase: '/horarios', nombre: 'Horarios de atención', descripcion: 'Horarios y matriz de guardias.' },
+    { clave: 'institucion', rutaBase: '/institucion', nombre: 'Institución', descripcion: 'Información institucional del hospital.' },
+    { clave: 'acerca', rutaBase: '/acerca', nombre: 'Acerca del hospital', descripcion: 'Reseña e información del hospital.' },
+    { clave: 'recorrido_virtual', rutaBase: '/recorrido-virtual', nombre: 'Recorrido virtual', descripcion: 'Recorrido virtual por las instalaciones.' },
+    { clave: 'noticias', rutaBase: '/noticias', nombre: 'Noticias y actualidad', descripcion: 'Noticias institucionales y sus detalles.' },
+    { clave: 'documentos', rutaBase: '/documentos', nombre: 'Documentos y transparencia', descripcion: 'Documentos académicos, POA y consultas documentales.' },
+    { clave: 'asistente_clinico', rutaBase: '/asistente-clinico', nombre: 'Asistente clínico', descripcion: 'Herramientas de consulta clínica.' },
+    { clave: 'subcentros', rutaBase: '/subcentros', nombre: 'GeoSalud MSP', descripcion: 'Acceso a información geográfica de salud.' },
+    { clave: 'accesos', rutaBase: '/accesos', nombre: 'Accesos directos', descripcion: 'Accesos a sistemas y servicios externos.' },
+    { clave: 'contacto', rutaBase: '/contacto', nombre: 'Contacto', protegida: true, descripcion: 'Canal oficial de contacto ciudadano.' },
+    { clave: 'configuracion', rutaBase: '/api/public/configuracion', nombre: 'Configuración pública', protegida: true, descripcion: 'Datos institucionales básicos utilizados por el portal.' },
+  ];
+
+  for (const seccion of seccionesPublicas) {
+    const { clave, ...datos } = seccion;
+    await prisma.seccionPublica.upsert({
+      where: { clave },
+      update: datos,
+      create: { clave, ...datos },
+    });
+  }
+  console.log(`✅ ${seccionesPublicas.length} secciones públicas configuradas.`);
+
+  // ── 6. NOTICIAS DE MUESTRA ───────────────────────────────────────
   const noticias = [
     {
       titulo: 'HPVC inaugura nueva unidad de Cuidados Intensivos Neonatales',

@@ -13,10 +13,12 @@ function ScrollToTop() {
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from './components/ui/PageTransition';
 import { Building2 } from 'lucide-react';
-import { ConfigProvider } from './context/ConfigContext';
+import { ConfigProvider, useConfig } from './context/ConfigContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ChatbotWidget from './components/chatbot/ChatbotWidget';
+import SeccionNoDisponiblePage from './pages/SeccionNoDisponiblePage';
+import PageViewTracker from './components/PageViewTracker';
 
 const HomePage            = lazy(() => import('./pages/HomePage'));
 const EspecialidadesPage  = lazy(() => import('./pages/EspecialidadesPage'));
@@ -43,6 +45,14 @@ function PageLoader() {
   );
 }
 
+function SectionRoute({ section, children }) {
+  const { isSectionEnabled, sectionsLoading } = useConfig();
+
+  if (sectionsLoading) return <PageLoader />;
+  if (!isSectionEnabled(section)) return <SeccionNoDisponiblePage />;
+  return children;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -50,22 +60,22 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <PageTransition key={location.pathname}>
         <Routes location={location}>
-          <Route path="/"                  element={<HomePage />} />
-          <Route path="/especialidades"    element={<EspecialidadesPage />} />
-          <Route path="/directorio"        element={<DirectorioPage />} />
-          <Route path="/noticias"          element={<NoticiasPage />} />
-          <Route path="/noticias/:slug"    element={<NoticiaDetallePage />} />
-          <Route path="/contacto"          element={<ContactoPage />} />
-          <Route path="/documentos"        element={<DocumentosPage />} />
-          <Route path="/recorrido-virtual" element={<RecorridoVirtualPage />} />
-          <Route path="/accesos"           element={<AccesosPage />} />
-          <Route path="/subcentros"        element={<SubcentrosPage />} />
-          <Route path="/acerca"            element={<AcercaPage />} />
-          <Route path="/horarios"          element={<HorariosPage />} />
-          <Route path="/servicios-paciente" element={<ServiciosPacientePage />} />
-          <Route path="/asistente-clinico" element={<AsistenteClinicoPage />} />
-          <Route path="/institucion"       element={<InstitucionPage />} />
-          <Route path="/servicios"         element={<ServiciosPage />} />
+          <Route path="/" element={<SectionRoute section="inicio"><HomePage /></SectionRoute>} />
+          <Route path="/especialidades" element={<SectionRoute section="especialidades"><EspecialidadesPage /></SectionRoute>} />
+          <Route path="/directorio" element={<SectionRoute section="directorio"><DirectorioPage /></SectionRoute>} />
+          <Route path="/noticias" element={<SectionRoute section="noticias"><NoticiasPage /></SectionRoute>} />
+          <Route path="/noticias/:slug" element={<SectionRoute section="noticias"><NoticiaDetallePage /></SectionRoute>} />
+          <Route path="/contacto" element={<SectionRoute section="contacto"><ContactoPage /></SectionRoute>} />
+          <Route path="/documentos" element={<SectionRoute section="documentos"><DocumentosPage /></SectionRoute>} />
+          <Route path="/recorrido-virtual" element={<SectionRoute section="recorrido_virtual"><RecorridoVirtualPage /></SectionRoute>} />
+          <Route path="/accesos" element={<SectionRoute section="accesos"><AccesosPage /></SectionRoute>} />
+          <Route path="/subcentros" element={<SectionRoute section="subcentros"><SubcentrosPage /></SectionRoute>} />
+          <Route path="/acerca" element={<SectionRoute section="acerca"><AcercaPage /></SectionRoute>} />
+          <Route path="/horarios" element={<SectionRoute section="horarios"><HorariosPage /></SectionRoute>} />
+          <Route path="/servicios-paciente" element={<SectionRoute section="servicios_paciente"><ServiciosPacientePage /></SectionRoute>} />
+          <Route path="/asistente-clinico" element={<SectionRoute section="asistente_clinico"><AsistenteClinicoPage /></SectionRoute>} />
+          <Route path="/institucion" element={<SectionRoute section="institucion"><InstitucionPage /></SectionRoute>} />
+          <Route path="/servicios" element={<SectionRoute section="servicios"><ServiciosPage /></SectionRoute>} />
           <Route path="*" element={
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
               <Building2 size={64} className="text-neutral-300" />
@@ -84,6 +94,7 @@ export default function App() {
   return (
     <ConfigProvider>
       <BrowserRouter>
+        <PageViewTracker />
         <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <Navbar />

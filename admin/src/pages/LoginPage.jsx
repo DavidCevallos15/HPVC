@@ -38,8 +38,8 @@ export default function LoginPage() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Overlay oscuro para mejorar legibilidad */}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+        {/* Velo eucalipto: conserva la fotografía sin recurrir al azul institucional oscuro */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#225e55]/85 via-[#2e7d6f]/72 to-[#c96f48]/58 backdrop-blur-[2px]" />
 
         {/* Círculos decorativos */}
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
@@ -50,10 +50,10 @@ export default function LoginPage() {
             <span className="text-3xl font-bold">H</span>
           </div>
           <h1 className="text-3xl font-semibold font-heading mb-2">HPVC Admin</h1>
-          <p className="text-primary-pale text-sm max-w-xs">
+          <p className="max-w-xs text-sm text-white/85">
             Panel de administración del Hospital Provincial de Portoviejo Dr. Verdi Cevallos Balda.
           </p>
-          <div className="mt-8 text-xs text-primary-pale/70 space-y-1">
+          <div className="mt-8 space-y-1 text-xs text-white/65">
             <div>🔒 Acceso restringido a personal autorizado</div>
             <div>🏥 Ministerio de Salud Pública del Ecuador</div>
           </div>

@@ -1,11 +1,20 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import api from '../api/axios';
 
-const ConfigContext = createContext({ config: {}, loading: true, reloadConfig: () => {} });
+const ConfigContext = createContext({
+  config: {},
+  loading: true,
+  sectionsLoading: true,
+  secciones: [],
+  isSectionEnabled: () => true,
+  reloadConfig: () => {},
+});
 
 export function ConfigProvider({ children }) {
-  const [config, setConfig]   = useState({});
+  const [config, setConfig] = useState({});
+  const [secciones, setSecciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sectionsLoading, setSectionsLoading] = useState(true);
 
   const fetchConfig = useCallback(() => {
     api.get('/public/configuracion', { silent: true })
@@ -14,19 +23,46 @@ export function ConfigProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Carga inicial
-  useEffect(() => { fetchConfig(); }, [fetchConfig]);
+  const fetchSections = useCallback(() => {
+    api.get('/public/secciones-publicas', { silent: true })
+      .then(res => setSecciones(Array.isArray(res.data.data) ? res.data.data : []))
+      .catch(err => {
+        console.error('Error al cargar la disponibilidad de secciones', err);
+        setSecciones([]);
+      })
+      .finally(() => setSectionsLoading(false));
+  }, []);
 
-  // Recarga cuando la pestaña del cliente vuelve a estar visible
-  // (útil cuando el admin guarda y el usuario vuelve al cliente)
+  const reloadConfig = useCallback(() => {
+    fetchConfig();
+    fetchSections();
+  }, [fetchConfig, fetchSections]);
+
+  const isSectionEnabled = useCallback((clave) => {
+    if (!clave) return true;
+    const seccion = secciones.find(item => item.clave === clave);
+    return seccion ? seccion.habilitada : true;
+  }, [secciones]);
+
   useEffect(() => {
-    const onFocus = () => fetchConfig();
+    reloadConfig();
+  }, [reloadConfig]);
+
+  useEffect(() => {
+    const onFocus = () => reloadConfig();
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
-  }, [fetchConfig]);
+  }, [reloadConfig]);
 
   return (
-    <ConfigContext.Provider value={{ config, loading, reloadConfig: fetchConfig }}>
+    <ConfigContext.Provider value={{
+      config,
+      loading,
+      sectionsLoading,
+      secciones,
+      isSectionEnabled,
+      reloadConfig,
+    }}>
       {children}
     </ConfigContext.Provider>
   );

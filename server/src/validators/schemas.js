@@ -40,6 +40,18 @@ const contactoSchemas = {
   }),
 };
 
+const analyticsSchemas = {
+  visita: z.object({
+    ruta: z.string()
+      .min(1, 'La ruta es requerida')
+      .max(180, 'La ruta no puede exceder 180 caracteres')
+      .regex(/^\/[^\s]*$/, 'La ruta no es válida'),
+    titulo: z.string().max(180, 'El título no puede exceder 180 caracteres').optional().nullable(),
+    visitanteId: z.string().uuid('Identificador de visitante inválido'),
+    sesionId: z.string().uuid('Identificador de sesión inválido'),
+  }),
+};
+
 const medicosSchemas = {
   create: z.object({
     nombre: z.string().min(1, 'El nombre es requerido').max(150),
@@ -104,6 +116,7 @@ module.exports = {
   authSchemas,
   noticiasSchemas,
   contactoSchemas,
+  analyticsSchemas,
   medicosSchemas,
   especialidadesSchemas,
   usuariosSchemas,
