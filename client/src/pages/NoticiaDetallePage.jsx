@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Tag, Newspaper } from 'lucide-react';
 import EmbedRenderer from '../components/EmbedRenderer';
 import api from '../api/axios';
+import posthog from 'posthog-js';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
 
@@ -16,8 +17,14 @@ export default function NoticiaDetallePage() {
 
   useEffect(() => {
     api.get(`/public/noticias/${slug}`)
-      .then(r => setNoticia(r.data.data))
-      .catch(() => setError(true))
+      .then(r => {
+        setNoticia(r.data.data);
+        posthog.capture('news_article_viewed', { slug, categoria: r.data.data?.categoria });
+      })
+      .catch(err => {
+        setError(true);
+        posthog.captureException(err);
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 

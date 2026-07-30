@@ -8,6 +8,7 @@ import {
 import api from '../api/axios';
 import Skeleton from '../components/ui/Skeleton';
 import * as XLSX from 'xlsx';
+import posthog from 'posthog-js';
 
 // ── Configuración Visual ───────────────────────────────────────────────────
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -41,14 +42,16 @@ function AiChatPanel({ documento }) {
     setPregunta('');
     setMensajes(m => [...m, { role: 'user', content: texto }]);
     setCargando(true);
+    posthog.capture('document_ai_question_asked', { document_type: documento.tipo });
     try {
       const { data } = await api.post('/public/documentos/preguntar', {
         pregunta: texto,
         documentoId: documento.id
       });
       setMensajes(m => [...m, { role: 'assistant', content: data.respuesta, fuentes: data.fuentes }]);
-    } catch {
+    } catch (err) {
       setMensajes(m => [...m, { role: 'assistant', content: 'Ocurrió un error al consultar. Intenta de nuevo.' }]);
+      posthog.captureException(err);
     } finally {
       setCargando(false);
     }
@@ -415,7 +418,7 @@ function PoaSection({ setSelectedPoa }) {
           {poas.map(poa => (
             <div
               key={poa.id}
-              onClick={() => setSelectedPoa(poa)}
+              onClick={() => { posthog.capture('poa_viewed', { anio: poa.anio }); setSelectedPoa(poa); }}
               className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
             >
               <div>
@@ -581,7 +584,7 @@ export default function DocumentosPage() {
                   const cat = CATEGORIAS.find(c => c.id === doc.tipo) || DEFAULT_CAT;
                   const Icono = cat.icon;
                   return (
-                    <div key={doc.id} onClick={() => setPreviewDoc(doc)}
+                    <div key={doc.id} onClick={() => { posthog.capture('document_viewed', { document_type: doc.tipo }); setPreviewDoc(doc); }}
                       className="group bg-white rounded-2xl border border-neutral-100 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all p-5 cursor-pointer flex flex-col h-full">
                       <div className="flex items-start gap-4 mb-3">
                         <div className={`w-12 h-12 rounded-xl ${cat.bg} flex items-center justify-center shrink-0`}>
@@ -608,7 +611,7 @@ export default function DocumentosPage() {
               if (count === 0 && cat.id !== 'guia') return null; // Ocultar vacías (excepto guías para que no se vea feo si carga)
               const Icono = cat.icon;
               return (
-                <div key={cat.id} onClick={() => setSelectedCategory(cat)}
+                <div key={cat.id} onClick={() => { posthog.capture('document_category_selected', { category: cat.id, category_label: cat.label }); setSelectedCategory(cat); }}
                   className={`bg-white rounded-3xl p-6 border ${cat.border} shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-full relative overflow-hidden group`}>
                   <div className={`absolute top-0 right-0 w-32 h-32 ${cat.bg} rounded-bl-full opacity-50 group-hover:scale-110 transition-transform`}></div>
                   <div className={`w-14 h-14 rounded-2xl ${cat.bg} flex items-center justify-center mb-5 relative z-10`}>
@@ -651,7 +654,7 @@ export default function DocumentosPage() {
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
                   {docsToShow.map(doc => (
-                    <div key={doc.id} onClick={() => setPreviewDoc(doc)}
+                    <div key={doc.id} onClick={() => { posthog.capture('document_viewed', { document_type: doc.tipo }); setPreviewDoc(doc); }}
                       className="group flex items-start gap-4 p-4 rounded-2xl border border-neutral-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors cursor-pointer">
                       <div className={`w-12 h-12 rounded-xl ${selectedCategory.bg} flex items-center justify-center shrink-0`}>
                         <FileText size={20} className={selectedCategory.color} />

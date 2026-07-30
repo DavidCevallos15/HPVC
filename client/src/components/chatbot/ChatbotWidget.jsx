@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageCircle, X, ChevronRight, Bot } from 'lucide-react';
+import posthog from 'posthog-js';
 
 // ─── Árbol de conversación ────────────────────────────────────────────────────
 const CHATBOT_TREE = {
@@ -141,10 +142,12 @@ export default function ChatbotWidget() {
   const handleOption = (opt) => {
     // Agrega mensaje del usuario
     setHistory((h) => [...h, { type: 'user', text: opt.label }]);
+    posthog.capture('chatbot_option_selected', { option_label: opt.label, current_node: node });
 
     if (opt.href) {
       // Enlace externo o tel:
       if (opt.extBlank) {
+        posthog.capture('chatbot_external_link_clicked', { option_label: opt.label, current_node: node });
         window.open(opt.href, '_blank', 'noopener,noreferrer');
       } else {
         window.location.href = opt.href;
@@ -252,7 +255,10 @@ export default function ChatbotWidget() {
 
       {/* ── Botón flotante (FAB) ── */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!open) posthog.capture('chatbot_opened');
+          setOpen(!open);
+        }}
         aria-label="Abrir asistente virtual"
         className="fixed bottom-5 right-5 z-[9999] w-16 h-16 bg-primary hover:bg-primary-light text-white rounded-full shadow-floating flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
       >

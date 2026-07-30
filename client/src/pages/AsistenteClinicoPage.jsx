@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '../components/ui/input';
 import Skeleton from '../components/ui/Skeleton';
 import { Search, FileText, Brain, Stethoscope, ArrowRight, Sparkles } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function AsistenteClinicoPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,7 @@ export default function AsistenteClinicoPage() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      posthog.capture('clinical_assistant_searched', { query_length: searchQuery.trim().length });
       setIsSearching(true);
       setHasSearched(true);
       // Simulate API call delay

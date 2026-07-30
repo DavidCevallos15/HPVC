@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import api from '../api/axios';
+import posthog from 'posthog-js';
 
 export default function ContactoPage() {
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '' });
@@ -16,10 +17,14 @@ export default function ContactoPage() {
     try {
       await api.post('/public/contacto', form);
       setStatus('ok');
+      posthog.capture('contact_form_submitted', { asunto: form.asunto });
       setForm({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al enviar el mensaje. Intente nuevamente.');
+      const errorMsg = err.response?.data?.message || 'Error al enviar el mensaje. Intente nuevamente.';
+      setError(errorMsg);
       setStatus('error');
+      posthog.capture('contact_form_failed', { asunto: form.asunto, error: errorMsg });
+      posthog.captureException(err);
     }
   };
 
