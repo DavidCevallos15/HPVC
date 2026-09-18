@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { useConfig } from '../../context/ConfigContext';
 import logoMsp from '../../assets/logo-msp-remove.png';
-import logoNuevoEcuador from '../../assets/logo-nuevo-ecuador.svg';
+import logoGobiernoEcuador from '../../assets/Footer-escudo.png';
 
 const footerLinks = {
   'Servicios': [
@@ -130,7 +130,7 @@ export default function Footer() {
           <span>© {new Date().getFullYear()} {config.hospital_nombre || 'Hospital Provincial Verdi Cevallos Balda'}. Todos los derechos reservados.</span>
           <div className="flex items-center gap-4">
             <span className="flex items-center">
-              <img src={logoNuevoEcuador} alt="El Nuevo Ecuador" className="h-8 w-auto brightness-0 invert opacity-90" />
+              <img src={logoGobiernoEcuador} alt="Gobierno del Ecuador" className="h-8 w-auto" />
             </span>
             <span className="w-px h-3 bg-white/20" />
 <span>

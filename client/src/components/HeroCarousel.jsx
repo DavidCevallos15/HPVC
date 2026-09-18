@@ -129,7 +129,7 @@ export default function HeroCarousel() {
 
             {/* Logo / escudo */}
             <div className="mb-5">
-              <img src={logoEscudo} alt="Escudo Ecuador" className="h-11 sm:h-13 md:h-14 object-contain drop-shadow-lg" />
+              <img src={logoEscudo} alt="Escudo Ecuador" className="h-[100px] w-auto object-contain drop-shadow-lg" />
             </div>
 
             {/* Título institucional — dinámico desde config */}
@@ -146,7 +146,7 @@ export default function HeroCarousel() {
               );
             })()}
             <span className="inline-flex items-center gap-1.5 mb-5 px-3 py-1 bg-accent/20 border border-accent/40 rounded-full text-accent text-xs font-bold tracking-widest uppercase backdrop-blur-sm">
-              ★ Hospital Público · TIPO C
+              ★ Hospital General de Segundo Nivel de Atención
             </span>
 
             {/* Subtítulo */}
