@@ -35,9 +35,9 @@ export default function Footer() {
           {/* Branding e Info - 4 columnas */}
           <div className="xl:col-span-4">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-14 h-14 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm">
+              {/* <div className="w-14 h-14 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm">
                 <img src={logoMsp} alt="Logotipo MSP" className="w-full h-full object-contain" />
-              </div>
+              </div> */}
               <div className="max-w-[180px]">
                 <div className="font-bold text-sm leading-tight text-white">
                   {config.hospital_nombre || 'Hospital Provincial de Portoviejo Dr. Verdi Cevallos Balda'}
@@ -129,9 +129,9 @@ export default function Footer() {
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-primary-pale/70">
           <span>© {new Date().getFullYear()} {config.hospital_nombre || 'Hospital Provincial Verdi Cevallos Balda'}. Todos los derechos reservados.</span>
           <div className="flex items-center gap-4">
-            <span className="flex items-center">
+            {/* <span className="flex items-center">
               <img src={logoGobiernoEcuador} alt="Gobierno del Ecuador" className="h-8 w-auto" />
-            </span>
+            </span> */}
             <span className="w-px h-3 bg-white/20" />
 <span>
   <a href="https://www.salud.gob.ec/">Ministerio de Salud Pública</a>

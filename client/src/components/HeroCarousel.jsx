@@ -128,9 +128,9 @@ export default function HeroCarousel() {
           <div className="max-w-xl xl:max-w-2xl relative">
 
             {/* Logo / escudo */}
-            <div className="mb-5">
+            {/* <div className="mb-5">
               <img src={logoEscudo} alt="Escudo Ecuador" className="h-[100px] w-auto object-contain drop-shadow-lg" />
-            </div>
+            </div> */}
 
             {/* Título institucional — dinámico desde config */}
             {(() => {

@@ -117,11 +117,11 @@ export default function Navbar() {
               alt="Logo MSP" 
               className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-110" 
             />
-            <img
+            {/* <img
               src={logoNuevoEcuador}
               alt="Logo Gobierno del Nuevo Ecuador"
               className="hidden sm:block h-10 w-auto object-contain"
-            />
+            /> */}
             <div className="leading-tight flex flex-col justify-center">
 
             </div>
