@@ -12,20 +12,20 @@ import HeroCarousel from '../components/HeroCarousel';
 import bgFooter from '../assets/background-footer.jpg';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
-const SOCIABLEKIT_EMBED_ID = '25697673';
-const SOCIABLEKIT_SCRIPT_ID = 'sociablekit-instagram-feed-script';
-const SOCIABLEKIT_SCRIPT_URL = 'https://widgets.sociablekit.com/instagram-feed/widget.js';
-const SOCIABLEKIT_HOST_ID = 'sociablekit-instagram-feed-host';
-const SOCIABLEKIT_CACHE_ID = 'sociablekit-instagram-feed-cache';
+const ELFSIGHT_APP_ID = 'cef63af6-e293-4c39-82cd-2406d8c55452';
+const ELFSIGHT_SCRIPT_ID = 'elfsight-platform-script';
+const ELFSIGHT_SCRIPT_URL = 'https://elfsightcdn.com/platform.js';
+const ELFSIGHT_HOST_ID = 'elfsight-instagram-feed-host';
+const ELFSIGHT_CACHE_ID = 'elfsight-instagram-feed-cache';
 
-let sociableKitScriptPromise = null;
+let elfsightScriptPromise = null;
 
-const getSociableKitCache = () => {
-  let cache = document.getElementById(SOCIABLEKIT_CACHE_ID);
+const getElfsightCache = () => {
+  let cache = document.getElementById(ELFSIGHT_CACHE_ID);
 
   if (!cache) {
     cache = document.createElement('div');
-    cache.id = SOCIABLEKIT_CACHE_ID;
+    cache.id = ELFSIGHT_CACHE_ID;
     cache.hidden = true;
     cache.setAttribute('aria-hidden', 'true');
     document.body.appendChild(cache);
@@ -34,62 +34,68 @@ const getSociableKitCache = () => {
   return cache;
 };
 
-const getSociableKitHost = () => {
-  let host = document.getElementById(SOCIABLEKIT_HOST_ID);
+const getElfsightHost = () => {
+  let host = document.getElementById(ELFSIGHT_HOST_ID);
 
   if (!host) {
     host = document.createElement('div');
-    host.id = SOCIABLEKIT_HOST_ID;
+    host.id = ELFSIGHT_HOST_ID;
     host.className = 'w-full min-w-0';
 
     const feed = document.createElement('div');
-    feed.className = 'sk-instagram-feed w-full min-w-0';
-    feed.dataset.embedId = SOCIABLEKIT_EMBED_ID;
+    feed.className = `elfsight-app-${ELFSIGHT_APP_ID} w-full min-w-0`;
+    feed.dataset.elfsightAppLazy = '';
     host.appendChild(feed);
   }
 
   return host;
 };
 
-const loadSociableKitScript = () => {
-  const host = getSociableKitHost();
-  const feed = host.querySelector('.sk-instagram-feed');
-  const existingScript = document.getElementById(SOCIABLEKIT_SCRIPT_ID);
-  const existingMarker = document.querySelector(`div[src="${SOCIABLEKIT_SCRIPT_URL}"]`);
+const loadElfsightScript = () => {
+  const host = getElfsightHost();
+  const feed = host.querySelector(`.elfsight-app-${ELFSIGHT_APP_ID}`);
+  const existingScript = document.getElementById(ELFSIGHT_SCRIPT_ID);
 
   if (feed?.childElementCount) return Promise.resolve();
-  if (sociableKitScriptPromise) return sociableKitScriptPromise;
+  if (elfsightScriptPromise) return elfsightScriptPromise;
 
-  if (existingScript && existingScript.dataset.loaded !== 'true' && !existingMarker) {
-    sociableKitScriptPromise = new Promise((resolve, reject) => {
+  if (existingScript) {
+    if (window.ElfsightApps) {
+      elfsightScriptPromise = Promise.resolve().then(() => {
+        window.ElfsightApps.init?.();
+      });
+      return elfsightScriptPromise;
+    }
+
+    elfsightScriptPromise = new Promise((resolve, reject) => {
       existingScript.addEventListener('load', resolve, { once: true });
       existingScript.addEventListener('error', reject, { once: true });
+    }).then(() => {
+      window.ElfsightApps?.init?.();
     });
-    return sociableKitScriptPromise;
+    return elfsightScriptPromise;
   }
 
-  // Recupera una inicializacion incompleta sin afectar la navegacion normal.
-  existingScript?.remove();
-  document.querySelectorAll(`div[src="${SOCIABLEKIT_SCRIPT_URL}"]`).forEach((marker) => marker.remove());
-
-  sociableKitScriptPromise = new Promise((resolve, reject) => {
+  elfsightScriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.id = SOCIABLEKIT_SCRIPT_ID;
-    script.src = SOCIABLEKIT_SCRIPT_URL;
+    script.id = ELFSIGHT_SCRIPT_ID;
+    script.src = ELFSIGHT_SCRIPT_URL;
+    script.async = true;
     script.defer = true;
     script.onload = () => {
-      script.dataset.loaded = 'true';
       resolve();
     };
     script.onerror = (error) => {
-      sociableKitScriptPromise = null;
+      elfsightScriptPromise = null;
       script.remove();
       reject(error);
     };
     document.body.appendChild(script);
+  }).then(() => {
+    window.ElfsightApps?.init?.();
   });
 
-  return sociableKitScriptPromise;
+  return elfsightScriptPromise;
 };
 
 const toAbsoluteMediaUrl = (url) => {
@@ -207,7 +213,7 @@ function NoticiasRecientes() {
     const mount = feedMountRef.current;
     if (!mount) return undefined;
 
-    const host = getSociableKitHost();
+    const host = getElfsightHost();
     mount.appendChild(host);
 
     let animationFrame;
@@ -255,12 +261,12 @@ function NoticiasRecientes() {
       mutationObserver.disconnect();
       cancelAnimationFrame(animationFrame);
       window.clearTimeout(resizeTimer);
-      getSociableKitCache().appendChild(host);
+      getElfsightCache().appendChild(host);
     };
   }, []);
 
   useEffect(() => {
-    loadSociableKitScript().catch(() => {
+    loadElfsightScript().catch(() => {
       // El contenedor permanece disponible para que un reintento posterior pueda recuperarlo.
     });
   }, []);
@@ -280,7 +286,7 @@ function NoticiasRecientes() {
         </div>
 
         {/* Contenedor del Feed de Instagram */}
-        <div className="sociablekit-feed-shell w-full min-w-0 overflow-hidden rounded-lg border border-neutral-100 bg-white p-2 shadow-sm sm:min-h-[500px] sm:p-4 lg:min-h-[560px] lg:p-6">
+        <div className="elfsight-feed-shell w-full min-w-0 overflow-hidden rounded-lg border border-neutral-100 bg-white p-2 shadow-sm sm:min-h-[500px] sm:p-4 lg:min-h-[560px] lg:p-6">
           <div ref={feedMountRef} className="w-full min-w-0" />
         </div>
 
